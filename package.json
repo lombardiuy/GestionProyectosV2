@@ -1,0 +1,92 @@
+{
+  "name": "GestiondeProyectos",
+  "description": "Gestión de proyectos",
+  "version": "2.0.0",
+  "main": "dist/electron/main.js",
+  "author": {
+    "name": "Ignacio Lombardi",
+    "email": "lombardiuy@gmail.com",
+    "gihub": "https://github.com/lombardiuy/"
+  },
+  "scripts": {
+    "start:backend": "nodemon --watch backend/src --ext ts --exec ts-node backend/src/index.ts",
+    "start:frontend": "cd frontend && ng serve --host 0.0.0.0",
+    "electron:nodemon": "nodemon --watch electron --watch backend --exec \"npm run electron:dev\"",
+    "electron:dev": "tsc -p electron && electron dist/electron/main.js --serve",
+    "dev": "concurrently \"npm run start:backend\" \"npm run start:frontend\" \"wait-on http://localhost:4200 && npm run electron:nodemon\"",
+    "build:frontend": "cd frontend && ng build --base-href ./ && npm run copy-frontend",
+    "build:backend": "tsc -p backend && npm run copy-backend",
+    "copy-frontend": "copyfiles -u 3 \"frontend/dist/browser/**/*\" dist/electron/frontend  ",
+    "copy-backend": "copyfiles -u 4 \"backend/dist/backend/src/**/*\" dist/electron/backend",
+    "copy-splash": "copyfiles -u 1 \"electron//**/*\" dist/electron/",
+    "copy-shared": "copyfiles -u 1 \"shared//**/*\" dist/electron/",
+    "build:electron": "tsc -p electron && npm run copy-splash",
+    "build:all": "npm run build:frontend && npm run build:backend  && npm run build:electron",
+    "start:prod": "electron dist/electron/main.js",
+    "dist": "npm run build:all && electron-builder --win"
+  },
+  "build": {
+    "appId": "Gestion.de.Proyectos",
+    "productName": "Gestion de Proyectos",
+    "asar": false,
+    "files": [
+      "dist/electron/**/*",
+      "electron/splash.html",
+      "electron/splash-assets/**/*"
+    ],
+    "win": {
+      "icon": "dist/electron/frontend/assets/icons"
+    }
+  },
+  "dependencies": {
+    "@angular/common": "^20.1.0",
+    "@angular/compiler": "^20.1.0",
+    "@angular/core": "^20.1.0",
+    "@angular/forms": "^20.1.0",
+    "@angular/platform-browser": "^20.1.0",
+    "@angular/router": "^20.1.0",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.2",
+    "bootstrap": "^5.3.7",
+    "bootstrap-icons": "^1.13.1",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "express-fileupload": "^1.5.2",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "mssql": "^11.0.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "typeorm": "^0.3.25",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.1.1",
+    "@angular/cli": "^20.1.1",
+    "@angular/compiler-cli": "^20.1.0",
+    "@types/express": "^5.0.3",
+    "@types/express-fileupload": "^1.5.1",
+    "@types/jasmine": "~5.1.0",
+    "@types/mssql": "^9.1.7",
+    "@types/node": "^24.1.0",
+    "@types/wait-on": "^5.3.4",
+    "concurrently": "^9.2.0",
+    "copyfiles": "^2.4.1",
+    "electron": "^37.2.3",
+    "electron-builder": "^26.0.12",
+    "electron-reload": "^2.0.0-alpha.1",
+    "jasmine-core": "~5.8.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.8.2",
+    "wait-on": "^8.0.3"
+  }
+}

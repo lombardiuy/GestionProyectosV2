@@ -1,0 +1,63 @@
+.list-group {
+    background-color: var(--bs-gray-200);
+    height: 100%;
+    overflow: scroll;
+}
+
+.list-group::-webkit-scrollbar {
+    display: none;
+}
+
+a[aria-expanded=true] .bi-caret-down-fill {
+    display: none;
+ }
+ a[aria-expanded=false] .bi-caret-up-fill {
+    display: none;
+ }
+
+
+ .list-group-item {
+    
+    background-color: transparent;
+    border-radius: 0;
+
+    }
+
+.list-group-item:hover{
+    background-color: var(--bs-gray-100);
+    color:var(--Megalabs-primary-green)
+}
+
+.secondary-menu {
+
+    padding-left:30px;
+
+}
+
+.submenu-item{
+    padding-left:40px;
+  
+}
+
+
+
+.primary-icon{
+  font-size: 20px;
+
+}
+
+.disabled {
+
+    padding-left:5px;
+}
+
+
+
+.flashing-alert{ 
+    font-size: 20px;
+}
+
+.minimalBarElement {
+    font-size:20px !important;
+}
+

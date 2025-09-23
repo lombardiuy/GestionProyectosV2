@@ -1,0 +1,52 @@
+
+
+
+  <div  class="w-100 h-100 d-flex align-items-center " *ngIf="(navbarstateService.displaySideNavbar | async) == 'true'">
+    <div class="list-group ">
+
+            <!--Risk Annalysis Parameters-->
+                    <a href="#menuAdmin" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
+          
+                      <span><i class="fa-solid fa-toolbox"></i> Administración</span>
+                      <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
+                
+                    
+                    </a>
+  
+                    <div class="collapse" id="menuAdmin">
+  
+                      <a href="#menuAdminUsers" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#menuAdmin" aria-expanded="false">
+          
+                        <span><i class="fa-solid fa-users"></i> Usuarios</span>
+                        <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
+                  
+                      
+                      </a>
+                      <div class="collapse" id="menuAdminUsers">
+      
+                        <a [routerLink]="['users/admin']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#menuAdminUsers"><i class="bi bi-person-lines-fill"></i> Gestion de Usuarios </a>
+                        <a [routerLink]="['users/roles']"class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#menuAdminUsers"><i class="bi bi-person-fill-gear"></i> Roles y permisos</a>
+                     
+                      
+                        
+  
+                    
+                     
+                    </div>
+    
+  
+                  
+                     
+                   
+                  </div>
+
+
+  
+  
+
+  
+  
+    </div>
+  
+  </div>
+  

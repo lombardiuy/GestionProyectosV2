@@ -1,0 +1,19 @@
+.top-navbar-production {
+    background-color: var(--Megalabs-primary-green);
+    height:60px;
+}
+
+.top-navbar-development {
+    background-color: var(--RA-Risk-High);
+    height:60px;
+}
+
+.rtl {
+    direction: rtl;
+  }
+  
+  .navbar {
+      padding-top: 0.25rem !important;
+      padding-bottom: 0.25rem !important;
+  }
+

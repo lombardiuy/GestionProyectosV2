@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "outDir": "../dist/electron",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+        "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["node", "electron"]
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["../dist"]
+}
