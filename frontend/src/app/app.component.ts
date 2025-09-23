@@ -1,6 +1,5 @@
 import { Component} from '@angular/core';
-import { NavbarstateService } from './shared/services/navbarstate.service';
-import { AuthService } from './core/services/auth.service';
+
 
 
 @Component({
@@ -11,7 +10,7 @@ import { AuthService } from './core/services/auth.service';
 })
 export class AppComponent {
 
-  constructor(public navbarstateService:NavbarstateService, public authService:AuthService) {
+  constructor() {
 
   }
 

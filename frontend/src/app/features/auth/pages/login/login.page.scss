@@ -1,0 +1,14 @@
+.login-container {
+    width:100vw;
+    height:100vh;
+    background-color:var(--Megalabs-primary-green);
+    background-image: url('../../../../../assets/img/bg.jpeg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.login-form {
+    width:350px;
+    height: 300px !important;
+}
