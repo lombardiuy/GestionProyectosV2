@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, of, switchMap, tap, throwError } from 'rxjs';
-import { User } from '../interfaces/user.interface';
+import { User } from '../../features/users/interfaces/user.interface';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import {jwtDecode} from 'jwt-decode';
@@ -79,7 +79,7 @@ export class AuthService {
       switchMap(res => {
         const decoded = jwtDecode<DecodedToken>(res.token);
 
-        if (!decoded.active) {
+        if (decoded.status  === 'reset-password') {
           return throwError(() => ({
             error: {
               code: 'inactive-account',

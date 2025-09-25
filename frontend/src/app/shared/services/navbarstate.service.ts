@@ -8,8 +8,8 @@ import { firstValueFrom } from 'rxjs';
 })
 export class NavbarstateService {
 
-  public displaySideNavbar = new BehaviorSubject<string>('false');
-  public timestamp$ = new BehaviorSubject<number>(Date.now());
+  public displaySideNavbar = new BehaviorSubject<boolean>(true);
+
 
 
   constructor() {
@@ -20,18 +20,9 @@ export class NavbarstateService {
 async toggleSideNavbar() {
   const currentValue = await firstValueFrom(this.displaySideNavbar);
 
-  if (currentValue === 'true') {
-
-     this.displaySideNavbar.next('false');
-  }else {
-         this.displaySideNavbar.next('true');
-  }
+  this.displaySideNavbar.next(!currentValue)
  
 }
-
- refreshTimestamp() {
-    this.timestamp$.next(Date.now());
-  }
 
 
 

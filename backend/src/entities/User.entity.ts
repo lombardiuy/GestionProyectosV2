@@ -21,7 +21,7 @@ export class User extends BaseEntity {
     profilePicture!: boolean; //Si tengo foto de perfil es la ID del usuario.
     
     @Column()
-    active!: boolean;
+    status!: string;
  
 
     @VersionColumn()

@@ -1,0 +1,26 @@
+
+top-navbar {
+    height:60px;
+}
+
+.sideNavbar {
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow: scroll;
+  
+
+
+}
+
+
+
+
+.content {
+    height: calc(100vh - 60px);
+    overflow: hidden; 
+    padding:0;
+}
+
+
+

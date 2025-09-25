@@ -1,0 +1,65 @@
+
+      <!-- Filtro y botón -->
+      <div class="w-100 d-flex justify-content-between mb-3">
+        <form [formGroup]="userListFilterForm" class="w-50">
+          <input type="text" formControlName="filter" placeholder="Busca por Nombre, Usuario o Rol" (input)="filterTable($event)" class="form-control" maxlength="30">
+        </form>
+        <button class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#createUserModal">
+          <i class="fa-solid fa-user-plus"></i> Crear Usuario
+        </button>
+      </div>
+
+      <!-- Listado de usuarios -->
+      <div class="card flex-grow-1 d-flex flex-column w-100 h-90">
+        <div class="card-header w-100 h-8">
+          <h6><i class="bi bi-person-lines-fill"></i> Listado de usuarios</h6>
+        </div>
+
+        <div class="card-body p-0 d-flex flex-column w-100 h-92">
+          <!-- Encabezado fijo -->
+          <div class="w-100   d-flex align-items-end ">
+            <table class="table  w-100 h-80 m-0 p-0">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Nombre</th>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+
+          <!-- Scroll del cuerpo -->
+          <div class="flex-grow-1 overflow-auto w-100 h-90" >
+            <table class="table  mb-0">
+              <tbody >
+                <tr *ngFor="let user of filteredUserList">
+                  <td>
+                    <img [src]="user.profilePicture ? profilePicturePath + 'ProfilePic_' + user.id + '.jpeg' + '?t=' + timestamp : profilePicturePath + 'avatar.jpeg'"
+                         alt="..." class="img-fluid rounded-circle avatar">
+                  </td>
+                  <td class="align-middle">{{ user.name }}</td>
+                  <td class="align-middle">{{ user.username }}</td>
+                  <td class="align-middle">{{ user.userRole.name }}</td>
+                  <td class="align-middle ">
+                    <div class="d-flex w-100 justify-content-center">
+                  
+                      <i class="fa-solid fa-user-pen color-primary me-5" data-bs-toggle="modal" data-bs-target="#createUserModal"></i>
+                  <i   class="fa-solid fa-user-xmark color-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal"></i>
+                   <i   class="fa-solid fa-user-xmark color-secondary" ></i>
+                    </div>
+          
+                  </td>
+                  
+                </tr>
+                <tr *ngIf="filteredUserList && filteredUserList.length === 0">
+                  <td colspan="5" class="text-danger text-center">No hay usuarios en el sistema.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+ 

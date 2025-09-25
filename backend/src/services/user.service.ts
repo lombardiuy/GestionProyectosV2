@@ -118,7 +118,7 @@ export const UserChangePassword = async (id: number, newPassword: string): Promi
 
     const hashed = await bcrypt.hash(newPassword, 10);
     user.password = hashed;
-    user.active = true;
+    user.status = 'active';
 
     const updatedUser = await userRepo.save(user);
     return updatedUser;

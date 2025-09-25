@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environment';
 import { NavbarstateService } from '../../services/navbarstate.service';
+import { TimeService } from '../../services/time.service';
 
 
 @Component({
@@ -24,9 +25,9 @@ export class TopNavbarComponent implements OnInit {
   
      timestamp: number = 0;
 
-  constructor(public authService:AuthService,  private router: Router, public navbarstateService:NavbarstateService) {
+  constructor(public authService:AuthService,  private router: Router, public navbarstateService:NavbarstateService, private timeService:TimeService) {
 
-      this.timeStampSubscription = this.navbarstateService.timestamp$.subscribe(ts => {
+      this.timeStampSubscription = this.timeService.timestamp$.subscribe(ts => {
       this.timestamp = ts;
   });
 
@@ -48,7 +49,7 @@ export class TopNavbarComponent implements OnInit {
    }
 
     ngOnDestroy() {
-    // Limpiamos la suscripción para evitar memory leaks
+
     if (this.timeStampSubscription) {
       this.timeStampSubscription.unsubscribe();
     }

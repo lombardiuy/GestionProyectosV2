@@ -11,13 +11,17 @@
 
     <div class="d-flex w-100">
 
-        <div *ngIf="navbarstateService.displaySideNavbar | async as displaySideNavbar" class="d-flex w-50 align-items-center ms-3">
+        <div class="d-flex w-50 align-items-center ms-3">
 
-            <div *ngIf="displaySideNavbar === 'false'"  (click)="navbarstateService.toggleSideNavbar()" style="font-size: 20px !important" class="text-white cursor-pointer">
-                <i class="fa-solid fa-angles-right"></i>
+            <div *ngIf="navbarstateService.displaySideNavbar | async ; else showOpenIcon "  (click)="navbarstateService.toggleSideNavbar()" style="font-size: 20px !important" class="text-white cursor-pointer">
+                <i class="fa-solid fa-angles-left"></i>
             </div>
             
-            <i *ngIf="displaySideNavbar === 'true'"(click)="navbarstateService.toggleSideNavbar()" style="font-size: 20px !important"class="fa-solid fa-angles-left text-white cursor-pointer"></i>
+        
+        <ng-template #showOpenIcon>
+               <i (click)="navbarstateService.toggleSideNavbar()" style="font-size: 20px !important" class="fa-solid fa-angles-right text-white cursor-pointer"></i>
+        </ng-template>
+
         </div>
 
         <div class="container-fluid d-flex  w-50 justify-content-end align-items-center text-white" sytle='border:solid' >

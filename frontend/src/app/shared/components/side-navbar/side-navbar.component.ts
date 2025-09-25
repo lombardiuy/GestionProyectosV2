@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavbarstateService } from '../../services/navbarstate.service';
+
 
 @Component({
   selector: 'side-navbar',
@@ -9,7 +9,7 @@ import { NavbarstateService } from '../../services/navbarstate.service';
 })
 export class SideNavbarComponent implements OnInit {
 
-  constructor(public navbarstateService:NavbarstateService) { }
+  constructor() { }
 
   async ngOnInit() {
 

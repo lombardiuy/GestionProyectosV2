@@ -1,13 +1,18 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-// Importa los layouts
+
 import { PrivatelayoutComponent } from './layouts/private-layout/private-layout.component';
 import { PubliclayoutComponent } from './layouts/public-layout/public-layout.component';
 
+
+import { AuthGuard } from './core/guards/auth.guard';
+
+
+
 const routes: Routes = [
 
-  // Rutas de autenticación con layout sin navbar ni sidebar
+  // Rutas públicas
   {
     path: 'auth',
     component: PubliclayoutComponent,
@@ -15,24 +20,27 @@ const routes: Routes = [
       {
         path: '',
         loadChildren: () =>
-          import('./features/auth/auth-module').then(m => m.AuthModule) // Nota: 'auth.module' no 'auth-module'
+          import('./features/auth/auth-module').then(m => m.AuthModule) 
       }
     ]
   },
 
-  // Rutas principales con layout que contiene navbar y sidebar
+ // Rutas privadas
   {
     path: '',
     component: PrivatelayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'users',
         loadChildren: () =>
-          import('./features/users/users-module').then(m => m.UsersModule) // Igual, cuidado con el nombre del archivo
+          import('./features/users/users-module').then(m => m.UsersModule) 
       },
-      // Aquí puedes agregar más rutas hijas protegidas o con sidebar/topbar
+   
     ]
   },
+
+
 
   // Redirección en caso de ruta no encontrada
   { path: '**', redirectTo: 'auth/login' }

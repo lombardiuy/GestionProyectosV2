@@ -8,7 +8,7 @@ export interface User {
   password:string;
   profilePicture:boolean;
   userRole:UserRole;
-  active:boolean;
+  status:string;
   
 
 
