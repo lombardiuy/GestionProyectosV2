@@ -1,4 +1,6 @@
 
+import {UserRole} from "./user-role.interface"
+import { UserStatus } from "./user-status.enum";
 
 
 export interface User {
@@ -6,36 +8,11 @@ export interface User {
   name: string;
   username:string;
   password:string;
-  profilePicture:boolean;
+  hasProfilePicture:boolean;
   userRole:UserRole;
-  status:string;
+  status:UserStatus;
   
 
 
 }
 
-
-export interface UserRole {
-   id?: number;
-  name: string;
-  users:User[];
-  modulePermissions:ModulePermission[];
-
-
-
-}
-
-
-export interface ModulePermission {
-  id?: number;
-  module: string;
-  create:boolean;
-  read:boolean;
-  update:boolean;
-  delete:boolean;
-  approve:boolean;
-  requiresApproval:boolean,
-  userRole:UserRole | null;
-
-
-}

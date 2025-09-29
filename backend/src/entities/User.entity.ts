@@ -18,7 +18,7 @@ export class User extends BaseEntity {
     password!: string;
 
     @Column()
-    profilePicture!: boolean; //Si tengo foto de perfil es la ID del usuario.
+    hasProfilePicture!: boolean; //Si tengo foto de perfil es la ID del usuario.
     
     @Column()
     status!: string;

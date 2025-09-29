@@ -8,13 +8,13 @@
 
     <div class="card-body d-flex flex-column w-100 h-92">
 
-          <button class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#createUserModal">
+          <button class="btn btn-success position-absolute end-0 me-3" (click)="createUser()" data-bs-toggle="modal" data-bs-target="#createUserModal">
           <i class="fa-solid fa-user-plus"></i> Crear Usuario
         </button>
                 
-            <users-list-component  class="w-100 h-100"
+            <users-list-component (editUserEvent)="editUser($event)"   class="w-100 h-100"
                    [profilePicturePath]="profilePicturePath" 
-                   [userList]="userList$ | async" 
+                   [userList]="usersList$ | async" 
                    [timestamp]="timestamp$ | async">
             </users-list-component>
     </div>
@@ -25,10 +25,21 @@
 </div>
 
   <div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
-   <user-create-component   class="w-100 h-100"
-    [profilePicturePath]="profilePicturePath"
-    [selectedUser]="selectedUser$ | async" 
+   <user-create-component  #usersCreateComponent    *ngIf="userCreateForm" class="w-100 h-100"
+   
+    (changeUserStatusEvent)="changeUserStatus()" 
+    (resetPasswordEvent)="resetPassword()" 
+     (saveUserEvent)="saveUser($event)"
+  
     [userCreateForm]="userCreateForm"
+    [profilePicturePath]="profilePicturePath"
+    [usersList]="usersList$ | async"
+    [userRolesList]="userRolesList$ | async"
+    [imagePreview] = "imagePreview"
+    [formError] = "formError"
+    [formErrorMsg] = "formErrorMsg"
+    [submitted] = "submitted"
+ 
     
      
    

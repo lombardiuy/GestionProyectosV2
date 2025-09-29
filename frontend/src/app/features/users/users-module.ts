@@ -5,12 +5,12 @@ import { UsersRoutingModule } from './users-routing-module';
 
 import { UsersPanelPage } from './pages/users-panel/users-panel.page';
 import { UsersListComponent } from './components/user-list/users-list.component';
-import { UsersCreateComponent } from './components/user-create/user-create.component';
+import { UserCreateComponent } from './components/user-create/user-create.component';
 
 
 @NgModule({
   declarations: [
-    UsersPanelPage, UsersListComponent, UsersCreateComponent
+    UsersPanelPage, UsersListComponent, UserCreateComponent
   ],
   imports: [
     CommonModule,

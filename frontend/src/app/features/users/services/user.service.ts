@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
-import {User} from '../interfaces/user.interface'
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+
 import { environment } from '../../../../environments/environment';
+
+import { UserRole } from '../interfaces/user-role.interface';
+import {User} from '../interfaces/user.interface'
 
 @Injectable({
   providedIn: 'root',
@@ -11,43 +14,101 @@ export class UserService {
 
  private apiUrl = environment.apiURL + 'user';
 
-  private userListSubject = new BehaviorSubject<User[] | null>(null);
-  public userList$ = this.userListSubject.asObservable();
-  
+  private usersListSubject = new BehaviorSubject<User[] | null>(null);
   private selectedUserSubject = new BehaviorSubject<User | null>(null);
+  private userRolesListSubject = new BehaviorSubject<UserRole[] | null>(null);
+  
+  
+  public usersList$ = this.usersListSubject.asObservable();
   public selectedUser$ = this.selectedUserSubject.asObservable();
+  public userRolesList$ = this.userRolesListSubject.asObservable();
 
   constructor(private http: HttpClient) {
 
   }
 
 
+
+
+
   /***************************************
    * CREATE
   ****************************************/
-  //READ
+
+
+  createUser(user:User) {
+
+    console.log("CREATE USER");
+    console.log(user)
+  
+    
+  return this.http.post<any>(`${this.apiUrl}/create`,  user);
+
+
+}
+
+
+  /***************************************
+   * READ
+  ****************************************/
 
 
 async getAllUsers(): Promise<User[] | null> {
   try {
     const userList = await firstValueFrom(this.http.get<User[]>(`${this.apiUrl}/list`));
-    this.userListSubject.next(userList);
+    this.usersListSubject.next(userList);
     return userList;
   } catch (err) {
     console.error(err);
-    this.userListSubject.next(null); 
+    this.usersListSubject.next(null); 
     return [];
   }
 }
 
 
-  //UPDATE
+async getAllUserRoles(): Promise<UserRole[] | null> {
+  try {
+    const userRolesList = await firstValueFrom(this.http.get<UserRole[]>(`${this.apiUrl}/roles`));
+    this.userRolesListSubject.next(userRolesList);
+    console.log(userRolesList)
+    return userRolesList;
+  } catch (err) {
+    console.error(err);
+    this.userRolesListSubject.next(null); 
+    return [];
+  }
+}
+
+async selectUser(id: number): Promise<User> {
+  const selectedUser = await firstValueFrom(
+    this.http.get<User>(`${this.apiUrl}/select/${id}`)
+  )
+  this.selectedUserSubject.next(selectedUser)
+  return selectedUser
+}
 
 
-  //DELETE
+  /***************************************
+   * UPDATE
+  ****************************************/
 
 
+  /***************************************
+   * DELETE
+  ****************************************/
 
+  
+  clearUserList() {
+    this.usersListSubject.next(null);
+  }
+  
+  clearUserRoleList() {
+    this.userRolesListSubject.next(null);
+  }
+
+  clearSelectedUser() {
+    this.selectedUserSubject.next(null);
+  }
 
 
 }

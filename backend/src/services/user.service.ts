@@ -9,9 +9,11 @@ const userRolesRepository = AppDataSource.getRepository(UserRole);
 /**
  * Obtiene todos los usuarios con sus roles y permisos.
  */
-export const getAllUsers = async (): Promise<User[]> => {
+export const getAllUsers = async (): Promise<Partial<User>[]> => {
   try {
-    return await userRepository.find({ relations: ['userRole'] });
+    const users =  await userRepository.find({ relations: ['userRole'] });
+    return users.map(({ password, ...rest }) => rest);
+
   } catch (error) {
     throw new Error('No se pudieron obtener los usuarios');
   }

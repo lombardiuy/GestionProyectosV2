@@ -1,8 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { User } from '../../interfaces/user.interface';
 import { FormGroup } from '@angular/forms';
 import { compareRoles } from '../../helpers/compare-roles.helper.';
-
+import { UserRole } from '../../interfaces/user-role.interface';
+import { UserStatus } from '../../interfaces/user-status.enum';
+import { createUsername } from '../../helpers/create-username.helper';
 
 @Component({
   selector: 'user-create-component',
@@ -13,23 +15,35 @@ import { compareRoles } from '../../helpers/compare-roles.helper.';
 
 
 
-export class UsersCreateComponent implements OnInit {
+export class UserCreateComponent implements OnInit {
+
+   public userStatus = UserStatus
+  
+   public compareRoles = compareRoles;
+
 
    @Input() profilePicturePath!: string | null;
-   @Input() selectedUser!: User| null;
+   @Input() usersList!: User[] | null;
+   @Input() userRolesList!: UserRole[] | null;
    @Input() userCreateForm!: FormGroup;
-
-   @Input() profilePicture!: File | null;
-   @Input() profilePictureStatus:string | null | undefined;
-   @Input() imagePreview: string | null | undefined;
-
    @Input() formError: boolean | undefined;
    @Input() formErrorMsg: string | null | undefined;
    @Input() submitted: boolean | undefined;
+   @Input() imagePreview: string | null | undefined;
 
-    @Input() userRoles!: User[] | null;
+   @Output() resetPasswordEvent = new EventEmitter<any>();
+   @Output() changeUserStatusEvent = new EventEmitter<any>();
+   @Output() saveUserEvent = new EventEmitter<File | null>();
 
-    compareRoles = compareRoles;
+   profilePicture!: File | null;
+   profilePictureStatus:string | null | undefined;
+  
+
+    @ViewChild('btnClose') btnClose!: ElementRef;  
+
+   
+
+  
 
 
 
@@ -39,37 +53,48 @@ export class UsersCreateComponent implements OnInit {
   ngOnInit(): void {
 
 
+
+
   
   
   }
+
+  closeModal() {
+    this.btnClose.nativeElement.click();
+  }
+  
   
 
-    get form() {
-    return this.userCreateForm.controls;
+  get form() {
+    return this.userCreateForm?.controls;
+  }
+
+  get id() {
+  return this.userCreateForm?.get('id');
   }
 
   get name() {
-  return this.userCreateForm.get('name');
+  return this.userCreateForm?.get('name');
   }
   get username() {
-  return this.userCreateForm.get('username');
+  return this.userCreateForm?.get('username');
   }
 
 get password() {
-  return this.userCreateForm.get('password');
+  return this.userCreateForm?.get('password');
 }
 
   get userRole() {
-  return this.userCreateForm.get('userRole');
+  return this.userCreateForm?.get('userRole');
   }
  
 
    get status() {
-  return this.userCreateForm.get('status');
+  return this.userCreateForm?.get('status');
   }
 
 
-setprofilePicture (event:Event) {
+  setprofilePicture (event:Event) {
 
     const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
@@ -86,7 +111,7 @@ setprofilePicture (event:Event) {
 
     this.profilePicture = file;
     this.profilePictureStatus = '';
-    this.userCreateForm.get('profilePicture')?.setValue(true);
+    this.userCreateForm.get('hasProfilePicture')?.setValue(true);
       this.imagePreview = URL.createObjectURL(file);
 
 
@@ -106,24 +131,39 @@ setprofilePicture (event:Event) {
 
    createUsername() {
 
+    if (!this.id?.value) {
+
   
-
-    if (this.userCreateForm.value.name) {
-     
-
-    let words = this.userCreateForm.value.name.split(' ');
-    let length = words.filter((element: string)=> element!= "").length
-
-    if (length > 1) {
-      this.userCreateForm.get('username')?.setValue(words[0].charAt(0).toLowerCase() + words[1].toLowerCase());
- 
-    }else {
-      this.userCreateForm.get('username')?.setValue("");
+  const name = this.userCreateForm.value.name;
+  const username = createUsername(name, this.usersList);
+  this.userCreateForm.get('username')?.setValue(username);
     }
   }
+
+
+  resetPassword() {
+    
+
+
+     this.resetPasswordEvent.emit('resetPassword');
+  
+  
+    
+
+
   }
 
+  changeUserStatus() {
 
+      this.changeUserStatusEvent.emit('changeStatus');
+
+  }
+
+  saveUser() {
+
+      this.saveUserEvent.emit(this.profilePicture);
+
+  }
 
 
 

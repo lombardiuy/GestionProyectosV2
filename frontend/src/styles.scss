@@ -1361,3 +1361,10 @@ input[type="checkbox"].form-check-input:checked {
 .modal-header {
   border-bottom: none;
 }
+
+input[readonly] {
+  background-color: #e9ecef !important; /* el gris que usa bootstrap para disabled */
+  opacity: 1 !important; /* para que no se vea “transparentado” */
+  pointer-events: none; /* opcional, para que no se pueda seleccionar */
+  user-select: none; /* opcional, para que no copie texto */
+}

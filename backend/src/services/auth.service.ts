@@ -26,7 +26,7 @@ export const getDevToken = async (): Promise<string> => {
       id: 0,
       name: "Usuario prueba",
       username: "testing",
-      profilePicture: false,
+      hasProfilePicture: false,
       userRole: {
         name: 'admin',
       },

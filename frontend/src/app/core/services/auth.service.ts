@@ -4,6 +4,7 @@ import { User } from '../../features/users/interfaces/user.interface';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import {jwtDecode} from 'jwt-decode';
+import { UserStatus } from '../../features/users/interfaces/user-status.enum';
 
 
 export type DecodedToken = Omit<User, 'password'> & {
@@ -79,7 +80,7 @@ export class AuthService {
       switchMap(res => {
         const decoded = jwtDecode<DecodedToken>(res.token);
 
-        if (decoded.status  === 'reset-password') {
+        if (decoded.status  === UserStatus.Inactive) {
           return throwError(() => ({
             error: {
               code: 'inactive-account',

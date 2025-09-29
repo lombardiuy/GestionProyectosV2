@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { User } from '../../interfaces/user.interface';
+import { UserService } from '../../services/user.service';
 
 
 @Component({
@@ -21,15 +22,17 @@ export class UsersListComponent implements OnInit {
    @Input() profilePicturePath!: string | null;
    @Input() userList!: User[] | null;
    @Input() timestamp!: Number | null;
+   @Output() editUserEvent = new EventEmitter<any>();
 
-    filteredUserList: User[] | null = [];
+
+   filteredUserList: User[] | null = [];
 
 
     
 
   
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder, private userService:UserService) { }
 
 
   ngOnInit(): void {
@@ -64,7 +67,20 @@ filterTable(event: any) {
     user.userRole?.name?.toLowerCase().includes(query)
   );
 }
+
+
+  editUser(user:User | null) {
+    
+
+    if (user && user.id) {
+
+     this.editUserEvent.emit(user.id);
+    }
   
+    
+
+
+  }
   
     ngOnDestroy(): void {
  

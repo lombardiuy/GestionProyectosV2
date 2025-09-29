@@ -4,9 +4,7 @@
         <form [formGroup]="userListFilterForm" class="w-50">
           <input type="text" formControlName="filter" placeholder="Busca por Nombre, Usuario o Rol" (input)="filterTable($event)" class="form-control" maxlength="30">
         </form>
-        <button class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#createUserModal">
-          <i class="fa-solid fa-user-plus"></i> Crear Usuario
-        </button>
+ 
       </div>
 
       <!-- Listado de usuarios -->
@@ -37,7 +35,7 @@
               <tbody >
                 <tr *ngFor="let user of filteredUserList">
                   <td>
-                    <img [src]="user.profilePicture ? profilePicturePath + 'ProfilePic_' + user.id + '.jpeg' + '?t=' + timestamp : profilePicturePath + 'avatar.jpeg'"
+                    <img [src]="user.hasProfilePicture ? profilePicturePath + 'ProfilePic_' + user.id + '.jpeg' + '?t=' + timestamp : profilePicturePath + 'avatar.jpeg'"
                          alt="..." class="img-fluid rounded-circle avatar">
                   </td>
                   <td class="align-middle">{{ user.name }}</td>
@@ -46,7 +44,7 @@
                   <td class="align-middle ">
                     <div class="d-flex w-100 justify-content-center">
                   
-                      <i class="fa-solid fa-user-pen color-primary me-5" data-bs-toggle="modal" data-bs-target="#createUserModal"></i>
+                      <i (click)="editUser(user)" class="fa-solid fa-user-pen color-primary me-5" data-bs-toggle="modal" data-bs-target="#createUserModal"></i>
                   <i   class="fa-solid fa-user-xmark color-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal"></i>
                    <i   class="fa-solid fa-user-xmark color-secondary" ></i>
                     </div>
