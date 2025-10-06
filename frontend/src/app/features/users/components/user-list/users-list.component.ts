@@ -22,7 +22,9 @@ export class UsersListComponent implements OnInit {
    @Input() profilePicturePath!: string | null;
    @Input() userList!: User[] | null;
    @Input() timestamp!: Number | null;
+
    @Output() editUserEvent = new EventEmitter<any>();
+   @Output() userSuspendFromListEvent = new EventEmitter<any>();
 
 
    filteredUserList: User[] | null = [];
@@ -82,6 +84,37 @@ filterTable(event: any) {
 
   }
   
+
+    userSuspendFromList(user:User | null) {
+    
+
+    if (user && user.id) {
+
+     this.userSuspendFromListEvent.emit(user.id);
+    }
+  
+    
+
+
+  }
+
+      userUnSuspendFromList(user:User | null) {
+    
+
+    if (user && user.id) {
+
+     this.userSuspendFromListEvent.emit(user.id);
+    }
+  
+    
+
+
+  }
+  
+
+  
+
+
     ngOnDestroy(): void {
  
   }

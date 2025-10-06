@@ -1,6 +1,5 @@
 
 import {UserRole} from "./user-role.interface"
-import { UserStatus } from "./user-status.enum";
 
 
 export interface User {
@@ -10,7 +9,8 @@ export interface User {
   password:string;
   hasProfilePicture:boolean;
   userRole:UserRole;
-  status:UserStatus;
+  active:boolean;
+  suspended:boolean;
   
 
 

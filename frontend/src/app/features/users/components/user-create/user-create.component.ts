@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { User } from '../../interfaces/user.interface';
 import { FormGroup } from '@angular/forms';
 import { compareRoles } from '../../helpers/compare-roles.helper.';
 import { UserRole } from '../../interfaces/user-role.interface';
-import { UserStatus } from '../../interfaces/user-status.enum';
 import { createUsername } from '../../helpers/create-username.helper';
+import { FormMessage } from '../../../../shared/interfaces/form-message.interface';
 
 @Component({
   selector: 'user-create-component',
@@ -15,9 +15,8 @@ import { createUsername } from '../../helpers/create-username.helper';
 
 
 
-export class UserCreateComponent implements OnInit {
+export class UserCreateComponent {
 
-   public userStatus = UserStatus
   
    public compareRoles = compareRoles;
 
@@ -25,21 +24,20 @@ export class UserCreateComponent implements OnInit {
    @Input() profilePicturePath!: string | null;
    @Input() usersList!: User[] | null;
    @Input() userRolesList!: UserRole[] | null;
+
    @Input() userCreateForm!: FormGroup;
-   @Input() formError: boolean | undefined;
-   @Input() formErrorMsg: string | null | undefined;
+   @Input() formMessage: FormMessage | null | undefined;
    @Input() submitted: boolean | undefined;
    @Input() imagePreview: string | null | undefined;
+   @Input() profilePictureStatus:string | null | undefined;
 
-   @Output() resetPasswordEvent = new EventEmitter<any>();
-   @Output() changeUserStatusEvent = new EventEmitter<any>();
-   @Output() saveUserEvent = new EventEmitter<File | null>();
-
-   profilePicture!: File | null;
-   profilePictureStatus:string | null | undefined;
+   @Output() resetPasswordEvent = new EventEmitter<void>();
+   @Output() changeUserStatusEvent = new EventEmitter<void>();
+   @Output() saveUserEvent = new EventEmitter<void>();
+   @Output() setProfilePictureEvent = new EventEmitter<File>();
   
 
-    @ViewChild('btnClose') btnClose!: ElementRef;  
+  @ViewChild('btnClose') btnClose!: ElementRef;  
 
    
 
@@ -50,14 +48,6 @@ export class UserCreateComponent implements OnInit {
   constructor() { }
 
 
-  ngOnInit(): void {
-
-
-
-
-  
-  
-  }
 
   closeModal() {
     this.btnClose.nativeElement.click();
@@ -80,7 +70,7 @@ export class UserCreateComponent implements OnInit {
   return this.userCreateForm?.get('username');
   }
 
-get password() {
+  get password() {
   return this.userCreateForm?.get('password');
 }
 
@@ -89,9 +79,14 @@ get password() {
   }
  
 
-   get status() {
-  return this.userCreateForm?.get('status');
+  get active() {
+  return this.userCreateForm?.get('active');
   }
+
+  get suspended() {
+  return this.userCreateForm?.get('suspended');
+  }
+
 
 
   setprofilePicture (event:Event) {
@@ -108,20 +103,13 @@ get password() {
 
     if (file?.type == "image/jpeg" ||file?.type == "image/jpg" || file?.type == "image/png" ) {
 
-
-    this.profilePicture = file;
-    this.profilePictureStatus = '';
-    this.userCreateForm.get('hasProfilePicture')?.setValue(true);
-      this.imagePreview = URL.createObjectURL(file);
-
-
-      
+     this.setProfilePictureEvent.emit(file);
+   
     }else {
 
 
       this.profilePictureStatus = "El archivo proporcionado no tiene el formato correcto";
       this.imagePreview = "";
-      this.profilePicture = null;
       this.userCreateForm.get('profilePicture')?.setValue(false);
 
 
@@ -129,7 +117,7 @@ get password() {
 
   }
 
-   createUsername() {
+  createUsername() {
 
     if (!this.id?.value) {
 
@@ -141,27 +129,9 @@ get password() {
   }
 
 
-  resetPassword() {
-    
-
-
-     this.resetPasswordEvent.emit('resetPassword');
-  
-  
-    
-
-
-  }
-
-  changeUserStatus() {
-
-      this.changeUserStatusEvent.emit('changeStatus');
-
-  }
-
   saveUser() {
 
-      this.saveUserEvent.emit(this.profilePicture);
+      this.saveUserEvent.emit();
 
   }
 

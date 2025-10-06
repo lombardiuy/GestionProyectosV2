@@ -38,11 +38,28 @@ export class UserService {
 
   createUser(user:User) {
 
-    console.log("CREATE USER");
-    console.log(user)
-  
-    
   return this.http.post<any>(`${this.apiUrl}/create`,  user);
+
+
+}
+
+  resetUserPassword(user:User) {
+
+  return this.http.post<any>(`${this.apiUrl}/resetUserPassword`,  user);
+
+
+}
+
+  suspendUser(user:User) {
+
+  return this.http.post<any>(`${this.apiUrl}/suspend`,  user);
+
+
+}
+
+  unSuspendUser(user:User) {
+
+  return this.http.post<any>(`${this.apiUrl}/unSuspend`,  user);
 
 
 }

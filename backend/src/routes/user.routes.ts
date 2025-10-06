@@ -8,7 +8,11 @@ import {
   changeUserPassword,
   getUserRoles,
   createRole,
+  resetUserPassword, 
+  suspendUser, 
+  unSuspendUser
 } from '../controllers/user.controller'
+
 
 const router = Router()
 
@@ -17,6 +21,9 @@ router.get('/roles', getUserRoles)
 router.get('/select/:id', selectUserById)
 
 router.post('/create', authMiddleware, createUser)
+router.post('/resetUserPassword', authMiddleware, resetUserPassword)
+router.post('/suspend', authMiddleware, suspendUser)
+router.post('/unSuspend', authMiddleware, unSuspendUser)
 router.post('/roles/create', authMiddleware, createRole)
 
 router.delete('/delete/:id', removeUser)

@@ -23,6 +23,7 @@
                   <th>Nombre</th>
                   <th>Usuario</th>
                   <th>Rol</th>
+                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -41,12 +42,18 @@
                   <td class="align-middle">{{ user.name }}</td>
                   <td class="align-middle">{{ user.username }}</td>
                   <td class="align-middle">{{ user.userRole.name }}</td>
+                  <td class="align-middle">
+                    <span *ngIf="user.suspended" class="color-danger">Suspendido</span>
+                    <span *ngIf="!user.suspended && user.active" class="color-success">Operativo</span>
+                    <span *ngIf="!user.suspended && !user.active" class="color-primary">No operativo</span>
+                  </td>
                   <td class="align-middle ">
                     <div class="d-flex w-100 justify-content-center">
                   
                       <i (click)="editUser(user)" class="fa-solid fa-user-pen color-primary me-5" data-bs-toggle="modal" data-bs-target="#createUserModal"></i>
-                  <i   class="fa-solid fa-user-xmark color-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal"></i>
-                   <i   class="fa-solid fa-user-xmark color-secondary" ></i>
+                      <i *ngIf="!user.suspended" (click)="userSuspendFromList(user)"   class="fa-solid fa-user-xmark color-danger" data-bs-toggle="modal" data-bs-target="#userSuspendModal"></i>
+                      <i *ngIf="user.suspended" (click)="userUnSuspendFromList(user)"   class="fa-solid fa-user-check color-success" data-bs-toggle="modal" data-bs-target="#userUnSuspendModal"></i>
+                    
                     </div>
           
                   </td>

@@ -57,6 +57,8 @@ export const createRole = async (req: Request, res: Response) => {
   }
 }
 
+
+
 export const removeUser = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id, 10)
   if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' })
@@ -77,3 +79,37 @@ export const changeUserPassword = async (req: Request, res: Response) => {
     res.status(401).json({ error: error.message })
   }
 }
+
+
+export const resetUserPassword = async (req: Request, res: Response) => {
+  const { id} = req.body
+  try {
+    const user = await userService.resetUserPassword(id)
+    res.json({ user })
+  } catch (error: any) {
+    res.status(401).json({ error: error.message })
+  }
+}
+
+
+export const suspendUser = async (req: Request, res: Response) => {
+  const { id} = req.body
+  try {
+    const user = await userService.suspendUser(id)
+    res.json({ user })
+  } catch (error: any) {
+    res.status(401).json({ error: error.message })
+  }
+}
+
+export const unSuspendUser = async (req: Request, res: Response) => {
+  const { id} = req.body
+  try {
+    const user = await userService.unSuspendUser(id)
+    res.json({ user })
+  } catch (error: any) {
+    res.status(401).json({ error: error.message })
+  }
+}
+
+

@@ -1,0 +1,60 @@
+
+<div class="modal-dialog modal-dialog-centered modal-lg">
+ <div class="modal-content">
+
+     <div class="modal-header">   
+   
+      <button *ngIf="!origin" 
+
+ #btnClose
+  type="button" 
+  class="btn-close" 
+  data-bs-target="#createUserModal" 
+  data-bs-toggle="modal" 
+  data-bs-dismiss="modal" 
+  aria-label="Close">
+</button>
+
+
+      <button *ngIf="origin === 'LIST'" #btnClose
+  type="button" 
+  class="btn-close" 
+  data-bs-dismiss="modal" 
+  aria-label="Close">
+</button>
+        
+</div>
+
+ <div class="modal-body">
+
+
+    <div class="card w-100 h-100">
+
+        <div class="card-header alert p-2 alert-danger">  <i class="fa-solid fa-user-xmark me-1"></i>  Suspender usuario</div>
+
+       
+        <div class="card-body">
+
+            <div class="text-center">¿Seguro que desea suspender al usuario <strong>{{username}}</strong>?</div>
+                <div class="d-flex align-items-center justify-content-center">
+                      <button  *ngIf="!origin"  data-bs-target="#createUserModal" data-bs-toggle="modal" data-bs-dismiss="modal"  class="btn btn-secondary m-3 ">Cancelar</button>
+                    <button  *ngIf="origin === 'LIST'"  data-bs-dismiss="modal"  class="btn btn-secondary m-3 ">Cancelar</button>
+                        <button (click)="suspendUser()" class="btn btn-danger m-3">Suspender usuario</button>
+                </div>
+
+                   <form-message [formMessage]="formMessage"></form-message>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+ </div>
+
+ </div>
+
+</div>
+

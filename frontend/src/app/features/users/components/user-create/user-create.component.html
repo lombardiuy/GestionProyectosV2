@@ -13,8 +13,17 @@
 
     <div class="card w-100 h-100">
 
-        <div class="card-header">
+        <div class="card-header alert p-2" [ngClass] = "{
+            'alert-primary': !id?.value,
+            'alert-success': id?.value && active?.value,
+            'alert-secondary':id?.value && !active?.value,
+            'alert-danger': id?.value && suspended?.value
+           
+           }">
             <h6 *ngIf="!id?.value"><i class="fa-solid fa-user-plus"></i> Crear usuario</h6>
+
+
+
             <h6 *ngIf="id?.value"><i class="fa-solid fa-user-pen"></i> Editar usuario</h6>           
         </div>
 
@@ -45,18 +54,17 @@
                 <div *ngIf="id?.value" class="d-flex flex-column w-100 align-items-center">
                  
 
+          <button *ngIf="!suspended?.value"   class="btn btn-sm btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#userSuspendModal">
+                                 <i class="fa-solid fa-user-xmark me-1"></i> Suspender usuario
+           </button>
 
-                            <div [ngSwitch]="status?.value" class="mt-2 small" >
-                               
-                                        <span  class="alert p-1 alert-success" *ngSwitchCase=userStatus.Active>Usuario activo</span>
-                                        <span  class="alert p-1 alert-secondary" *ngSwitchCase=userStatus.Inactive>Usuario inactivo</span>
-                                        <span  class="alert p-1 alert-danger" *ngSwitchCase=userStatus.Suspended>Usuario suspendido</span>
-                            </div>
+                           
+              <button *ngIf="suspended?.value"   class="btn btn-sm btn-success mt-3" data-bs-toggle="modal" data-bs-target="#userUnSuspendModal">
+                                 <i class="fa-solid fa-user-check me-1"></i> Reactivar usuario
+           </button>
 
                     
-                          <button (click)="changeUserStatus()" *ngIf="status?.value === userStatus.Active " class="btn btn-sm btn-danger mt-3"><i class="fa-solid fa-user-xmark me-1"></i> Suspender usuario</button>
-                          <button (click)="changeUserStatus()" *ngIf="status?.value === userStatus.Suspended " class="btn btn-sm btn-success mt-3"><i class="fa-solid fa-user-check me-1"></i> Activar usuario</button>   
-        
+
 
                 </div>
 
@@ -110,25 +118,25 @@
        
                
         
-                <label *ngIf="(status?.value ==='inactive' || !id?.value)">Contraseña:</label>
-                <input *ngIf="(status?.value ==='inactive') || !id?.value" type="text" formControlName="password" class="form-control" readonly>
+                <label *ngIf="(!active?.value || !id?.value)">Contraseña:</label>
+                <input *ngIf="(!active?.value) || !id?.value" type="text" formControlName="password" class="form-control" readonly>
         
-                <div *ngIf="status?.value ==='inactive' || !id?.value" class="invalid-feedback" >
+                <div *ngIf="!active || !id?.value" class="invalid-feedback" >
                     <div>El usuario es creado con una contraseña por defecto que se modifica en el primer inicio</div>
                    
                 </div>
 
                 <div class="w-100 d-flex justify-content-end">
-                
-                       <button (click)="resetPassword()" *ngIf="status?.value =='active'" class="btn btn-sm  btn-primary mr-1 mt-4">
+
+            
+                             <button *ngIf="active?.value"   class="btn btn-sm  btn-primary mr-1 mt-4" data-bs-toggle="modal" data-bs-target="#userPasswordResetModal">
+                                 <i class="fa-solid fa-lock-open"></i>  Resetear contraseña
+                                </button>
 
 
                         
-                       <i class="fa-solid fa-lock-open"></i>
-                      Resetear contraseña
+             
 
-
-                    </button>
                 </div>
 
 
@@ -143,7 +151,7 @@
                     
                 <div class="text-center">
         
-                    <button *ngIf="userCreateForm.dirty"  (click) = "saveUser()" class="btn btn-success mr-1 mt-2" [disabled] = "userCreateForm.invalid || submitted">
+                    <button   (click) = "saveUser()" class="btn btn-success mr-1 mt-2" [disabled] = "userCreateForm.invalid || submitted || !userCreateForm.dirty">
 
 
                         
@@ -158,15 +166,11 @@
                  
                 </div>
         
-                <div *ngIf="!formError && (formErrorMsg || '').length > 0" class="alert alert-success mt-2" role="alert">
-                    {{formErrorMsg}}
-                   </div>
-        
-                   <div *ngIf="formError && (formErrorMsg || '').length > 0" class="alert alert-danger mt-2" role="alert">
-                    {{formErrorMsg}}
-                  </div>
+          
         
                 </div>
+
+                <form-message [formMessage]="formMessage"></form-message>
 
         
                 

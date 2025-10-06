@@ -8,11 +8,11 @@
 
     <div class="card-body d-flex flex-column w-100 h-92">
 
-          <button class="btn btn-success position-absolute end-0 me-3" (click)="createUser()" data-bs-toggle="modal" data-bs-target="#createUserModal">
+          <button class="btn btn-success position-absolute end-0 me-3"  (click)="createUser()" data-bs-toggle="modal" data-bs-target="#createUserModal">
           <i class="fa-solid fa-user-plus"></i> Crear Usuario
         </button>
                 
-            <users-list-component (editUserEvent)="editUser($event)"   class="w-100 h-100"
+            <users-list-component (editUserEvent)="editUser($event)"      (userSuspendFromListEvent)="userSuspendFromList($event)"  class="w-100 h-100"
                    [profilePicturePath]="profilePicturePath" 
                    [userList]="usersList$ | async" 
                    [timestamp]="timestamp$ | async">
@@ -25,21 +25,21 @@
 </div>
 
   <div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
-   <user-create-component  #usersCreateComponent    *ngIf="userCreateForm" class="w-100 h-100"
+   <user-create-component     *ngIf="userCreateForm" class="w-100 h-100"
    
-    (changeUserStatusEvent)="changeUserStatus()" 
-    (resetPasswordEvent)="resetPassword()" 
-     (saveUserEvent)="saveUser($event)"
-  
+        
     [userCreateForm]="userCreateForm"
     [profilePicturePath]="profilePicturePath"
     [usersList]="usersList$ | async"
     [userRolesList]="userRolesList$ | async"
     [imagePreview] = "imagePreview"
-    [formError] = "formError"
-    [formErrorMsg] = "formErrorMsg"
+    [formMessage] = "formMessage"
     [submitted] = "submitted"
  
+
+    (setProfilePictureEvent)="setprofilePicture($event)"
+    (saveUserEvent)="saveUser()"
+
     
      
    
@@ -47,3 +47,41 @@
 
    ></user-create-component>
   </div>
+
+
+    <div class="modal fade" id="userPasswordResetModal" tabindex="-1" aria-hidden="true">
+   <user-password-reset-component  #userPasswordResetComponent    *ngIf="userCreateForm" class="w-100 h-100"
+      [username]="form['username'].value" 
+      (resetPasswordEvent)="resetPassword()" 
+   
+
+></user-password-reset-component>
+
+
+
+
+  </div>
+
+    <div class="modal fade" id="userSuspendModal" tabindex="-1" aria-hidden="true">
+     <user-suspend-component  #userSuspendComponent    *ngIf="userCreateForm" class="w-100 h-100"
+      [username]="form['username'].value" 
+      [origin]="origin" 
+      [formMessage] = "formMessage"
+      (suspendUserEvent)="userSuspend()" 
+      
+   
+
+></user-suspend-component>
+
+</div>
+
+
+    <div class="modal fade" id="userUnSuspendModal" tabindex="-1" aria-hidden="true">
+     <user-unsuspend-component  #UserUnSuspendComponent    *ngIf="userCreateForm" class="w-100 h-100"
+      [username]="form['username'].value" 
+      (unSuspendUserEvent)="userUnSuspend()" 
+   
+
+></user-unsuspend-component>
+
+</div>

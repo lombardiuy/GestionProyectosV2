@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { UsersPanelPage } from './pages/users-panel/users-panel.page';
 
 const routes: Routes = [
-     { path: 'panel', component: UsersPanelPage },
+     { path: '', component: UsersPanelPage },
 ];
 
 @NgModule({

@@ -2,7 +2,7 @@ import { AppDataSource } from '../data-source';
 import { User } from '../entities/User.entity';
 import { UserRole } from '../entities/UserRole.entity';
 import bcrypt from 'bcryptjs';
-
+import 'dotenv/config';
 const userRepository = AppDataSource.getRepository(User);
 const userRolesRepository = AppDataSource.getRepository(UserRole);
 
@@ -63,6 +63,8 @@ export const create = async (user: User): Promise<User> => {
       // Mantener contraseña original si no se modificó
       user.password = exists.password;
     }
+    user.active = false;
+    user.suspended = false;
 
     const createdUser = userRepository.create(user);
     return await userRepository.save(createdUser);
@@ -120,9 +122,78 @@ export const UserChangePassword = async (id: number, newPassword: string): Promi
 
     const hashed = await bcrypt.hash(newPassword, 10);
     user.password = hashed;
-    user.status = 'active';
 
     const updatedUser = await userRepo.save(user);
     return updatedUser;
   });
 };
+
+
+/**
+ * Resetea la contraseña de un usuario.
+ * @param id ID del usuario
+ */
+export const resetUserPassword = async (id: number): Promise<User> => {
+  return await AppDataSource.transaction(async (manager) => {
+    const userRepo = manager.getRepository(User);
+
+    const user = await userRepo.findOneBy({ id });
+    if (!user) {
+      throw new Error('Usuario no encontrado.');
+    }
+
+    const hashed = await bcrypt.hash(process.env.DEFAULT_PASSWORD!, 10);
+    user.password = hashed;
+    user.active = false;
+
+
+    const updatedUser = await userRepo.save(user);
+    return updatedUser;
+  });
+};
+
+
+/**
+ * Suspende Usuario
+ * @param id ID del usuario
+ */
+export const suspendUser = async (id: number): Promise<User> => {
+  return await AppDataSource.transaction(async (manager) => {
+    const userRepo = manager.getRepository(User);
+
+    const user = await userRepo.findOneBy({ id });
+    if (!user) {
+      throw new Error('Usuario no encontrado.');
+    }
+
+
+    user.suspended = true;
+
+    const updatedUser = await userRepo.save(user);
+    return updatedUser;
+  });
+};
+
+
+/**
+ * Reactiva Usuario
+ * @param id ID del usuario
+ */
+export const unSuspendUser = async (id: number): Promise<User> => {
+  return await AppDataSource.transaction(async (manager) => {
+    const userRepo = manager.getRepository(User);
+
+    const user = await userRepo.findOneBy({ id });
+    if (!user) {
+      throw new Error('Usuario no encontrado.');
+    }
+
+
+    user.suspended = false;
+
+    const updatedUser = await userRepo.save(user);
+    return updatedUser;
+  });
+};
+
+

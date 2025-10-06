@@ -1,0 +1,11 @@
+<div *ngIf="formMessage && formMessage.message.length > 0" class="alert mt-2" 
+        [ngClass]="
+        {
+        'alert-success':formMessage.type === 'success',
+        'alert-error':formMessage.type === 'error'
+
+        }">
+
+
+                    {{formMessage.message}}
+    </div>
