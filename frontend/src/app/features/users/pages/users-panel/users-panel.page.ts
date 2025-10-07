@@ -1,5 +1,5 @@
 import {  Component, OnInit, ViewChild } from '@angular/core';
-import {  Observable,  Subscription } from 'rxjs';
+import {  map, Observable,  pipe,  Subscription } from 'rxjs';
 
 import { UserService } from '../../services/user.service';
 import { TimeService } from '../../../../shared/services/time.service';
@@ -18,11 +18,10 @@ import { FileService } from '../../../../core/services/file.service';
 import { delay } from '../../../../shared/helpers/delay.helper';
 import { UserCreateComponent } from '../../components/user-create/user-create.component';
 import { UserPasswordResetComponent } from '../../components/user-password-reset/user-password-reset.component';
-import { UserSuspendComponent } from '../../components/user-suspend/user-suspend.component';
-import { UserUnSuspendComponent } from '../../components/user-unsuspend/user-unsuspend.component';
+import { UserSuspensionComponent } from '../../components/user-suspension/user-suspension.component';
+
 
 import { FormMessage, MessageType } from '../../../../shared/interfaces/form-message.interface';
-
 
 @Component({
   selector: 'users-panel-page',
@@ -57,18 +56,23 @@ export class UsersPanelPage implements OnInit {
 
   @ViewChild(UserCreateComponent) userCreateComponent!: UserCreateComponent;
   @ViewChild(UserPasswordResetComponent) userPasswordResetComponent!: UserPasswordResetComponent;
-  @ViewChild(UserSuspendComponent) userSuspendComponent!: UserSuspendComponent;
-  @ViewChild(UserUnSuspendComponent) userUnSuspendComponent!: UserUnSuspendComponent;
+  @ViewChild(UserSuspensionComponent) userSuspensionComponent!: UserSuspensionComponent;
+
 
   public userCreateForm!: FormGroup;
   public selectedUser$: Observable<User | null>;
   public userRolesList$:Observable<UserRole[] | null>;
+  
  
   public imagePreview: string | null | undefined;
   public profilePicture!: File | null;
   public profilePictureStatus:string | null | undefined;;
   public formMessage:FormMessage | null |undefined;
   public submitted: boolean | undefined;
+
+  public suspend:boolean | undefined;
+
+  
   
 
   constructor(private userService:UserService, private fileService:FileService,  private timeService:TimeService,
@@ -80,6 +84,7 @@ export class UsersPanelPage implements OnInit {
      this.userRolesList$ = this.userService.userRolesList$;
      this.selectedUser$ = this.userService.selectedUser$;
      this.timestamp$ = this.timeService.timestamp$;
+
      
 
      
@@ -135,6 +140,7 @@ initForm(selectedUser?: User | null) {
     this.form['suspended'].setValue(selectedUser.suspended);
     this.form['hasProfilePicture'].setValue(selectedUser.hasProfilePicture);
 
+
     if (selectedUser.hasProfilePicture) {
        this.imagePreview = this.profilePicturePath+"ProfilePic_"+selectedUser.id+".jpeg";
     }
@@ -154,8 +160,11 @@ initForm(selectedUser?: User | null) {
     this.form['hasProfilePicture'].setValue(false);
     this.form['active'].setValue(false);
     this.form['suspended'].setValue(false);
+ 
     
   }
+  
+    this.suspend = !this.form['suspended'].value;
 }
 
   resetForm() {
@@ -177,6 +186,8 @@ initForm(selectedUser?: User | null) {
   this.formMessage = null;
   this.submitted = false;
   this.imagePreview = "";
+  
+    this.suspend = undefined;
 
 
 
@@ -187,6 +198,7 @@ initForm(selectedUser?: User | null) {
 
 
   async editUser(userID:number) { 
+    console.log(userID)
 
     const selectedUser = await this.userService.selectUser(userID);
 
@@ -215,7 +227,8 @@ initForm(selectedUser?: User | null) {
     ).subscribe({
       next: async(res) => {
 
-
+       this.form['active'].setValue(res.user.active);
+       this.form['password'].setValue(environment.default_password);
         this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Contraseña reseteada con éxito!' )
 
         this.submitted = false;
@@ -256,10 +269,10 @@ initForm(selectedUser?: User | null) {
 
   }
 
-   userSuspend() {
+   suspensionUser() {
 
 
-      this.userSuspendSubscription= this.userService.suspendUser(
+      this.userSuspendSubscription= this.userService.suspensionUser(
     this.userCreateForm.value
      
     ).subscribe({
@@ -268,12 +281,17 @@ initForm(selectedUser?: User | null) {
 
 
   
-        this.form['suspended'].setValue(true);
+        this.form['suspended'].setValue(res.user.suspended);
+        
+  
    
+     
 
-
+          if (res.user.suspended) {
         this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Usuario suspendido con éxito!' )
-
+          }else  {
+             this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Usuario reactivado con éxito!' )
+          }
 
         this.submitted = false;
 
@@ -282,7 +300,7 @@ initForm(selectedUser?: User | null) {
         
         await delay(1000);
         
-        this.userSuspendComponent.closeModal()
+        this.userSuspensionComponent.closeModal()
 
         this.formMessage = null;
 
@@ -294,6 +312,7 @@ initForm(selectedUser?: User | null) {
 
         this.origin = null;
 
+        this.suspend = !this.form['suspended'].value;
   
 
 
@@ -315,60 +334,15 @@ initForm(selectedUser?: User | null) {
   
 
 
-   userUnSuspend() {
-
-    this.userUnsuspendSubscription = this.userService.unSuspendUser(
-    this.userCreateForm.value
-     
-    ).subscribe({
-      next: async(res) => {
-
-        this.form['suspended'].setValue(false)
 
 
-        
-        this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Usuario reactivado con éxito!' )
-
-
-        this.submitted = false;
-        
-        this.userUnSuspendComponent.closeModal()
-        
-        await delay(1000);
-
-       this.formMessage = null;
-       
-
-
-        await this.userService.getAllUsers();
-        this.timeService.refreshTimestamp();
-
-  
-
-
-         
-    
-       
-      },
-      error: (err) => {
-        console.error(err)
  
-  
-        
-        this.formMessage = this.messageService.createFormMessage(MessageType.ERROR,err.error.error )
-        this.submitted = false;
-      }
-    });
 
 
-  }
+  async suspendUserFromList(event:any) { 
 
-
-
-
-  async userSuspendFromList(userID:number) { 
-
-    this.editUser(userID);
+    this.editUser(event.id);
+    this.suspend = event.suspend;
     this.origin = "LIST";
    
 

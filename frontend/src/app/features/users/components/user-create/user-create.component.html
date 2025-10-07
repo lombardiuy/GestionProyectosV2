@@ -54,12 +54,12 @@
                 <div *ngIf="id?.value" class="d-flex flex-column w-100 align-items-center">
                  
 
-          <button *ngIf="!suspended?.value"   class="btn btn-sm btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#userSuspendModal">
+          <button *ngIf="!suspended?.value"   class="btn btn-sm btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
                                  <i class="fa-solid fa-user-xmark me-1"></i> Suspender usuario
            </button>
 
                            
-              <button *ngIf="suspended?.value"   class="btn btn-sm btn-success mt-3" data-bs-toggle="modal" data-bs-target="#userUnSuspendModal">
+              <button *ngIf="suspended?.value"   class="btn btn-sm btn-success mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
                                  <i class="fa-solid fa-user-check me-1"></i> Reactivar usuario
            </button>
 

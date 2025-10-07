@@ -9,8 +9,7 @@ import {
   getUserRoles,
   createRole,
   resetUserPassword, 
-  suspendUser, 
-  unSuspendUser
+  suspensionUser
 } from '../controllers/user.controller'
 
 
@@ -22,8 +21,7 @@ router.get('/select/:id', selectUserById)
 
 router.post('/create', authMiddleware, createUser)
 router.post('/resetUserPassword', authMiddleware, resetUserPassword)
-router.post('/suspend', authMiddleware, suspendUser)
-router.post('/unSuspend', authMiddleware, unSuspendUser)
+router.post('/suspension', authMiddleware, suspensionUser)
 router.post('/roles/create', authMiddleware, createRole)
 
 router.delete('/delete/:id', removeUser)

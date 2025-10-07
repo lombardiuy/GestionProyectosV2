@@ -12,7 +12,11 @@
           <i class="fa-solid fa-user-plus"></i> Crear Usuario
         </button>
                 
-            <users-list-component (editUserEvent)="editUser($event)"      (userSuspendFromListEvent)="userSuspendFromList($event)"  class="w-100 h-100"
+            <users-list-component class="w-100 h-100"
+              
+                 (editUserEvent)="editUser($event)" 
+                 (suspendUserFromListEvent)="suspendUserFromList($event)" 
+                  
                    [profilePicturePath]="profilePicturePath" 
                    [userList]="usersList$ | async" 
                    [timestamp]="timestamp$ | async">
@@ -62,26 +66,18 @@
 
   </div>
 
-    <div class="modal fade" id="userSuspendModal" tabindex="-1" aria-hidden="true">
-     <user-suspend-component  #userSuspendComponent    *ngIf="userCreateForm" class="w-100 h-100"
+  
+    <div class="modal fade" id="userSuspensionModal" tabindex="-1" aria-hidden="true">
+     <user-suspension-component  #userSuspensionComponent    *ngIf="userCreateForm" class="w-100 h-100"
       [username]="form['username'].value" 
       [origin]="origin" 
+      [suspend] = "suspend"
       [formMessage] = "formMessage"
-      (suspendUserEvent)="userSuspend()" 
+      (suspensionUserEvent)="suspensionUser()" 
       
    
 
-></user-suspend-component>
+></user-suspension-component>
 
 </div>
 
-
-    <div class="modal fade" id="userUnSuspendModal" tabindex="-1" aria-hidden="true">
-     <user-unsuspend-component  #UserUnSuspendComponent    *ngIf="userCreateForm" class="w-100 h-100"
-      [username]="form['username'].value" 
-      (unSuspendUserEvent)="userUnSuspend()" 
-   
-
-></user-unsuspend-component>
-
-</div>

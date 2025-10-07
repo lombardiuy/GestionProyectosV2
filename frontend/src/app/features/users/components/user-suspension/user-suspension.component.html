@@ -30,16 +30,19 @@
 
     <div class="card w-100 h-100">
 
-        <div class="card-header alert p-2 alert-danger">  <i class="fa-solid fa-user-xmark me-1"></i>  Suspender usuario</div>
+        <div *ngIf="suspend" class="card-header alert p-2 alert-danger">  <i class="fa-solid fa-user-xmark me-1"></i>  Suspender usuario</div>
+        <div *ngIf="!suspend" class="card-header alert p-2 alert-danger">   <i class="fa-solid fa-user-check me-1"></i>  Reactivar usuario</div>
 
        
         <div class="card-body">
 
-            <div class="text-center">¿Seguro que desea suspender al usuario <strong>{{username}}</strong>?</div>
+            <div  *ngIf="suspend" class="text-center">¿Seguro que desea suspender al usuario <strong>{{username}}</strong>?</div>
+            <div  *ngIf="!suspend" class="text-center">¿Seguro que desea reactivar al usuario <strong>{{username}}</strong>?</div>
                 <div class="d-flex align-items-center justify-content-center">
                       <button  *ngIf="!origin"  data-bs-target="#createUserModal" data-bs-toggle="modal" data-bs-dismiss="modal"  class="btn btn-secondary m-3 ">Cancelar</button>
                     <button  *ngIf="origin === 'LIST'"  data-bs-dismiss="modal"  class="btn btn-secondary m-3 ">Cancelar</button>
-                        <button (click)="suspendUser()" class="btn btn-danger m-3">Suspender usuario</button>
+                        <button *ngIf="suspend" (click)="suspensionUser()" class="btn btn-danger m-3">Suspender usuario</button>
+                       <button *ngIf="!suspend" (click)="suspensionUser()" class="btn btn-success m-3">Reactivar usuario</button>
                 </div>
 
                    <form-message [formMessage]="formMessage"></form-message>

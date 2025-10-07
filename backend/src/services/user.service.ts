@@ -157,7 +157,7 @@ export const resetUserPassword = async (id: number): Promise<User> => {
  * Suspende Usuario
  * @param id ID del usuario
  */
-export const suspendUser = async (id: number): Promise<User> => {
+export const suspensionUser = async (id: number): Promise<User> => {
   return await AppDataSource.transaction(async (manager) => {
     const userRepo = manager.getRepository(User);
 
@@ -167,7 +167,7 @@ export const suspendUser = async (id: number): Promise<User> => {
     }
 
 
-    user.suspended = true;
+    user.suspended =  !user.suspended;
 
     const updatedUser = await userRepo.save(user);
     return updatedUser;
@@ -175,25 +175,5 @@ export const suspendUser = async (id: number): Promise<User> => {
 };
 
 
-/**
- * Reactiva Usuario
- * @param id ID del usuario
- */
-export const unSuspendUser = async (id: number): Promise<User> => {
-  return await AppDataSource.transaction(async (manager) => {
-    const userRepo = manager.getRepository(User);
-
-    const user = await userRepo.findOneBy({ id });
-    if (!user) {
-      throw new Error('Usuario no encontrado.');
-    }
-
-
-    user.suspended = false;
-
-    const updatedUser = await userRepo.save(user);
-    return updatedUser;
-  });
-};
 
 

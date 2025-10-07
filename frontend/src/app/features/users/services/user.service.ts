@@ -50,19 +50,14 @@ export class UserService {
 
 }
 
-  suspendUser(user:User) {
+  suspensionUser(user:User) {
 
-  return this.http.post<any>(`${this.apiUrl}/suspend`,  user);
-
-
-}
-
-  unSuspendUser(user:User) {
-
-  return this.http.post<any>(`${this.apiUrl}/unSuspend`,  user);
+  return this.http.post<any>(`${this.apiUrl}/suspension`, user);
 
 
 }
+
+
 
 
   /***************************************

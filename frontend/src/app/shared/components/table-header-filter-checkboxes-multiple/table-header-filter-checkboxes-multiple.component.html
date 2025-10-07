@@ -1,0 +1,44 @@
+<i
+  *ngIf="!showFilter"
+  class="fa-solid fa-filter ms-2 cursor-pointer"
+  [ngClass]="{'color-primary': selected.length > 0}"
+  (click)="toggleFilter()"
+></i>
+
+<i
+  *ngIf="showFilter"
+  class="fa-solid fa-xmark ms-2 cursor-pointer"
+  (click)="toggleFilter()"
+></i>
+
+<div class="dropdown rtl cursor-pointer w-100">
+  <div
+    class="dropdown-menu dropdown-menu-right mt-2 w-100 p-0 m-0 custom-dropdown"
+    [ngClass]="{ show: showFilter }"
+  >
+    <!-- Botón Limpiar arriba -->
+    <div class="dropdown-header p-2 border-bottom d-flex justify-content-end">
+      <button type="button" class="btn btn-xs btn-outline-secondary" (click)="clear()">
+        Limpiar
+      </button>
+    </div>
+
+    <!-- Lista de opciones con scroll -->
+    <ul class="list-group list-group-flush scroll-list">
+      <li class="list-group-item small-item" *ngFor="let option of options; let i = index"
+         >
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [id]="'option-' + i"
+            [checked]="selected.includes(option)"
+            (click)="toggleOption(option, $event)"
+           
+          />
+          <label class="form-check-label" [for]="'option-' + i">{{ option.name }}</label>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>

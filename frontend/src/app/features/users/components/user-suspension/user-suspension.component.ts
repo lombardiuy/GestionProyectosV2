@@ -1,34 +1,34 @@
 import { Component, Output, EventEmitter, ViewChild, ElementRef, Input } from '@angular/core';
-import {FormMessage} from "../../.././../shared/interfaces/form-message.interface"
+import {FormMessage} from "../../../../shared/interfaces/form-message.interface"
 
 @Component({
-  selector: 'user-suspend-component',
-  templateUrl: './user-suspend.component.html',
-  styleUrls: ['./user-suspend.component.scss'],
+  selector: 'user-suspension-component',
+  templateUrl: './user-suspension.component.html',
+  styleUrls: ['./user-suspension.component.scss'],
   standalone:false
 })
 
-
-
-export class UserSuspendComponent {
+export class UserSuspensionComponent {
+  
 
    
   @ViewChild('btnClose') btnClose!: ElementRef;  
 
    @Input() username: string | null | undefined;
    @Input() origin: string | null | undefined;
+   @Input() suspend: boolean | null | undefined;
    @Input() formMessage: FormMessage | null | undefined;
    
-   @Output() suspendUserEvent = new EventEmitter<void>();
+   @Output() suspensionUserEvent = new EventEmitter<void>();
 
 
    
 
   constructor() { }
 
-    suspendUser() {
+    suspensionUser() {
 
-     this.suspendUserEvent.emit();
+     this.suspensionUserEvent.emit();
   
   }
 

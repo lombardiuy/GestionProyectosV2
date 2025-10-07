@@ -20,10 +20,27 @@
               <thead>
                 <tr>
                   <th></th>
-                  <th>Nombre</th>
+                  <th>Nombre </th>
                   <th>Usuario</th>
-                  <th>Rol</th>
-                   <th>Estado</th>
+                 <th>
+  Rol
+  <table-header-filter-checkboxes-multiple
+    [options]="userRolesOptions"
+    [(selected)]="selectedRoles"
+     (selectedChange)="filterTable()"
+  ></table-header-filter-checkboxes-multiple>
+</th>
+
+                   <th>Estado 
+      <table-header-filter-checkboxes-multiple
+    [options]="[
+      {name:'Operativo'},
+      {name:'No operativo'},
+      {name:'Suspendido'}]"
+    [(selected)]="selectedStatus"
+     (selectedChange)="filterTable()"
+  ></table-header-filter-checkboxes-multiple>
+                  </th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -39,7 +56,7 @@
                     <img [src]="user.hasProfilePicture ? profilePicturePath + 'ProfilePic_' + user.id + '.jpeg' + '?t=' + timestamp : profilePicturePath + 'avatar.jpeg'"
                          alt="..." class="img-fluid rounded-circle avatar">
                   </td>
-                  <td class="align-middle">{{ user.name }}</td>
+                  <td class="align-middle">{{ user.name }} </td>
                   <td class="align-middle">{{ user.username }}</td>
                   <td class="align-middle">{{ user.userRole.name }}</td>
                   <td class="align-middle">
@@ -51,8 +68,8 @@
                     <div class="d-flex w-100 justify-content-center">
                   
                       <i (click)="editUser(user)" class="fa-solid fa-user-pen color-primary me-5" data-bs-toggle="modal" data-bs-target="#createUserModal"></i>
-                      <i *ngIf="!user.suspended" (click)="userSuspendFromList(user)"   class="fa-solid fa-user-xmark color-danger" data-bs-toggle="modal" data-bs-target="#userSuspendModal"></i>
-                      <i *ngIf="user.suspended" (click)="userUnSuspendFromList(user)"   class="fa-solid fa-user-check color-success" data-bs-toggle="modal" data-bs-target="#userUnSuspendModal"></i>
+                      <i *ngIf="!user.suspended" (click)="userSuspensionFromList(user, true)"   class="fa-solid fa-user-xmark color-danger" data-bs-toggle="modal" data-bs-target="#userSuspensionModal"></i>
+                      <i *ngIf="user.suspended" (click)="userSuspensionFromList(user, false)"   class="fa-solid fa-user-check color-success" data-bs-toggle="modal" data-bs-target="#userSuspensionModal"></i>
                     
                     </div>
           

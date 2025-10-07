@@ -92,24 +92,16 @@ export const resetUserPassword = async (req: Request, res: Response) => {
 }
 
 
-export const suspendUser = async (req: Request, res: Response) => {
+export const suspensionUser = async (req: Request, res: Response) => {
   const { id} = req.body
   try {
-    const user = await userService.suspendUser(id)
+    const user = await userService.suspensionUser(id)
     res.json({ user })
   } catch (error: any) {
     res.status(401).json({ error: error.message })
   }
 }
 
-export const unSuspendUser = async (req: Request, res: Response) => {
-  const { id} = req.body
-  try {
-    const user = await userService.unSuspendUser(id)
-    res.json({ user })
-  } catch (error: any) {
-    res.status(401).json({ error: error.message })
-  }
-}
+
 
 
