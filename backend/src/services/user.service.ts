@@ -3,6 +3,7 @@ import { User } from '../entities/User.entity';
 import { UserRole } from '../entities/UserRole.entity';
 import bcrypt from 'bcryptjs';
 import 'dotenv/config';
+import { UserRolePermission } from '../entities/UserRolePermission';
 const userRepository = AppDataSource.getRepository(User);
 const userRolesRepository = AppDataSource.getRepository(UserRole);
 
@@ -24,8 +25,9 @@ export const getAllUsers = async (): Promise<Partial<User>[]> => {
  */
 export const getUserRoles = async (): Promise<UserRole[]> => {
   try {
-    return await userRolesRepository.find({ relations: ['modulePermissions', 'users'] });
+    return await userRolesRepository.find({relations:['userRolePermissions']});
   } catch (error) {
+    console.error(error)
     throw new Error('No se pudieron obtener los roles');
   }
 };
@@ -34,9 +36,16 @@ export const getUserRoles = async (): Promise<UserRole[]> => {
  * Busca un usuario por su ID.
  * @param id ID del usuario
  */
-export const selectUserById = async (id: number): Promise<User | null> => {
+export const selectUserById = async (id: number): Promise<Partial<User> | null> => {
   try {
-    return await userRepository.findOne({where:{ id }, relations:['userRole', 'userRole.modulePermissions']});
+    const user =  await userRepository.findOne({where:{ id }, relations:['userRole']});
+
+    if (!user) return null;
+    
+    const { password, ...rest } = user;
+
+    return rest;
+    
   } catch {
     return null;
   }
@@ -78,40 +87,68 @@ export const create = async (user: User): Promise<User> => {
  * Crea un nuevo rol de usuario.
  * @param userRole Datos del rol
  */
-export const createRole = async (userRole: UserRole): Promise<UserRole> => {
+export const createUserRole = async (userRole: UserRole, permissions: string[]): Promise<UserRole> => {
   return await AppDataSource.transaction(async (manager) => {
     const userRoleRepo = manager.getRepository(UserRole);
+    const userRolePermissionRepo = manager.getRepository(UserRolePermission);
 
+    // Validar duplicado
     const existsUserRole = await userRoleRepo.findOneBy({ name: userRole.name });
     if (existsUserRole && !userRole.id) {
       throw new Error('Ya existe un rol con el mismo nombre');
     }
 
+    // Guardar primero el rol
     const savedUserRole = await userRoleRepo.save(userRole);
+
+    // Crear permisos relacionados
+    const newPerms = permissions.map((code) =>
+      userRolePermissionRepo.create({ permission: code, userRole: savedUserRole })
+    );
+
+    await userRolePermissionRepo.save(newPerms);
+
     return savedUserRole;
   });
 };
 
 /**
- * Elimina un usuario por su ID.
- * @param id ID del usuario a eliminar
+ * Crea un nuevo rol de usuario.
+ * @param userRole Datos del rol
  */
-export const remove = async (id: number): Promise<void> => {
-  const user = await userRepository.findOneBy({ id });
+export const updateUserRole = async (userRole: UserRole, permissions: string[])=> {
+  return await AppDataSource.transaction(async (manager) => {
+    const userRoleRepo = manager.getRepository(UserRole);
+    const userRolePermissionRepo = manager.getRepository(UserRolePermission);
 
-  if (!user) {
-    throw new Error('Usuario no encontrado');
-  }
+   
+  // Borrar los permisos viejos
+  await UserRolePermission.delete({ userRole: userRole });
 
-  await userRepository.delete(id);
+
+
+    // Crear permisos relacionados
+    const newPerms = permissions.map((code) =>
+      userRolePermissionRepo.create({ permission: code, userRole: userRole })
+    );
+
+    await userRolePermissionRepo.save(newPerms);
+
+ 
+  });
 };
+
+
+
+
+
 
 /**
  * Cambia la contraseña de un usuario.
  * @param id ID del usuario
  * @param newPassword Nueva contraseña
  */
-export const UserChangePassword = async (id: number, newPassword: string): Promise<User> => {
+export const setUserPassword = async (id: number, newPassword: string): Promise<User> => {
   return await AppDataSource.transaction(async (manager) => {
     const userRepo = manager.getRepository(User);
 
@@ -122,6 +159,7 @@ export const UserChangePassword = async (id: number, newPassword: string): Promi
 
     const hashed = await bcrypt.hash(newPassword, 10);
     user.password = hashed;
+    user.active = true;
 
     const updatedUser = await userRepo.save(user);
     return updatedUser;

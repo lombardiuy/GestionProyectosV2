@@ -6,7 +6,11 @@ import jwt from 'jsonwebtoken';
 const userRepository = AppDataSource.getRepository(User);
 
 export const login = async (username: string, password: string): Promise<string> => {
-  const user = await userRepository.findOneBy({ username });
+   const user = await userRepository.findOne({
+    where: { username },
+    relations: ['userRole', 'userRole.userRolePermissions'],
+  });
+
 
   if (!user) throw new Error('Usuario no encontrado');
 
@@ -29,9 +33,15 @@ export const getDevToken = async (): Promise<string> => {
       hasProfilePicture: false,
       userRole: {
         name: 'admin',
+        userRolePermissions: [
+          {  permission: 'USERS_VIEW' },
+          {  permission: 'USERS_CREATE' },
+          {  permission: 'USERS_SUSPEND' },
+        ]
       },
       active: true,
     };
+    
 
     return jwt.sign(fakeToken, process.env.JWT_SECRET!, {
       expiresIn: '1d',

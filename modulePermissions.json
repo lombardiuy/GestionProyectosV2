@@ -1,0 +1,16 @@
+[
+  {
+    "module": { "code": "Users", "description": "Usuarios", "icon": "<i class='fa-solid fa-users'></i>" },
+    "permissions": [
+      { "code": "USERS_VIEW", "description": "Visualizar" },
+      { "code": "USERS_CREATE", "description": "Crear" },
+      { "code": "USERS_EDIT", "description": "Editar" },
+      { "code": "USERS_SUSPEND", "description": "Suspender" },
+      { "code": "USERS_UNSUSPEND", "description": "Reactivar" },
+      { "code": "USERS_RESET_PASSWORD", "description": "Resetear contraseña" },
+      { "code": "USERS_ROLE_VIEW", "description": "Visualizar roles" },
+      { "code": "USERS_ROLE_CREATE", "description": "Crear roles" },
+      { "code": "USERS_ROLE_EDIT", "description": "Editar roles" }
+    ]
+  }
+]

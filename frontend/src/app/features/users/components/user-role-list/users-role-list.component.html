@@ -1,0 +1,23 @@
+
+      <!-- Filtro y botón -->
+      <div class="w-100 d-flex justify-content-between mb-3">
+     
+
+          <select [(ngModel)]="selectedUserRole"
+        (ngModelChange)="selectUserRole($event)"
+        class="form-control form-select form-select-sm w-50"> 
+  <option [ngValue]="null" disabled>
+    Seleccione un rol para visualizar sus permisos
+  </option>
+  <option *ngFor="let userRole of userRolesList" [ngValue]="userRole">
+    {{ userRole.name }}
+  </option>
+</select>
+
+    
+
+            
+        
+ 
+      </div>
+

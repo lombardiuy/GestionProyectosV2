@@ -2,7 +2,8 @@ import { DataSource } from 'typeorm';
 import 'dotenv/config';
 import { User } from './entities/User.entity'; 
 import { UserRole } from './entities/UserRole.entity';
-import { ModulePermission } from './entities/ModulePermission';
+import { UserRolePermission } from './entities/UserRolePermission';
+
 
 
 
@@ -17,8 +18,7 @@ export const AppDataSource = new DataSource({
   entities: [
 
     //1- Users
-    User, UserRole, ModulePermission
-  
+    User, UserRole, UserRolePermission
   ],
   synchronize: true,
   options: {

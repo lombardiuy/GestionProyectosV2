@@ -70,6 +70,7 @@ export class AuthService {
       tap(res => {
         localStorage.setItem(this.tokenKey, res.token);
         const decoded = jwtDecode<DecodedToken>(res.token);
+        console.error(decoded)
         this.userProfile$.next(decoded);
       })
     );
@@ -79,6 +80,19 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, { username, password }).pipe(
       switchMap(res => {
         const decoded = jwtDecode<DecodedToken>(res.token);
+
+          if (decoded.suspended) {
+          return throwError(() => ({
+            error: {
+              code: 'suspended-account',
+              id: decoded.id,
+              username: decoded.username,
+              error: 'Tu cuenta está suspendida. Por favor, contacta al administrador.'
+            }
+          }));
+        }
+
+
 
         if (!decoded.active) {
           return throwError(() => ({
@@ -92,6 +106,7 @@ export class AuthService {
         }
 
         localStorage.setItem(this.tokenKey, res.token);
+        console.warn(decoded)
         this.userProfile$.next(decoded);
 
         return of(res);
@@ -102,5 +117,14 @@ export class AuthService {
   logOut(): void {
     this.clearToken();
     this.userProfile$.next(null);
+  }
+
+   hasPermission(permissionCode: string): boolean {
+    const user = this.userProfile$.value;
+    if (!user || !user.userRole) return false;
+
+    return user.userRole.userRolePermissions.some(
+      (p) => p.permission === permissionCode
+    );
   }
 }

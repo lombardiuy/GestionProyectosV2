@@ -8,8 +8,9 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "strict": true
+    "strict": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src/**/*.ts",  "shared/interfaces"],
+  "include": ["src/**/*.ts",  "src/types/**/*.d.ts" , "shared/interfaces"],
   "exclude": ["node_modules"]
 }

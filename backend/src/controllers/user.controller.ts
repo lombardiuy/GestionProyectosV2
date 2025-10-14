@@ -48,32 +48,38 @@ export const createUser = async (req: Request, res: Response) => {
   }
 }
 
-export const createRole = async (req: Request, res: Response) => {
+export const saveUserRole = async (req: Request, res: Response) => {
+
+  const { userRole, permissions } = req.body
+
+
+  if (!userRole.id) {
   try {
-    const role = await userService.createRole(req.body)
+    const role = await userService.createUserRole(userRole, permissions)
     res.json({ message: 'Rol creado', role })
   } catch (error: any) {
     res.status(400).json({ error: error.message })
   }
-}
+} else {
 
-
-
-export const removeUser = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id, 10)
-  if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' })
-  try {
-    await userService.remove(id)
-    res.json({ message: 'Usuario eliminado' })
+   try {
+    const role = await userService.updateUserRole(userRole, permissions)
+    res.json({ message: 'Rol actualizado', role })
   } catch (error: any) {
     res.status(400).json({ error: error.message })
   }
+
+}
+  
 }
 
-export const changeUserPassword = async (req: Request, res: Response) => {
+
+
+
+export const setUserPassword = async (req: Request, res: Response) => {
   const { id, password } = req.body
   try {
-    const user = await userService.UserChangePassword(id, password)
+    const user = await userService.setUserPassword(id, password)
     res.json({ user })
   } catch (error: any) {
     res.status(401).json({ error: error.message })

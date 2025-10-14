@@ -1,0 +1,94 @@
+
+
+
+
+
+
+        <div class="w-100 h-100 d-flex flex-column">
+          
+      <div class="card flex-grow-1 d-flex flex-column w-100 h-85">
+        <div class="card-header w-100 h-8">
+            <h6><i class="fa-solid fa-key"></i> Permisos asociados al rol {{selectedUserRole?.name}}</h6>
+        </div>
+
+        <div class="card-body p-0 d-flex flex-column w-100 h-92" *ngIf="formMode !='select'">
+          <!-- Encabezado fijo -->
+          <div  class="w-100   d-flex align-items-end ">
+            <table class="table  w-100 h-80 m-0 p-0">
+              <thead>
+                <tr>
+               
+                  <th class="w-20 align-middle text-center ">Módulo </th>
+                  <th class="w-80 align-middle text-center">Permisos</th>
+
+                </tr>
+              </thead>
+            </table>
+          </div>
+
+          <!-- Scroll del cuerpo -->
+          <form [formGroup]="userRoleCreateForm" class="flex-grow-1 overflow-auto w-100 h-90" >
+            <table class="table  mb-0">
+              <tbody >
+                <tr *ngFor="let mod of modules">
+        
+                  <td class="align-middle text-center w-20  bold"> <span [innerHTML]="mod.module.icon"></span>{{ mod.module.description }} </td>
+                  <td class="w-80 align-middle text-center">
+
+                        <div class="d-flex flex-wrap gap-5 w-100">
+              <div
+                *ngFor="let perm of mod.permissions"
+                class="form-check form-check-inline"
+              >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [formControlName]="perm.code"
+                  id="{{ mod.module.code }}_{{ perm.code }}"
+                />
+                <label
+                  class="form-check-label"
+                  [for]="mod.module.code + '_' + perm.code"
+                >
+                  {{ perm.description }}
+                </label>
+              </div>
+            </div>
+                  </td>
+              
+           
+             
+                  
+                </tr>
+              
+              </tbody>
+            </table>
+          </form>
+        </div>
+        
+      </div>
+
+      <div class="w-100 h-15 d-flex justify-content-center align-items-center">
+            <button *ngIf="!saving" (click)="saveUserRole()" class="btn btn-primary" type="submit"  [disabled] = "userRoleCreateForm!.invalid || saving || !userRoleCreateForm!.dirty">
+      Guardar
+    </button>
+        <form-message *ngIf="saving" [formMessage]="formMessage"></form-message>
+
+
+
+
+      </div>
+
+
+   
+
+
+
+
+
+
+
+
+        </div>
+
+

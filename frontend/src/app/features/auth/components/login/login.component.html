@@ -1,0 +1,31 @@
+  <form (ngSubmit)="login()" [formGroup]="loginForm">
+
+        <label>Usuario:</label>
+        <input type="text" formControlName="username" class="form-control"
+          [ngClass]="{'is-invalid': !!username?.errors, 'is-valid': username?.valid}">
+
+        <div *ngIf="username?.errors as usernameErrors" class="invalid-feedback">
+          <div *ngIf="usernameErrors['required']">El campo es obligatorio</div>
+        </div>
+
+        <label>Clave:</label>
+        <input type="password" formControlName="password" class="form-control"
+          [ngClass]="{'is-invalid': !!password?.errors, 'is-valid': password?.valid}">
+
+        <div *ngIf="password?.errors as passwordErrors" class="invalid-feedback">
+          <div *ngIf="passwordErrors['required']">El campo es obligatorio</div>
+          <div *ngIf="passwordErrors['minlength']">La clave debe tener al menos 4 caracteres</div>
+        </div>
+
+        <div class="text-center">
+          <button class="btn btn-primary mr-1 mt-3" [disabled]="loginForm.invalid || saving">
+            <span *ngIf="saving" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Ingresar
+          </button>
+        </div>
+
+        <form-message *ngIf="saving" [formMessage]="formMessage"></form-message>
+
+        
+
+      </form>

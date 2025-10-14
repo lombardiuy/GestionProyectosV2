@@ -1,42 +1,31 @@
 
-<div class="d-flex d-wrap align-items-center justify-content-center login-container">
+<div  class="d-flex d-wrap align-items-center justify-content-center login-container">
 
   <div class="card login-form">
-    <div  class="card-body">
+    <div *ngIf="!loading; else loadingSpinner"  class="card-body">
 
-      <form (ngSubmit)="login()" [formGroup]="loginForm">
+ 
 
-        <label>Usuario:</label>
-        <input type="text" formControlName="username" class="form-control"
-          [ngClass]="{'is-invalid': !!username?.errors, 'is-valid': username?.valid}">
+      <login-component *ngIf="!setPasswordMode"
+       [loginForm]="loginForm" 
+        [formMessage]="formMessage" 
+        [saving]="saving" 
+        (loginEvent)="login()" >
+      </login-component>
 
-        <div *ngIf="username?.errors as usernameErrors" class="invalid-feedback">
-          <div *ngIf="usernameErrors['required']">El campo es obligatorio</div>
-        </div>
-
-        <label>Clave:</label>
-        <input type="password" formControlName="password" class="form-control"
-          [ngClass]="{'is-invalid': !!password?.errors, 'is-valid': password?.valid}">
-
-        <div *ngIf="password?.errors as passwordErrors" class="invalid-feedback">
-          <div *ngIf="passwordErrors['required']">El campo es obligatorio</div>
-          <div *ngIf="passwordErrors['minlength']">La clave debe tener al menos 4 caracteres</div>
-        </div>
-
-        <div class="text-center">
-          <button class="btn btn-primary mr-1 mt-3" [disabled]="loginForm.invalid || submitted">
-            <span *ngIf="submitted" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Ingresar
-          </button>
-        </div>
-
-        <div *ngIf="loginError" class="alert alert-danger mt-3" role="alert">
-          <div>{{ loginErrorMessage }}</div>
-        </div>
-
-      </form>
+        <set-password-component *ngIf="setPasswordMode"
+        [setUserPasswordForm]="setUserPasswordForm" 
+        [formMessage]="formMessage" 
+        [saving]="saving" 
+        (setUserPasswordEvent)="setUserPassword()" >
+      </set-password-component>
 
     </div>
   </div>
 
 </div>
+
+<ng-template  #loadingSpinner>
+  <loading-spinner class="w-100 h-100"></loading-spinner>
+</ng-template>
+

@@ -1,0 +1,198 @@
+import {  Component, OnInit, ViewChild } from '@angular/core';
+import {  map, Observable,  pipe,  Subscription, throwError } from 'rxjs';
+
+import { UserService } from '../../services/user.service';
+import { UserRoleService } from '../../services/userRole.service';
+
+import { FormArray, FormBuilder,  FormGroup, Validators } from '@angular/forms';
+
+
+
+
+
+import { UserRole } from '../../interfaces/userRole.interface';
+
+
+import MODULE_PERMISSIONS from '../../../../../../../modulePermissions.json';
+import { FormMessage, MessageType } from '../../../../shared/interfaces/form-message.interface';
+import { MessageService } from '../../../../shared/services/message.service';
+import { delay } from '../../../../shared/helpers/delay.helper';
+import { AuthService } from '../../../../core/services/auth.service';
+
+
+@Component({
+  selector: 'users-role-panel-page',
+  templateUrl: './users-role-panel.page.html',
+  styleUrls: ['./users-role-panel.page.scss'],
+  standalone:false
+})
+
+
+
+export class UsersRolePanelPage implements OnInit {
+
+
+  //General
+
+    public loading:boolean = true;
+    public saving:boolean = false;
+
+    public selectedUserRole:UserRole | null | undefined = null;
+    public userRoleCreateForm!: FormGroup;
+    public userRolesList$:Observable<UserRole[] | null>;
+    public formMode = "select";
+    public formMessage:FormMessage | null |undefined;
+   
+  
+modules = MODULE_PERMISSIONS;
+
+  
+  
+
+  constructor(
+    private userRoleService:UserRoleService,
+      private messageService:MessageService,
+      private authService:AuthService, 
+
+      private formBuilder:FormBuilder) {
+
+
+
+     this.userRolesList$ = this.userRoleService.userRolesList$;
+     
+   
+
+     
+
+     
+   }
+
+
+
+  hasPermission(code: string): boolean {
+    return this.authService.hasPermission(code);
+  }
+
+  
+
+
+
+  async ngOnInit(): Promise<void> {
+
+
+    await this.userRoleService.getAllUserRoles();
+    
+   
+  
+  }
+
+  createUserRole(){
+
+    this.formMode
+    this.selectedUserRole = {
+      id:undefined,
+      name:"",
+      users:[],
+      userRolePermissions:[]
+
+    }
+        this.createEmptyForm();
+
+        this.formMode = 'create';
+  }
+
+  selectUserRole(event:any) {
+    this.createEmptyForm();
+
+    this.selectedUserRole = event;
+    console.error(event)
+
+
+ 
+    for (const code of event.userRolePermissions) {
+
+     
+      if (this.userRoleCreateForm!.contains(code.permission)) {
+        console.log(true)
+  
+        this.userRoleCreateForm!.get(code.permission)?.setValue(true);
+      }
+   
+    }
+
+ this.formMode = 'edit';
+
+
+
+  }
+   
+createEmptyForm() {
+
+  const group: any = {};
+    for (const mod of this.modules) {
+      for (const perm of mod.permissions) {
+        group[perm.code] = [false];
+      }
+    }
+    this.userRoleCreateForm = this.formBuilder.group(group);
+  
+ 
+
+}
+
+cancelSelection() {
+
+  this.selectedUserRole = null;
+  this.createEmptyForm();
+  this.formMode = 'select';
+ 
+}
+
+  getSelectedPermissions(): string[] {
+    return Object.entries(this.userRoleCreateForm!.value)
+      .filter(([_, checked]) => checked)
+      .map(([code]) => code);
+  }
+
+ saveUserRole() {
+
+
+  this.saving = true;
+
+    const selectedPermissions = this.getSelectedPermissions();
+
+
+    this.userRoleService.saveUserRole(this.selectedUserRole!, selectedPermissions).subscribe({
+      next: async() => {
+        this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Rol guardado con éxito!' )
+        await this.userRoleService.getAllUserRoles();
+        await delay(1000);
+        this.formMessage = null;
+        this.saving = false;
+        this.selectedUserRole = null;
+    
+        
+             
+               
+      },
+      error: async(err) => {
+  
+       this.formMessage = this.messageService.createFormMessage(MessageType.ERROR,err.error.error );
+            await delay(1000);
+              this.formMessage = null;
+              this.saving = false;
+              
+      },
+    });
+  }
+
+
+
+  async ngOnDestroy() {
+
+
+  }
+
+
+  
+}

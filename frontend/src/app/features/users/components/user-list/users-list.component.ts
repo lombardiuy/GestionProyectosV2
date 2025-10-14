@@ -2,7 +2,7 @@ import { Component, OnInit, Input, SimpleChanges, EventEmitter, Output } from '@
 
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { User } from '../../interfaces/user.interface';
-import { UserRole } from '../../interfaces/user-role.interface';
+import { UserRole } from '../../interfaces/userRole.interface';
 
 
 import { UserService } from '../../services/user.service';
@@ -65,9 +65,10 @@ export class UsersListComponent implements OnInit {
   
   }
 ngOnChanges(changes: SimpleChanges) {
-    if (changes['userList']) {
+    if (changes['userList'] && this.userListFilterForm) {
      
       this.filteredUserList = this.userList;  
+
       this.filterTable(this.userListFilterForm.value);
 
 this.userRolesOptions = Array.from(

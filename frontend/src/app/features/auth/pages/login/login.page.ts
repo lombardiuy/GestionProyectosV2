@@ -3,6 +3,12 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import {FormMessage, MessageType} from '../../../../shared/interfaces/form-message.interface'
+import { MessageService } from '../../../../shared/services/message.service';
+import { delay } from '../../../../shared/helpers/delay.helper';
+import { passwordsMatchValidator } from '../../../users/validators/match-password.validator';
+import { UserService } from '../../../users/services/user.service';
+
 
 @Component({
   selector: 'login-page',
@@ -17,29 +23,31 @@ export class LoginPage implements OnInit {
 
 
   
-  loginForm!: FormGroup;
-  loginError:boolean = false;
-  loginErrorMessage:string = '';
-  submitted:boolean = false;
+  public loginForm!: FormGroup;
+  public setUserPasswordForm!: FormGroup;
 
   private loginSubscription?: Subscription;
+  private setUserPasswordSubscription?: Subscription;
 
   usernameInput:string | null = null;
   passwordInput: string | null = null;
 
+  public formMessage:FormMessage | null |undefined;
+  public loading: boolean = true;
+  public saving!: boolean;
+
+  public setPasswordMode:boolean = false;
+
   
 
-  constructor(public authService: AuthService, private formBuilder: FormBuilder, private router:Router) { 
+  constructor(
+    private userService:UserService,
+    private authService: AuthService,
+     private formBuilder: FormBuilder,
+      private router:Router,  
+       private messageService:MessageService ) { 
     
-   const navState = this.router.getCurrentNavigation()?.extras.state;
 
-
-
-   if (navState?.['username'] && navState?.['password']) {
-    this.usernameInput = navState['username'];
-    this.passwordInput = navState['password']
-    
-  }
   
   }
 
@@ -53,18 +61,19 @@ export class LoginPage implements OnInit {
     }
     );
 
-
-
-
-    if (this.usernameInput && this.passwordInput) {
-
-      this.username?.setValue(this.usernameInput);
-      this.password?.setValue(this.passwordInput);
-
-      this.login();
-
+    this.setUserPasswordForm = this.formBuilder.group(
+    {
+      id: ["", [Validators.required]],
+      username: ["", [Validators.required]],
+      password: ["", [Validators.required, Validators.minLength(6)]],
+      passwordRepeat: ["", Validators.required],
+    },
+    {
+      validators: passwordsMatchValidator('password', 'passwordRepeat')
     }
+  );
 
+  this.loading = false;
 
   
   }
@@ -80,53 +89,110 @@ get password() {
 
 
 
-  login() {
+  async login() {
 
+
+    
          if (this.loginForm.invalid) {
-      this.loginError = true;
-      this.loginErrorMessage = 'Por favor, completá todos los campos correctamente.';
+
+          this.messageService.createFormMessage(MessageType.ERROR, "Por favor, completá todos los campos correctamente.")
+          await delay(1000);
+          this.formMessage = null;
+
       return;
     }
-  this.submitted = true;
+  this.saving = true;
 
    this.loginSubscription = this.authService.login(
       this.loginForm.get('username')!.value,
       this.loginForm.get('password')!.value
     ).subscribe({
-      next: (res) => {
-  
-        this.loginError = false;
-        this.loginErrorMessage = '';
-        this.submitted = false;
+      next: async(res) => {
+
+          await delay(1000);
+          this.formMessage = null;
+
         this.router.navigate(['']); // ejemplo de redirección luego del login
       },
-      error: (err) => {
+      error: async(err) => {
         
 
-        if (err.error.code === 'inactive-account') {
+        if (err.error.code != 'inactive-account') {
 
-           this.router.navigate(['auth/password-reset'], {
-            state: {
-             id: err.error.id,
-            username: err.error.username
-            }
-});
+          this.formMessage =  this.messageService.createFormMessage(MessageType.ERROR, err.error.error)
+ 
+          await  delay(1000);
+        
+           this.saving = false;
+        
 
-
+        }else {
+           
+        this.setUserPasswordForm.get('id')?.setValue(err.error.id);
+        this.setUserPasswordForm.get('username')?.setValue(err.error.username);
+        this.saving = false;
+        this.setPasswordMode = true;
+          
         }
 
-   
- 
- 
-        this.loginError = true;
-        this.loginErrorMessage = err.error.error
-        this.submitted = false;
+  
       }
     });
+
+    
+  }
+
+
+
+    async setUserPassword() {
+
+
+    if (this.setUserPasswordForm.invalid) {
+
+      this.messageService.createFormMessage(MessageType.ERROR, "Por favor, completá todos los campos correctamente.")
+          await delay(1000);
+          this.formMessage = null;
+
+      return;
+    }
+
+  this.saving = true;
+
+   this.setUserPasswordSubscription = this.userService.setUserPassword(
+      this.setUserPasswordForm.get('id')!.value,
+      this.setUserPasswordForm.get('password')!.value
+    ).subscribe({
+      next: async(res) => {
+
+        this.formMessage =  this.messageService.createFormMessage(MessageType.SUCCESS, 'Clave actualizada exitosamente!');
+
+        await delay(1000);
+        this.formMessage = null;
+
+        this.router.navigate(['']); // ejemplo de redirección luego del login
+      },
+      error: async(err) => {
+
+
+         this.formMessage =  this.messageService.createFormMessage(MessageType.ERROR, err.error.error)
+         await  delay(1000);
+        
+        this.formMessage = null;
+        this.saving = false;
+      
+          
+        
+
+  
+      }
+    });
+
+    
   }
 
     ngOnDestroy(): void {
     this.loginSubscription?.unsubscribe();
+    this.setUserPasswordSubscription?.unsubscribe();
   }
 
 }

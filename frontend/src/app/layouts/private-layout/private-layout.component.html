@@ -1,11 +1,17 @@
 <div class="w-100 h-100 d-flex flex-column m-0 p-0 overflow-hidden">
   <top-navbar class="w-100"></top-navbar>
 
-  <div class="d-flex w-100 content">
+  <div class="d-flex flex-grow-1 w-100 content">
 
-    <side-navbar *ngIf="(navbarstateService.displaySideNavbar | async)" class="mw-10"></side-navbar>
+    <!-- Barra lateral -->
+    <side-navbar
+      *ngIf="(navbarstateService.displaySideNavbar | async)"
+      class="flex-shrink-0"
+      style="width: 10%; min-width: 200px; max-width: 300px;"
+    ></side-navbar>
 
-    <div>
+    <!-- Contenido -->
+    <div class="flex-grow-1 overflow-auto">
       <router-outlet></router-outlet>
     </div>
   </div>

@@ -1,0 +1,63 @@
+
+
+<div  class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+  <div class="card w-90 h-90">
+    <div class="card-header w-100 h-8">
+      <h5><i class="bi bi-person-fill-gear"></i> Roles y permisos</h5>
+   
+    </div>
+
+    <div class="card-body d-flex flex-column w-100 h-92">
+
+      <div class="w-100 h-8">
+          <button  *ngIf=" hasPermission('USERS_ROLE_CREATE') && (formMode === 'select' || formMode === 'edit')" class="btn btn-success position-absolute end-0 me-3"  (click)="createUserRole()">
+          <i class="bi bi-plus"></i><i class="bi bi-person-fill-gear"></i> Crear Rol
+        </button>
+
+          <button  (click)="cancelSelection()" *ngIf=" formMode === 'create'" class="btn btn-primary position-absolute end-0 me-3" >
+          <i class="bi bi-person-fill-gear"></i> Visualizar roles
+        </button>
+
+        <input *ngIf="selectedUserRole && !selectedUserRole.id" type="text" class="form-control w-50 mb-2" placeholder="Nombre del Rol" [(ngModel)]="selectedUserRole!.name" >
+                
+            <users-role-list-component *ngIf=" formMode != 'create' "  class="w-100 " 
+              [selectedUserRole]="selectedUserRole"
+              [userRolesList]="userRolesList$ | async"
+              (selectUserRoleEvent)="selectUserRole($event)">
+           
+              </users-role-list-component>
+      </div>
+
+
+
+            
+   <user-role-create-component    *ngIf="selectedUserRole"  class="w-100 h-92"
+              
+  
+  
+              [userRoleCreateForm]="userRoleCreateForm"
+              [selectedUserRole]="selectedUserRole"
+              [modules]="modules"
+              [formMode]="formMode"
+              [saving]="saving"
+              [loading]="loading"
+              [formMessage]="formMessage"
+              (saveUserRoleEvent)="saveUserRole()"
+   
+   
+   ></user-role-create-component>
+
+
+    </div>
+  </div>
+
+
+
+</div>
+
+
+
+
+
+
+     

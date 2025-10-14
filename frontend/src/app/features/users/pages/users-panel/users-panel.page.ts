@@ -2,6 +2,7 @@ import {  Component, OnInit, ViewChild } from '@angular/core';
 import {  map, Observable,  pipe,  Subscription } from 'rxjs';
 
 import { UserService } from '../../services/user.service';
+import { UserRoleService } from '../../services/userRole.service';
 import { TimeService } from '../../../../shared/services/time.service';
 import { MessageService } from '../../../../shared/services/message.service';
 
@@ -13,7 +14,7 @@ import { validUsername } from '../../validators/valid-username.validator';
 import { allowedValuesValidator } from '../../../../shared/validators/custom-validators';
 
 import {User} from "../../interfaces/user.interface";
-import { UserRole } from '../../interfaces/user-role.interface';
+import { UserRole } from '../../interfaces/userRole.interface';
 import { FileService } from '../../../../core/services/file.service';
 import { delay } from '../../../../shared/helpers/delay.helper';
 import { UserCreateComponent } from '../../components/user-create/user-create.component';
@@ -75,13 +76,17 @@ export class UsersPanelPage implements OnInit {
   
   
 
-  constructor(private userService:UserService, private fileService:FileService,  private timeService:TimeService,
-     private messageService:MessageService, 
-      private formBuilder:FormBuilder) {
+  constructor(
+    private userService:UserService, 
+    private userRoleService:UserRoleService,
+    private fileService:FileService,  
+    private timeService:TimeService,
+    private messageService:MessageService, 
+    private formBuilder:FormBuilder) {
 
 
      this.usersList$ = this.userService.usersList$;
-     this.userRolesList$ = this.userService.userRolesList$;
+     this.userRolesList$ = this.userRoleService.userRolesList$;
      this.selectedUser$ = this.userService.selectedUser$;
      this.timestamp$ = this.timeService.timestamp$;
 
@@ -102,7 +107,7 @@ export class UsersPanelPage implements OnInit {
   async ngOnInit(): Promise<void> {
 
     await this.userService.getAllUsers();
-    await this.userService.getAllUserRoles();
+    await this.userRoleService.getAllUserRoles();
     this.createEmptyForm();
 
    
@@ -435,7 +440,7 @@ initForm(selectedUser?: User | null) {
   async ngOnDestroy() {
     await this.userService.clearSelectedUser();
     await this.userService.clearUserList();
-    await this.userService.clearUserRoleList();
+    await this.userRoleService.clearUserRoleList();
 
     this.createUserSubscription?.unsubscribe();
     this.resetUserPasswordSubscription?.unsubscribe();

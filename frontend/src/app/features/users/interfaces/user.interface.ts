@@ -1,5 +1,5 @@
 
-import {UserRole} from "./user-role.interface"
+import {UserRole} from "./userRole.interface"
 
 
 export interface User {

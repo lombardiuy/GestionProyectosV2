@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UsersRoutingModule } from './users-routing-module';
 
 import { SharedModule } from '../../shared/shared-module';
@@ -12,15 +12,21 @@ import { UserCreateComponent } from './components/user-create/user-create.compon
 import { UserPasswordResetComponent } from './components/user-password-reset/user-password-reset.component';
 import { UserSuspensionComponent } from './components/user-suspension/user-suspension.component';
 
+import { UsersRolePanelPage } from './pages/user-role-panel/users-role-panel.page';
+import { UsersRoleListComponent } from './components/user-role-list/users-role-list.component';
+import { UserRoleCreateComponent } from './components/user-role-create/user-role-create.component';
+
 
 
 @NgModule({
   declarations: [
-    UsersPanelPage, UsersListComponent, UserCreateComponent, UserPasswordResetComponent, UserSuspensionComponent
+    UsersPanelPage, UsersListComponent, UserCreateComponent, UserPasswordResetComponent, UserSuspensionComponent,
+    UsersRolePanelPage, UsersRoleListComponent, UserRoleCreateComponent
   ],
   imports: [
     CommonModule,
     UsersRoutingModule, 
+    FormsModule,
     ReactiveFormsModule, 
     SharedModule
   ]

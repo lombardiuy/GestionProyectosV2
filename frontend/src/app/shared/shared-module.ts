@@ -7,17 +7,18 @@ import { SideNavbarComponent } from './components/side-navbar/side-navbar.compon
 import { TopNavbarComponent } from './components/top-navbar/top-navbar.component';
 import { FormMessageComponent } from './components/form-message/form-message.component';
 import { TableHeaderFilterCheckboxesMultipleComponent } from './components/table-header-filter-checkboxes-multiple/table-header-filter-checkboxes-multiple.component';
-
+import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
+import { LoadingPointsComponent } from './components/loading-points/loading-points.component';
 
 @NgModule({
   declarations: [
-    TopNavbarComponent, SideNavbarComponent, FormMessageComponent, TableHeaderFilterCheckboxesMultipleComponent ],
+    TopNavbarComponent, SideNavbarComponent, FormMessageComponent, TableHeaderFilterCheckboxesMultipleComponent, LoadingPointsComponent, LoadingSpinnerComponent ],
   imports: [
     CommonModule,
     SharedRoutingModule
   ], 
   exports:[
-    TopNavbarComponent, SideNavbarComponent, FormMessageComponent, TableHeaderFilterCheckboxesMultipleComponent
+    TopNavbarComponent, SideNavbarComponent, FormMessageComponent, TableHeaderFilterCheckboxesMultipleComponent, LoadingPointsComponent, LoadingSpinnerComponent
   ]
 })
 export class SharedModule { }

@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@
 import { User } from '../../interfaces/user.interface';
 import { FormGroup } from '@angular/forms';
 import { compareRoles } from '../../helpers/compare-roles.helper.';
-import { UserRole } from '../../interfaces/user-role.interface';
+import { UserRole } from '../../interfaces/userRole.interface';
 import { createUsername } from '../../helpers/create-username.helper';
 import { FormMessage } from '../../../../shared/interfaces/form-message.interface';
 

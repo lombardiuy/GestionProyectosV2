@@ -1,0 +1,34 @@
+import { Component, EventEmitter, Input, Output} from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import {UserRole} from '../../interfaces/userRole.interface';
+import { FormMessage} from '../../../../shared/interfaces/form-message.interface';
+@Component({
+  selector: 'user-role-create-component',
+  templateUrl: './user-role-create.component.html',
+  styleUrls: ['./user-role-create.component.scss'],
+  standalone:false
+})
+
+
+
+export class UserRoleCreateComponent {
+
+     @Input() userRoleCreateForm!: FormGroup ;
+     @Input() selectedUserRole:UserRole | null | undefined;
+     @Input() modules:any;
+     @Input() saving:boolean |undefined;
+     @Input() loading:boolean |undefined;
+     @Input() formMode:string | undefined;
+     @Input() formMessage:FormMessage | null |undefined;
+
+     @Output() saveUserRoleEvent = new EventEmitter<void>();
+
+  constructor() {
+
+  }
+
+  saveUserRole() {
+    this.saveUserRoleEvent.emit()
+  }
+
+}

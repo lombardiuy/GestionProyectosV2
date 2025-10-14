@@ -2,7 +2,7 @@
 
 export const environment = {
   production: false,
-  auth:false,
+  auth:true,
   productionMode:false,
   apiURL: 'http://192.168.220.76:3000/',
   publicURL: 'http://192.168.220.76:3000/public/',

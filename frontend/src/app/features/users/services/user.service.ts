@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { environment } from '../../../../environments/environment';
 
-import { UserRole } from '../interfaces/user-role.interface';
+import { UserRole } from '../interfaces/userRole.interface';
 import {User} from '../interfaces/user.interface'
 
 @Injectable({
@@ -16,12 +16,12 @@ export class UserService {
 
   private usersListSubject = new BehaviorSubject<User[] | null>(null);
   private selectedUserSubject = new BehaviorSubject<User | null>(null);
-  private userRolesListSubject = new BehaviorSubject<UserRole[] | null>(null);
+
   
   
   public usersList$ = this.usersListSubject.asObservable();
   public selectedUser$ = this.selectedUserSubject.asObservable();
-  public userRolesList$ = this.userRolesListSubject.asObservable();
+
 
   constructor(private http: HttpClient) {
 
@@ -46,6 +46,13 @@ export class UserService {
   resetUserPassword(user:User) {
 
   return this.http.post<any>(`${this.apiUrl}/resetUserPassword`,  user);
+
+
+}
+
+  setUserPassword(id: number, password: string) {
+
+  return this.http.post<any>(`${this.apiUrl}/setUserPassword`, { id, password });
 
 
 }
@@ -78,18 +85,7 @@ async getAllUsers(): Promise<User[] | null> {
 }
 
 
-async getAllUserRoles(): Promise<UserRole[] | null> {
-  try {
-    const userRolesList = await firstValueFrom(this.http.get<UserRole[]>(`${this.apiUrl}/roles`));
-    this.userRolesListSubject.next(userRolesList);
-    console.log(userRolesList)
-    return userRolesList;
-  } catch (err) {
-    console.error(err);
-    this.userRolesListSubject.next(null); 
-    return [];
-  }
-}
+
 
 async selectUser(id: number): Promise<User> {
   const selectedUser = await firstValueFrom(
@@ -114,9 +110,7 @@ async selectUser(id: number): Promise<User> {
     this.usersListSubject.next(null);
   }
   
-  clearUserRoleList() {
-    this.userRolesListSubject.next(null);
-  }
+  
 
   clearSelectedUser() {
     this.selectedUserSubject.next(null);
