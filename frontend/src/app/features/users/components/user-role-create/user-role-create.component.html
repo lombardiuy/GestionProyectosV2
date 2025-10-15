@@ -69,7 +69,7 @@
       </div>
 
       <div class="w-100 h-15 d-flex justify-content-center align-items-center">
-            <button *ngIf="!saving" (click)="saveUserRole()" class="btn btn-primary" type="submit"  [disabled] = "userRoleCreateForm!.invalid || saving || !userRoleCreateForm!.dirty">
+            <button *ngIf="!saving && hasPermission('USER_ROLE_CREATE') || hasPermission('USER_ROLE_EDIT')" (click)="saveUserRole()" class="btn btn-primary" type="submit"  [disabled] = "userRoleCreateForm!.invalid || saving || selectedUserRole?.name === '' || !userRoleCreateForm!.dirty">
       Guardar
     </button>
         <form-message *ngIf="saving" [formMessage]="formMessage"></form-message>

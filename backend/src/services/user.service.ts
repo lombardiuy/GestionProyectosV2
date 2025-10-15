@@ -92,6 +92,16 @@ export const createUserRole = async (userRole: UserRole, permissions: string[]):
     const userRoleRepo = manager.getRepository(UserRole);
     const userRolePermissionRepo = manager.getRepository(UserRolePermission);
 
+    if (userRole.name === '') {
+        
+      throw new Error('Debe asignar un nombre al rol');
+
+    }
+
+    if (permissions.length === 0) {
+        throw new Error('Debe asignar al menos 1 permiso al rol');
+    }
+
     // Validar duplicado
     const existsUserRole = await userRoleRepo.findOneBy({ name: userRole.name });
     if (existsUserRole && !userRole.id) {

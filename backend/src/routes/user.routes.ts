@@ -21,7 +21,7 @@ router.get('/select/:id', selectUserById)
 
 router.post('/create', authMiddleware, createUser)
 router.post('/resetUserPassword', authMiddleware, resetUserPassword)
-router.post('/setUserPassword', authMiddleware, setUserPassword)
+router.post('/setUserPassword', setUserPassword)
 router.post('/suspension', authMiddleware, suspensionUser)
 router.post('/roles/create', authMiddleware, saveUserRole)
 

@@ -88,7 +88,9 @@ modules = MODULE_PERMISSIONS;
 
   createUserRole(){
 
-    this.formMode
+    if (this.hasPermission('USER_ROLE_CREATE')) {
+
+   
     this.selectedUserRole = {
       id:undefined,
       name:"",
@@ -100,31 +102,32 @@ modules = MODULE_PERMISSIONS;
 
         this.formMode = 'create';
   }
-
-  selectUserRole(event:any) {
-    this.createEmptyForm();
-
-    this.selectedUserRole = event;
-    console.error(event)
-
-
- 
-    for (const code of event.userRolePermissions) {
-
-     
-      if (this.userRoleCreateForm!.contains(code.permission)) {
-        console.log(true)
-  
-        this.userRoleCreateForm!.get(code.permission)?.setValue(true);
-      }
-   
-    }
-
- this.formMode = 'edit';
-
-
-
   }
+
+selectUserRole(event: any) {
+  this.createEmptyForm(); // crea todos los controles
+  this.selectedUserRole = event;
+  this.formMode = 'edit';
+
+  const assignedPermissions = event.userRolePermissions.map((p: any) => p.permission);
+
+  // Recorremos todos los controles del formulario
+  Object.keys(this.userRoleCreateForm!.controls).forEach(permission => {
+    const control = this.userRoleCreateForm!.get(permission);
+    if (!control) return;
+
+    // Setear true si está asignado, false si no
+    control.setValue(assignedPermissions.includes(permission));
+
+    // Deshabilitar si el usuario no tiene permiso de edición
+    if (!this.hasPermission('USER_ROLE_EDIT') || !this.hasPermission(permission)) {
+      control.disable();
+    } else {
+      control.enable(); // opcional, para asegurarnos de que se habilite si corresponde
+    }
+  });
+}
+
    
 createEmptyForm() {
 
@@ -170,6 +173,7 @@ cancelSelection() {
         this.formMessage = null;
         this.saving = false;
         this.selectedUserRole = null;
+        this.formMode = 'select'
     
         
              

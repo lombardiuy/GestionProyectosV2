@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {UserRole} from '../../interfaces/userRole.interface';
 import { FormMessage} from '../../../../shared/interfaces/form-message.interface';
+import { AuthService } from '../../../../core/services/auth.service';
 @Component({
   selector: 'user-role-create-component',
   templateUrl: './user-role-create.component.html',
@@ -23,12 +24,16 @@ export class UserRoleCreateComponent {
 
      @Output() saveUserRoleEvent = new EventEmitter<void>();
 
-  constructor() {
+  constructor(private authService:AuthService) {
 
   }
 
   saveUserRole() {
     this.saveUserRoleEvent.emit()
+  }
+
+   hasPermission(code: string): boolean {
+    return this.authService.hasPermission(code);
   }
 
 }

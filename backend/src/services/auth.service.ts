@@ -2,6 +2,9 @@ import { AppDataSource } from '../data-source';
 import { User } from '../entities/User.entity';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import fs from 'fs';
+
 
 const userRepository = AppDataSource.getRepository(User);
 
@@ -25,6 +28,21 @@ export const login = async (username: string, password: string): Promise<string>
 };
 
 export const getDevToken = async (): Promise<string> => {
+
+// Carga los permisos desde el JSON en la raíz del proyecto
+const permissionsPath = path.resolve(__dirname, '../../../modulePermissions.json');
+const permissionsData = JSON.parse(fs.readFileSync(permissionsPath, 'utf8'));
+
+
+
+
+// Aplana los permisos en una lista simple: USERS_CREATE, USERS_VIEW, etc.
+ const validPermissions = (permissionsData as any[]).flatMap(moduleEntry =>
+  moduleEntry.permissions.map((p: any) => ({ permission: p.code }))
+);
+
+console.log(validPermissions)
+
   if (process.env.FAKE_AUTH === 'true') {
     const fakeToken = {
       id: 0,
@@ -33,16 +51,13 @@ export const getDevToken = async (): Promise<string> => {
       hasProfilePicture: false,
       userRole: {
         name: 'admin',
-        userRolePermissions: [
-          {  permission: 'USERS_VIEW' },
-          {  permission: 'USERS_CREATE' },
-          {  permission: 'USERS_SUSPEND' },
-        ]
+        userRolePermissions: validPermissions
       },
       active: true,
     };
     
 
+    console.log(fakeToken)
     return jwt.sign(fakeToken, process.env.JWT_SECRET!, {
       expiresIn: '1d',
     });
