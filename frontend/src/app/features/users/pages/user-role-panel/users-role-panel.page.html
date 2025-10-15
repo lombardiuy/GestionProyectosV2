@@ -49,15 +49,15 @@
 
 
     </div>
+     <div *ngIf="hasPermission('USERS_VIEW')" class="card-footer text-primary d-flex justify-content-end align-items-center">
+    
+       <div [routerLink]="['/users']" class="cursor-pointer"><i class="fa-solid fa-users me-1"></i> Gestión de Usuarios </div> 
+      
+       
+    </div>
   </div>
 
 
 
 </div>
 
-
-
-
-
-
-     

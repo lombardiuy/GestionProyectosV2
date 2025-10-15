@@ -10,15 +10,33 @@ import { TableHeaderFilterCheckboxesMultipleComponent } from './components/table
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 import { LoadingPointsComponent } from './components/loading-points/loading-points.component';
 
+import { UnauthorizedPage } from './pages/unauthorized/unauthorized.page';
+
 @NgModule({
   declarations: [
-    TopNavbarComponent, SideNavbarComponent, FormMessageComponent, TableHeaderFilterCheckboxesMultipleComponent, LoadingPointsComponent, LoadingSpinnerComponent ],
+     UnauthorizedPage,
+    TopNavbarComponent,
+     SideNavbarComponent, 
+     FormMessageComponent, 
+     TableHeaderFilterCheckboxesMultipleComponent, 
+     LoadingPointsComponent,
+    LoadingSpinnerComponent, 
+    
+    ],
   imports: [
     CommonModule,
     SharedRoutingModule
   ], 
   exports:[
-    TopNavbarComponent, SideNavbarComponent, FormMessageComponent, TableHeaderFilterCheckboxesMultipleComponent, LoadingPointsComponent, LoadingSpinnerComponent
+     UnauthorizedPage,
+    TopNavbarComponent, 
+    SideNavbarComponent, 
+    FormMessageComponent, 
+    TableHeaderFilterCheckboxesMultipleComponent, 
+    LoadingPointsComponent, 
+    LoadingSpinnerComponent,
+   
+
   ]
 })
 export class SharedModule { }

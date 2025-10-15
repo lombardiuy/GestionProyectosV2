@@ -15,6 +15,7 @@ export class UserPasswordResetComponent {
    @Input() username: string | null | undefined;
    @Output() resetPasswordEvent = new EventEmitter<void>();
    @ViewChild('btnClose') btnClose!: ElementRef;  
+   @Input() hasPermission!: (code: string) => boolean;
 
   constructor() { }
 

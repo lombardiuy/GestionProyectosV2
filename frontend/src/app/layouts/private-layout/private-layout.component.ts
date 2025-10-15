@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavbarstateService } from '../../shared/services/navbarstate.service';
+import { AuthService } from '../../core/services/auth.service';
 
 
 @Component({
@@ -16,7 +17,7 @@ export class PrivatelayoutComponent implements OnInit {
 
   
 
-  constructor(public navbarstateService:NavbarstateService) { 
+  constructor(public navbarstateService:NavbarstateService, private authService:AuthService) { 
   
   }
 
@@ -27,5 +28,10 @@ export class PrivatelayoutComponent implements OnInit {
 
   
   }
+
+    hasPermission(code: string): boolean {
+    return this.authService.hasPermission(code);
+  }
+
    
 }

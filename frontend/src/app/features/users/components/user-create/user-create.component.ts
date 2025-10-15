@@ -19,6 +19,8 @@ export class UserCreateComponent {
 
   
    public compareRoles = compareRoles;
+  
+   @Input() hasPermission!: (code: string) => boolean;
 
 
    @Input() profilePicturePath!: string | null;

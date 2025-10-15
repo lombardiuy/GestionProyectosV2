@@ -6,6 +6,7 @@
     <!-- Barra lateral -->
     <side-navbar
       *ngIf="(navbarstateService.displaySideNavbar | async)"
+      [hasPermission]="hasPermission.bind(this)"
       class="flex-shrink-0"
       style="width: 10%; min-width: 200px; max-width: 300px;"
     ></side-navbar>

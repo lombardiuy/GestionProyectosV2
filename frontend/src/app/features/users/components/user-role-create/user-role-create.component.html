@@ -41,7 +41,7 @@
                 class="form-check form-check-inline"
               >
                 <input
-                  class="form-check-input"
+                  class="form-check-input cursor-pointer"
                   type="checkbox"
                   [formControlName]="perm.code"
                   id="{{ mod.module.code }}_{{ perm.code }}"
@@ -69,7 +69,14 @@
       </div>
 
       <div class="w-100 h-15 d-flex justify-content-center align-items-center">
-            <button *ngIf="!saving && hasPermission('USER_ROLE_CREATE') || hasPermission('USER_ROLE_EDIT')" (click)="saveUserRole()" class="btn btn-primary" type="submit"  [disabled] = "userRoleCreateForm!.invalid || saving || selectedUserRole?.name === '' || !userRoleCreateForm!.dirty">
+            <button *ngIf="
+              !saving &&
+    (
+      (hasPermission('USERS_ROLE_CREATE') && formMode === 'create') ||
+      (hasPermission('USERS_ROLE_EDIT') && formMode === 'edit')
+    )
+    
+    " (click)="saveUserRole()" class="btn btn-primary" type="submit"  [disabled] = "userRoleCreateForm!.invalid || saving || selectedUserRole?.name === '' || !userRoleCreateForm!.dirty">
       Guardar
     </button>
         <form-message *ngIf="saving" [formMessage]="formMessage"></form-message>

@@ -8,20 +8,24 @@
 
     <div class="card-body d-flex flex-column w-100 h-92">
 
-          <button class="btn btn-success position-absolute end-0 me-3"  (click)="createUser()" data-bs-toggle="modal" data-bs-target="#createUserModal">
+          <button *ngIf="hasPermission('USERS_CREATE')" class="btn btn-success position-absolute end-0 me-3"  (click)="createUser()" data-bs-toggle="modal" data-bs-target="#createUserModal">
           <i class="fa-solid fa-user-plus"></i> Crear Usuario
         </button>
                 
-            <users-list-component class="w-100 h-100"
+            <users-list-component *ngIf="hasPermission('USERS_VIEW')" class="w-100 h-100"
               
+                 [hasPermission]="hasPermission.bind(this)"
+                 [profilePicturePath]="profilePicturePath" 
+                 [userList]="usersList$ | async" 
+                 [timestamp]="timestamp$ | async"
+
                  (editUserEvent)="editUser($event)" 
-                 (suspendUserFromListEvent)="suspendUserFromList($event)" 
-                  
-                   [profilePicturePath]="profilePicturePath" 
-                   [userList]="usersList$ | async" 
-                   [timestamp]="timestamp$ | async">
+                 (suspendUserFromListEvent)="suspendUserFromList($event)" >
+                   
             </users-list-component>
     </div>
+
+   
   </div>
 
 
@@ -29,9 +33,9 @@
 </div>
 
   <div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
-   <user-create-component     *ngIf="userCreateForm" class="w-100 h-100"
+   <user-create-component     *ngIf="userCreateForm && hasPermission('USERS_CREATE')" class="w-100 h-100"
    
-        
+    [hasPermission]="hasPermission.bind(this)"
     [userCreateForm]="userCreateForm"
     [profilePicturePath]="profilePicturePath"
     [usersList]="usersList$ | async"
@@ -54,7 +58,8 @@
 
 
     <div class="modal fade" id="userPasswordResetModal" tabindex="-1" aria-hidden="true">
-   <user-password-reset-component  #userPasswordResetComponent    *ngIf="userCreateForm" class="w-100 h-100"
+   <user-password-reset-component  #userPasswordResetComponent    *ngIf="userCreateForm && hasPermission('USERS_PASSWORD_RESET')" class="w-100 h-100"
+       [hasPermission]="hasPermission.bind(this)"
       [username]="form['username'].value" 
       (resetPasswordEvent)="resetPassword()" 
    
@@ -68,7 +73,8 @@
 
   
     <div class="modal fade" id="userSuspensionModal" tabindex="-1" aria-hidden="true">
-     <user-suspension-component  #userSuspensionComponent    *ngIf="userCreateForm" class="w-100 h-100"
+     <user-suspension-component  #userSuspensionComponent    *ngIf="userCreateForm && hasPermission('USERS_SUSPEND')" class="w-100 h-100"
+     [hasPermission]="hasPermission.bind(this)"
       [username]="form['username'].value" 
       [origin]="origin" 
       [suspend] = "suspend"
@@ -80,4 +86,3 @@
 ></user-suspension-component>
 
 </div>
-

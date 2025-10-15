@@ -27,7 +27,7 @@ export class UsersListComponent implements OnInit {
    @Input() userList!: User[] | null;
 
    @Input() timestamp!: Number | null;
-  
+   @Input() hasPermission!: (code: string) => boolean;
 
    @Output() editUserEvent = new EventEmitter<any>();
    @Output() suspendUserFromListEvent = new EventEmitter<any>();

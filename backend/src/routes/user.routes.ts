@@ -1,6 +1,7 @@
-import { Router } from 'express'
-import { authMiddleware } from '../middleware/auth.middleware'
-import { requirePermission } from '../middleware/requirePermission.middleware'
+import { Router } from 'express';
+import { authMiddleware } from '../middleware/auth.middleware';
+import { requirePermissionMiddleware } from '../middleware/requirePermission.middleware';
+import { requireAnyPermissionMiddleware } from '../middleware/requireAnyPermission.middleware';
 import {
   getAllUsers,
   selectUserById,
@@ -15,15 +16,15 @@ import {
 
 const router = Router()
 
-router.get('/list', authMiddleware, requirePermission("USERS_VIEW"), getAllUsers)
-router.get('/roles', getUserRoles)
-router.get('/select/:id', selectUserById)
+router.get('/list', authMiddleware, requirePermissionMiddleware("USERS_VIEW"), getAllUsers)
+router.get('/roles', authMiddleware,  authMiddleware, requireAnyPermissionMiddleware('USERS_VIEW', 'USERS_ROLE_VIEW'), getUserRoles )
+router.get('/select/:id', authMiddleware, requirePermissionMiddleware("USERS_EDIT"), selectUserById)
 
-router.post('/create', authMiddleware, createUser)
-router.post('/resetUserPassword', authMiddleware, resetUserPassword)
+router.post('/create', authMiddleware,requirePermissionMiddleware("USERS_CREATE"), createUser)
+router.post('/resetUserPassword', authMiddleware, requirePermissionMiddleware("USERS_PASSWORD_RESET"),resetUserPassword)
 router.post('/setUserPassword', setUserPassword)
-router.post('/suspension', authMiddleware, suspensionUser)
-router.post('/roles/create', authMiddleware, saveUserRole)
+router.post('/suspension', authMiddleware, requireAnyPermissionMiddleware('USERS_SUSPEND', 'USERS_UNSUSPEND'), suspensionUser)
+router.post('/roles/create', authMiddleware,requirePermissionMiddleware("USERS_ROLE_CREATE"), saveUserRole)
 
 
 export default router

@@ -124,6 +124,7 @@ get password() {
           await  delay(1000);
         
            this.saving = false;
+           this.formMessage = null;
         
 
         }else {
@@ -131,6 +132,7 @@ get password() {
         this.setUserPasswordForm.get('id')?.setValue(err.error.id);
         this.setUserPasswordForm.get('username')?.setValue(err.error.username);
         this.saving = false;
+          this.formMessage = null;
         this.setPasswordMode = true;
           
         }
@@ -168,8 +170,11 @@ get password() {
 
         await delay(1000);
         this.formMessage = null;
+        this.saving = false;
 
-        this.router.navigate(['']); // ejemplo de redirección luego del login
+        this.loginForm.reset();
+        this.setUserPasswordForm.reset();
+        this.setPasswordMode = false;
       },
       error: async(err) => {
 

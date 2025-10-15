@@ -24,6 +24,21 @@ const routes: Routes = [
       }
     ]
   },
+    {
+    path: 'unauthorized',
+    component: PrivatelayoutComponent,
+      children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./shared/shared-module').then(m => m.SharedModule) 
+      },
+   
+    ]
+    
+  },
+
+
 
  // Rutas privadas
   {

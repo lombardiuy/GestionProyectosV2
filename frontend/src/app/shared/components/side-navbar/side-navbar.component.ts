@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 
 @Component({
@@ -8,6 +8,8 @@ import { Component, OnInit } from '@angular/core';
   standalone:false
 })
 export class SideNavbarComponent implements OnInit {
+
+     @Input() hasPermission!: (code: string) => boolean;
 
   constructor() { }
 

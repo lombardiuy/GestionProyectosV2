@@ -1,12 +1,10 @@
 import {  Component, OnInit, ViewChild } from '@angular/core';
-import {  map, Observable,  pipe,  Subscription, throwError } from 'rxjs';
+import {  firstValueFrom, map, Observable,  pipe,  skip,  Subject, takeUntil, throwError } from 'rxjs';
 
 import { UserService } from '../../services/user.service';
 import { UserRoleService } from '../../services/userRole.service';
 
 import { FormArray, FormBuilder,  FormGroup, Validators } from '@angular/forms';
-
-
 
 
 
@@ -18,6 +16,8 @@ import { FormMessage, MessageType } from '../../../../shared/interfaces/form-mes
 import { MessageService } from '../../../../shared/services/message.service';
 import { delay } from '../../../../shared/helpers/delay.helper';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
+import { PermissionsValidator, PermissionMap } from '../../validators/permissions.validator';
 
 
 @Component({
@@ -42,9 +42,18 @@ export class UsersRolePanelPage implements OnInit {
     public userRolesList$:Observable<UserRole[] | null>;
     public formMode = "select";
     public formMessage:FormMessage | null |undefined;
+    private prevFormValue:any | null | undefined;
+
+
+     private destroyForm$ = new Subject<void>();
    
   
 modules = MODULE_PERMISSIONS;
+
+permissionDependencies: PermissionMap = {
+      USERS_VIEW: ['USERS_CREATE', 'USERS_EDIT', 'USERS_SUSPEND', 'USERS_UNSUSPEND'],
+      USERS_ROLE_VIEW: ['USERS_ROLE_CREATE', 'USERS_ROLE_EDIT']
+    };
 
   
   
@@ -52,7 +61,8 @@ modules = MODULE_PERMISSIONS;
   constructor(
     private userRoleService:UserRoleService,
       private messageService:MessageService,
-      private authService:AuthService, 
+      private authService:AuthService,
+      private route: ActivatedRoute, 
 
       private formBuilder:FormBuilder) {
 
@@ -79,16 +89,39 @@ modules = MODULE_PERMISSIONS;
 
   async ngOnInit(): Promise<void> {
 
-
-    await this.userRoleService.getAllUserRoles();
     
+
+
+   await this.userRoleService.getAllUserRoles();
+
+  const roleName = this.route.snapshot.paramMap.get('roleName');
+
+
+  if (roleName) {
+    // Esperamos a que el observable emita su valor
+    const userRoles = await firstValueFrom(this.userRolesList$);
+
+    // Luego filtramos el resultado
+    this.selectedUserRole = userRoles?.find(role => role.name === roleName);
+
+    this.selectUserRole(this.selectedUserRole)
+  }
+
+
+   
+
+
+   
    
   
   }
 
   createUserRole(){
+    
 
-    if (this.hasPermission('USER_ROLE_CREATE')) {
+    if (this.hasPermission('USERS_ROLE_CREATE')) {
+
+ 
 
    
     this.selectedUserRole = {
@@ -102,6 +135,11 @@ modules = MODULE_PERMISSIONS;
 
         this.formMode = 'create';
   }
+
+    // this.listenFormChanges();
+      PermissionsValidator.listenPermissions(this.userRoleCreateForm, this.permissionDependencies);
+
+
   }
 
 selectUserRole(event: any) {
@@ -120,16 +158,26 @@ selectUserRole(event: any) {
     control.setValue(assignedPermissions.includes(permission));
 
     // Deshabilitar si el usuario no tiene permiso de edición
-    if (!this.hasPermission('USER_ROLE_EDIT') || !this.hasPermission(permission)) {
+    if (!this.hasPermission('USERS_ROLE_EDIT') || !this.hasPermission(permission)) {
+
+
+   
       control.disable();
+   
     } else {
       control.enable(); // opcional, para asegurarnos de que se habilite si corresponde
     }
   });
+
+   //this.listenFormChanges();
+
+    PermissionsValidator.listenPermissions(this.userRoleCreateForm, this.permissionDependencies);
 }
 
    
 createEmptyForm() {
+
+  
 
   const group: any = {};
     for (const mod of this.modules) {
@@ -138,8 +186,12 @@ createEmptyForm() {
       }
     }
     this.userRoleCreateForm = this.formBuilder.group(group);
+
+   
+
   
- 
+  
+
 
 }
 
@@ -192,10 +244,20 @@ cancelSelection() {
 
 
 
+
+
+
+
   async ngOnDestroy() {
+
+  this.destroyForm$.next();
+  this.destroyForm$.complete();
+
 
 
   }
+
+
 
 
   

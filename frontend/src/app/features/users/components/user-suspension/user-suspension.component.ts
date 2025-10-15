@@ -18,6 +18,7 @@ export class UserSuspensionComponent {
    @Input() origin: string | null | undefined;
    @Input() suspend: boolean | null | undefined;
    @Input() formMessage: FormMessage | null | undefined;
+   @Input() hasPermission!: (code: string) => boolean;
    
    @Output() suspensionUserEvent = new EventEmitter<void>();
 

@@ -28,7 +28,7 @@ interface UserRequest extends Request {
   };
 }
 
-export function requirePermission(requiredPermission: string) {
+export function requirePermissionMiddleware(requiredPermission: string) {
   return (req: UserRequest, res: Response, next: NextFunction) => {
     const user = req.user; // ✅ ya tipado correctamente
     console.log(user?.userRole)

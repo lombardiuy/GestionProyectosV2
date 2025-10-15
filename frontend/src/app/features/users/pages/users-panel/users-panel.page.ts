@@ -23,6 +23,7 @@ import { UserSuspensionComponent } from '../../components/user-suspension/user-s
 
 
 import { FormMessage, MessageType } from '../../../../shared/interfaces/form-message.interface';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'users-panel-page',
@@ -78,6 +79,7 @@ export class UsersPanelPage implements OnInit {
 
   constructor(
     private userService:UserService, 
+    private authService:AuthService,
     private userRoleService:UserRoleService,
     private fileService:FileService,  
     private timeService:TimeService,
@@ -435,6 +437,10 @@ initForm(selectedUser?: User | null) {
 
 
 
+
+  hasPermission(code: string): boolean {
+    return this.authService.hasPermission(code);
+  }
 
   
   async ngOnDestroy() {
