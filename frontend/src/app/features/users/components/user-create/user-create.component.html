@@ -11,7 +11,7 @@
  <div class="modal-body">
 
 
-    <div class="card w-100 h-100">
+    <div *ngIf="!loadingCreateForm else loadingSpinner"  class="card w-100 h-100">
 
         <div class="card-header alert p-2" [ngClass] = "{
             'alert-primary': !id?.value,
@@ -32,7 +32,7 @@
 
 
 
-            <form   [formGroup]="userCreateForm">
+            <form  [formGroup]="userCreateForm">
 
                 <div class="d-flex w-100 h-100 flex-column">
                     <div class="w-100  d-flex justify-content-between">
@@ -54,12 +54,12 @@
                 <div *ngIf="id?.value" class="d-flex flex-column w-100 align-items-center">
                  
 
-          <button *ngIf="!suspended?.value && hasPermission('USERS_SUSPEND')"   class="btn btn-sm btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
+          <button *ngIf="!suspended?.value && hasPermission('USERS_SUSPENSION')"   class="btn btn-sm btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
                                  <i class="fa-solid fa-user-xmark me-1"></i> Suspender usuario
            </button>
 
                            
-              <button *ngIf="suspended?.value && hasPermission('USERS_UNSUSPEND')"   class="btn btn-sm btn-success mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
+              <button *ngIf="suspended?.value && hasPermission('USERS_SUSPENSION')"   class="btn btn-sm btn-success mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
                                  <i class="fa-solid fa-user-check me-1"></i> Reactivar usuario
            </button>
 
@@ -151,11 +151,11 @@
                     
                 <div class="text-center">
         
-                    <button   (click) = "saveUser()" class="btn btn-success mr-1 mt-2" [disabled] = "userCreateForm.invalid || submitted || !userCreateForm.dirty">
+                    <button   (click) = "saveUser()" class="btn btn-success mr-1 mt-2" [disabled] = "userCreateForm.invalid || saving || !userCreateForm.dirty">
 
 
                         
-                        <span *ngIf ="submitted" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        <span *ngIf ="saving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                       <span *ngIf="!id?.value"><i class="fa-solid fa-floppy-disk"></i> Crear usuario </span>
                         <span *ngIf="id?.value"> <i class="fa-solid fa-floppy-disk"></i> Guardar cambios</span>
 
@@ -193,3 +193,7 @@
 
 
   
+
+<ng-template  #loadingSpinner>
+  <loading-spinner class="w-100 h-100"></loading-spinner>
+</ng-template>

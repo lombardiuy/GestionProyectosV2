@@ -23,7 +23,7 @@ router.get('/select/:id', authMiddleware, requirePermissionMiddleware("USERS_EDI
 router.post('/create', authMiddleware,requirePermissionMiddleware("USERS_CREATE"), createUser)
 router.post('/resetUserPassword', authMiddleware, requirePermissionMiddleware("USERS_PASSWORD_RESET"),resetUserPassword)
 router.post('/setUserPassword', setUserPassword)
-router.post('/suspension', authMiddleware, requireAnyPermissionMiddleware('USERS_SUSPEND', 'USERS_UNSUSPEND'), suspensionUser)
+router.post('/suspension', authMiddleware,requirePermissionMiddleware("USERS_SUSPENSION"), suspensionUser)
 router.post('/roles/create', authMiddleware,requirePermissionMiddleware("USERS_ROLE_CREATE"), saveUserRole)
 
 

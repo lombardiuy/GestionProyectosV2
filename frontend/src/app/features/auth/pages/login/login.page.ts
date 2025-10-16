@@ -169,12 +169,12 @@ get password() {
         this.formMessage =  this.messageService.createFormMessage(MessageType.SUCCESS, 'Clave actualizada exitosamente!');
 
         await delay(1000);
-        this.formMessage = null;
-        this.saving = false;
+         this.formMessage =  this.messageService.createFormMessage(MessageType.SUCCESS, 'Ingresando...');
 
-        this.loginForm.reset();
-        this.setUserPasswordForm.reset();
-        this.setPasswordMode = false;
+        this.loginForm.get('password')?.setValue(this.setUserPasswordForm.get('password')!.value);
+        this.login();
+
+        
       },
       error: async(err) => {
 

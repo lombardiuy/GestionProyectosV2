@@ -22,6 +22,9 @@ export class UserCreateComponent {
   
    @Input() hasPermission!: (code: string) => boolean;
 
+     @Input() saving:boolean |undefined;
+     @Input() loadingCreateForm:boolean |undefined;
+
 
    @Input() profilePicturePath!: string | null;
    @Input() usersList!: User[] | null;
@@ -29,7 +32,6 @@ export class UserCreateComponent {
 
    @Input() userCreateForm!: FormGroup;
    @Input() formMessage: FormMessage | null | undefined;
-   @Input() submitted: boolean | undefined;
    @Input() imagePreview: string | null | undefined;
    @Input() profilePictureStatus:string | null | undefined;
 

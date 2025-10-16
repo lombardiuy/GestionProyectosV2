@@ -78,8 +78,21 @@ export class AuthService {
 
   login(username: string, password: string) {
     return this.http.post<any>(`${this.apiUrl}/login`, { username, password }).pipe(
+      
       switchMap(res => {
+        
         const decoded = jwtDecode<DecodedToken>(res.token);
+
+          if (!res?.token) {
+          return throwError(() => ({
+            error: {
+              code: 'missing-token',
+              error: 'No se recibió un token válido del servidor.'
+            }
+          }));
+        }
+
+        
 
           if (decoded.suspended) {
           return throwError(() => ({

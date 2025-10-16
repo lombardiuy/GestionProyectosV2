@@ -1,6 +1,6 @@
 
 
-<div  class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+<div  *ngIf="!loading else loadingSpinner"  class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
   <div class="card w-90 h-90">
     <div class="card-header w-100 h-8">
       <h5><i class="fa-solid fa-users"></i> Gestión de Usuarios </h5>
@@ -42,7 +42,8 @@
     [userRolesList]="userRolesList$ | async"
     [imagePreview] = "imagePreview"
     [formMessage] = "formMessage"
-    [submitted] = "submitted"
+    [saving] = "saving"
+    [loadingCreateForm] = "loadingCreateForm"
  
 
     (setProfilePictureEvent)="setprofilePicture($event)"
@@ -73,7 +74,7 @@
 
   
     <div class="modal fade" id="userSuspensionModal" tabindex="-1" aria-hidden="true">
-     <user-suspension-component  #userSuspensionComponent    *ngIf="userCreateForm && hasPermission('USERS_SUSPEND')" class="w-100 h-100"
+     <user-suspension-component  #userSuspensionComponent    *ngIf="userCreateForm && hasPermission('USERS_SUSPENSION')" class="w-100 h-100"
      [hasPermission]="hasPermission.bind(this)"
       [username]="form['username'].value" 
       [origin]="origin" 
@@ -86,3 +87,8 @@
 ></user-suspension-component>
 
 </div>
+
+
+<ng-template  #loadingSpinner>
+  <loading-spinner class="w-100 h-100"></loading-spinner>
+</ng-template>

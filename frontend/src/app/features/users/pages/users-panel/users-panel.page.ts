@@ -37,6 +37,11 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class UsersPanelPage implements OnInit {
 
 
+    public loading:boolean = true;
+    public loadingCreateForm:boolean = true;
+    public saving:boolean = false;
+    
+
   //General
 
 
@@ -111,7 +116,9 @@ export class UsersPanelPage implements OnInit {
     await this.userService.getAllUsers();
     await this.userRoleService.getAllUserRoles();
     this.createEmptyForm();
+    this.loading = false;
 
+  
    
   
   
@@ -205,11 +212,14 @@ initForm(selectedUser?: User | null) {
 
 
   async editUser(userID:number) { 
-    console.log(userID)
+    
 
+    this.loadingCreateForm = true;
     const selectedUser = await this.userService.selectUser(userID);
 
     this.initForm(selectedUser)
+
+      this.loadingCreateForm = false;
 
 
 
@@ -218,10 +228,13 @@ initForm(selectedUser?: User | null) {
   } 
 
   async createUser() { 
+
+    this.loadingCreateForm = true;
     
     await this.userService.clearSelectedUser()
 
     this.initForm();
+      this.loadingCreateForm = false;
 
   
   } 

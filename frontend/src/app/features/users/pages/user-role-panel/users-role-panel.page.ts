@@ -51,7 +51,7 @@ export class UsersRolePanelPage implements OnInit {
 modules = MODULE_PERMISSIONS;
 
 permissionDependencies: PermissionMap = {
-      USERS_VIEW: ['USERS_CREATE', 'USERS_EDIT', 'USERS_SUSPEND', 'USERS_UNSUSPEND'],
+      USERS_VIEW: ['USERS_CREATE', 'USERS_EDIT', 'USERS_SUSPENSION', 'USERS_SUSPENSION'],
       USERS_ROLE_VIEW: ['USERS_ROLE_CREATE', 'USERS_ROLE_EDIT']
     };
 
@@ -109,7 +109,7 @@ permissionDependencies: PermissionMap = {
 
 
    
-
+  this.loading = false;
 
    
    
