@@ -1,7 +1,7 @@
 {
-  "name": "GestiondeProyectos",
-  "description": "Gestión de proyectos",
-  "version": "2.0.0",
+  "name": "Agendaweb",
+  "description": "Agendaweb",
+  "version": "1.0.0",
   "main": "dist/electron/main.js",
   "author": {
     "name": "Ignacio Lombardi",
