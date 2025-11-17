@@ -33,7 +33,7 @@
                  
     
                  <div class="dropdown-menu dropdown-menu-right mt-1" aria-labelledby="dropdownMenu1" [ngClass]="{'show': toggleFlag}">
-                    <a class="dropdown-item" > Perfil      <i class="bi bi-person-fill"></i></a>
+                    <a  [routerLink]="['/users/profile']" class="dropdown-item" > Perfil      <i class="bi bi-person-fill"></i></a>
                     <a class="dropdown-item" (click)="logOut()">Salir        <i class="bi bi-box-arrow-right"></i> </a>
                   </div>
             </div>

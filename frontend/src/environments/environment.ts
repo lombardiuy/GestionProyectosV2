@@ -3,11 +3,9 @@
 export const environment = {
   production: false,
   auth:false,
-  productionMode:false,
-  apiURL: 'http://localhost:3000/',
-  publicURL: 'http://localhost:3000/public/',
-  default_password:"123456", 
-  modules: ['users', 'userRoles']
+  apiURL: 'http://192.168.220.76:3000/',
+  publicURL: 'http://192.168.220.76:3000/public/',
+  default_password:"Mega2025!", 
 
 
 

@@ -4,8 +4,8 @@
   <div  class="w-100 h-100 d-flex align-items-center">
     <div class="list-group w-100 h-100">
 
-            <!--Risk Annalysis Parameters-->
-                    <a href="#menuAdmin" *ngIf="hasPermission('USERS_VIEW') || hasPermission('USERS_ROLE_VIEW')" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
+            <!--Admin Menu-->
+                    <a href="#adminMenu" *ngIf="hasPermission('USERS_VIEW') || hasPermission('USERS_ROLE_VIEW')" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
           
                       <span><i class="fa-solid fa-toolbox"></i> Administración</span>
                       <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
@@ -13,19 +13,19 @@
                     
                     </a>
   
-                    <div class="collapse" id="menuAdmin">
+                    <div class="collapse" id="adminMenu">
   
-                      <a href="#menuAdminUsers" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#menuAdmin" aria-expanded="false">
+                      <a href="#adminMenuUsers" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#adminMenu" aria-expanded="false">
           
                         <span><i class="fa-solid fa-users"></i> Usuarios</span>
                         <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
                   
                       
                       </a>
-                      <div class="collapse" id="menuAdminUsers">
+                      <div class="collapse" id="adminMenuUsers">
       
-                        <a *ngIf="hasPermission('USERS_VIEW')" [routerLink]="['/users']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#menuAdminUsers"><i class="bi bi-person-lines-fill"></i> Gestión de Usuarios </a>
-                        <a *ngIf="hasPermission('USERS_ROLE_VIEW')" [routerLink]="['/users/roles']"class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#menuAdminUsers"><i class="bi bi-person-fill-gear"></i> Roles y permisos</a>
+                        <a *ngIf="hasPermission('USERS_VIEW')" [routerLink]="['/users']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#adminMenuUsers"><i class="bi bi-person-lines-fill"></i> Gestión de Usuarios </a>
+                        <a *ngIf="hasPermission('USERS_ROLE_VIEW')" [routerLink]="['/users/roles']"class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#adminMenuUsers"><i class="bi bi-person-fill-gear"></i> Roles y permisos</a>
                      
                       
                         
@@ -41,6 +41,53 @@
                   </div>
 
 
+
+                  
+            <!--Product Menu-->
+               <a href="#productMenu" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
+          
+                <span><i class="fa-solid fa-prescription-bottle"></i> Producto</span>
+                <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
+          
+              
+              </a>
+              <div class="collapse" id="productMenu">
+                  <a [routerLink]="['']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#productMenu"><i class="fa-solid fa-prescription-bottle-medical"></i> Agregar</a>
+                
+               
+              </div>
+
+
+                                
+            <!--Process Menu-->
+               <a href="#processMenu" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
+          
+                <span><i class="bi bi-diagram-3-fill"></i>  Proceso</span>
+                <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
+          
+              
+              </a>
+              <div class="collapse" id="processMenu">
+                  <a [routerLink]="['equipment']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#processMenu"><i class="bi bi-gear-wide-connected"></i> Equipos</a>
+                
+               
+              </div>
+
+
+                                            
+            <!--Risk Analysis Menu-->
+               <a href="#riskAnalysisMenu" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
+          
+                <span><i class="fa-solid fa-biohazard"></i>  Análisis de riesgo</span>
+                <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
+          
+              
+              </a>
+              <div class="collapse" id="riskAnalysisMenu">
+                  <a [routerLink]="['']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#riskAnalysisMenu"><i class="fa-solid fa-prescription-bottle-medical"></i> Agregar</a>
+                
+               
+              </div>
   
   
 

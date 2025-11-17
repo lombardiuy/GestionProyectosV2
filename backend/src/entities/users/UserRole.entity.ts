@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToMany } from "typeorm"; 
 import { User } from "./User.entity";
-import { UserRolePermission } from "./UserRolePermission";
+import { UserRolePermission } from "./UserRolePermission.entity";
 
 
 

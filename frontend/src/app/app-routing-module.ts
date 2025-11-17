@@ -51,6 +51,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./features/users/users-module').then(m => m.UsersModule) 
       },
+       {
+        path: 'auditTrail',
+        loadChildren: () =>
+          import('./features/auditTrail/audit-trail-module').then(m => m.AuditTrailModule) 
+      },
    
     ]
   },

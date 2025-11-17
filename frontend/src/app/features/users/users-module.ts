@@ -15,13 +15,15 @@ import { UserSuspensionComponent } from './components/user-suspension/user-suspe
 import { UsersRolePanelPage } from './pages/user-role-panel/users-role-panel.page';
 import { UsersRoleListComponent } from './components/user-role-list/users-role-list.component';
 import { UserRoleCreateComponent } from './components/user-role-create/user-role-create.component';
+import { UserProfilePage } from './pages/user-profile/user-profile.page';
+
 
 
 
 @NgModule({
   declarations: [
     UsersPanelPage, UsersListComponent, UserCreateComponent, UserPasswordResetComponent, UserSuspensionComponent,
-    UsersRolePanelPage, UsersRoleListComponent, UserRoleCreateComponent
+    UsersRolePanelPage, UsersRoleListComponent, UserRoleCreateComponent, UserProfilePage
   ],
   imports: [
     CommonModule,
@@ -29,6 +31,7 @@ import { UserRoleCreateComponent } from './components/user-role-create/user-role
     FormsModule,
     ReactiveFormsModule, 
     SharedModule
-  ]
+  ], 
+
 })
 export class UsersModule { }

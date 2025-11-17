@@ -1,0 +1,22 @@
+
+<div  class="d-flex d-wrap align-items-center justify-content-center w-100 h-100">
+
+  <div class="card w-95 h-95">
+
+    <div class="card-header"><i class="fa-solid fa-book"></i> Audit Trail</div>
+    <div *ngIf="!loading; else loadingSpinner"  class="card-body">
+
+      Hola
+
+ 
+
+
+    </div>
+  </div>
+
+</div>
+
+<ng-template  #loadingSpinner>
+  <loading-spinner class="w-100 h-100"></loading-spinner>
+</ng-template>
+

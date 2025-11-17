@@ -1,12 +1,14 @@
 
 
+<!--USERS PANEL-->
+
 <div  *ngIf="!loading else loadingSpinner"  class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
   <div class="card w-90 h-90">
-    <div class="card-header w-100 h-8">
+    <div class="card-header w-100 h-6">
       <h5><i class="fa-solid fa-users"></i> Gestión de Usuarios </h5>
     </div>
 
-    <div class="card-body d-flex flex-column w-100 h-92">
+    <div class="card-body d-flex flex-column w-100 h-90">
 
           <button *ngIf="hasPermission('USERS_CREATE')" class="btn btn-success position-absolute end-0 me-3"  (click)="createUser()" data-bs-toggle="modal" data-bs-target="#createUserModal">
           <i class="fa-solid fa-user-plus"></i> Crear Usuario
@@ -25,12 +27,15 @@
             </users-list-component>
     </div>
 
+
    
   </div>
 
 
 
 </div>
+
+<!--USER CREATE MODAL -->
 
   <div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
    <user-create-component     *ngIf="userCreateForm && hasPermission('USERS_CREATE')" class="w-100 h-100"
@@ -58,7 +63,10 @@
   </div>
 
 
-    <div class="modal fade" id="userPasswordResetModal" tabindex="-1" aria-hidden="true">
+
+<!--USER PASSWORD RESET MODAL -->
+
+<div class="modal fade" id="userPasswordResetModal" tabindex="-1" aria-hidden="true">
    <user-password-reset-component  #userPasswordResetComponent    *ngIf="userCreateForm && hasPermission('USERS_PASSWORD_RESET')" class="w-100 h-100"
        [hasPermission]="hasPermission.bind(this)"
       [username]="form['username'].value" 
@@ -66,27 +74,29 @@
    
 
 ></user-password-reset-component>
-
-
-
-
-  </div>
+</div>
 
   
-    <div class="modal fade" id="userSuspensionModal" tabindex="-1" aria-hidden="true">
-     <user-suspension-component  #userSuspensionComponent    *ngIf="userCreateForm && hasPermission('USERS_SUSPENSION')" class="w-100 h-100"
+
+
+<!--USER SUSPENSION MODAL -->
+
+<div class="modal fade" id="userSuspensionModal" tabindex="-1" aria-hidden="true">
+
+<user-suspension-component  #userSuspensionComponent    *ngIf="userCreateForm && hasPermission('USERS_SUSPENSION')" class="w-100 h-100"
      [hasPermission]="hasPermission.bind(this)"
       [username]="form['username'].value" 
       [origin]="origin" 
       [suspend] = "suspend"
       [formMessage] = "formMessage"
-      (suspensionUserEvent)="suspensionUser()" 
-      
-   
-
-></user-suspension-component>
+      (suspensionUserEvent)="suspensionUser()">
+    
+</user-suspension-component>
 
 </div>
+
+
+
 
 
 <ng-template  #loadingSpinner>

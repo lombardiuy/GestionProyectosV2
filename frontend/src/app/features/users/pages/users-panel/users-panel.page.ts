@@ -1,5 +1,5 @@
 import {  Component, OnInit, ViewChild } from '@angular/core';
-import {  map, Observable,  pipe,  Subscription } from 'rxjs';
+import {  firstValueFrom, map, Observable,  pipe,  Subscription, timestamp } from 'rxjs';
 
 import { UserService } from '../../services/user.service';
 import { UserRoleService } from '../../services/userRole.service';
@@ -11,7 +11,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
 
 import { validUsername } from '../../validators/valid-username.validator';
-import { allowedValuesValidator } from '../../../../shared/validators/custom-validators';
+
+
 
 import {User} from "../../interfaces/user.interface";
 import { UserRole } from '../../interfaces/userRole.interface';
@@ -75,7 +76,7 @@ export class UsersPanelPage implements OnInit {
   public profilePicture!: File | null;
   public profilePictureStatus:string | null | undefined;;
   public formMessage:FormMessage | null |undefined;
-  public submitted: boolean | undefined;
+  
 
   public suspend:boolean | undefined;
 
@@ -142,7 +143,7 @@ createEmptyForm() {
   
 
 
-initForm(selectedUser?: User | null) {
+async initForm(selectedUser?: User | null) {
   this.resetForm();
 
   if (selectedUser) {
@@ -154,9 +155,10 @@ initForm(selectedUser?: User | null) {
     this.form['suspended'].setValue(selectedUser.suspended);
     this.form['hasProfilePicture'].setValue(selectedUser.hasProfilePicture);
 
+    const timestamp = await firstValueFrom(this.timestamp$)
 
     if (selectedUser.hasProfilePicture) {
-       this.imagePreview = this.profilePicturePath+"ProfilePic_"+selectedUser.id+".jpeg";
+       this.imagePreview = this.profilePicturePath+"ProfilePic_"+selectedUser.id+".jpeg" + '?t='+ timestamp;
     }
 
     if (this.form['active'].value === false) {
@@ -198,7 +200,7 @@ initForm(selectedUser?: User | null) {
 
 
   this.formMessage = null;
-  this.submitted = false;
+  this.saving = false;
   this.imagePreview = "";
   
     this.suspend = undefined;
@@ -239,6 +241,8 @@ initForm(selectedUser?: User | null) {
   
   } 
 
+  
+
   resetPassword() {
  
       this.resetUserPasswordSubscription= this.userService.resetUserPassword(
@@ -251,18 +255,20 @@ initForm(selectedUser?: User | null) {
        this.form['password'].setValue(environment.default_password);
         this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Contraseña reseteada con éxito!' )
 
-        this.submitted = false;
+        this.saving = false;
+        await this.userService.getAllUsers();
+        this.timeService.refreshTimestamp();
+          await delay(1000);
+
+       this.formMessage = null;
         
         this.userPasswordResetComponent.closeModal()
         
-        await delay(1000);
-
-       this.formMessage = null;
+      
        
 
 
-        await this.userService.getAllUsers();
-        this.timeService.refreshTimestamp();
+        
 
   
 
@@ -279,7 +285,7 @@ initForm(selectedUser?: User | null) {
         this.formMessage = this.messageService.createFormMessage(MessageType.ERROR,err.error.error )
 
 
-        this.submitted = false;
+        this.saving = false;
       }
     });
 
@@ -313,7 +319,7 @@ initForm(selectedUser?: User | null) {
              this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Usuario reactivado con éxito!' )
           }
 
-        this.submitted = false;
+        this.saving = false;
 
        
    
@@ -344,7 +350,7 @@ initForm(selectedUser?: User | null) {
         console.error(err)
         
         this.formMessage = this.messageService.createFormMessage(MessageType.ERROR,err.error.error )
-        this.submitted = false;
+        this.saving = false;
       }
     });
 
@@ -378,7 +384,8 @@ initForm(selectedUser?: User | null) {
 
 
 
-  saveUser(action?:string) {
+  saveUser() {
+
 
  
 
@@ -389,9 +396,10 @@ initForm(selectedUser?: User | null) {
       return;
     }
 
-    this.submitted = true;
+    this.saving = true;
 
-    this.createUserSubscription= this.userService.createUser(
+    if (!this.userCreateForm.value.id) {
+        this.createUserSubscription= this.userService.createUser(
       this.userCreateForm.value,
      
     ).subscribe({
@@ -405,8 +413,8 @@ initForm(selectedUser?: User | null) {
    
 
 
-        this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Usuario guardado con éxito!' )
-        this.submitted = false;
+        this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Usuario creado con éxito!' )
+        this.saving = false;
         
         await delay(1000);
         await this.userService.getAllUsers();
@@ -424,9 +432,53 @@ initForm(selectedUser?: User | null) {
  
      
         this.formMessage = this.messageService.createFormMessage(MessageType.ERROR,err.error.error )
-        this.submitted = false;
+        this.saving = false;
       }
     });
+    }
+
+      if (this.userCreateForm.value.id) {
+        this.createUserSubscription= this.userService.updateUser(
+      this.userCreateForm.value,
+     
+    ).subscribe({
+      next: async(res) => {
+
+        if(this.profilePicture) {
+     
+    
+          await this.fileService.save(this.profilePicture, 'ProfilePic_'+res.user.id, 'profilePic')
+        }
+   
+
+
+        this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Usuario creado con éxito!' )
+        this.saving = false;
+        
+        await delay(1000);
+        await this.userService.getAllUsers();
+        this.timeService.refreshTimestamp();
+
+         this.userCreateComponent.closeModal()
+
+
+         
+    
+       
+      },
+      error: (err) => {
+        console.error(err)
+ 
+     
+        this.formMessage = this.messageService.createFormMessage(MessageType.ERROR,err.error.error )
+        this.saving = false;
+      }
+    });
+    }
+
+   
+
+  
  
 
 

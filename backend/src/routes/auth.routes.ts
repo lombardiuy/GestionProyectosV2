@@ -1,9 +1,11 @@
 import { Router } from 'express';
-import * as authController from '../controllers/auth.controller';
+import {login, getDevToken} from '../controllers/auth.controller'
+import { validateDto } from '../middleware/validateDto.middleare';
+import { LoginDto } from '../dto/auth/login.dto';
 
 const router = Router();
 
-router.post('/login', authController.login);
-router.get('/getDevToken', authController.getDevToken);
+router.post('/login',   validateDto(LoginDto), login);
+router.get('/getDevToken', getDevToken);
 
 export default router;

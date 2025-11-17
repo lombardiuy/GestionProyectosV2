@@ -1,5 +1,5 @@
 import { AppDataSource } from '../data-source';
-import { User } from '../entities/User.entity';
+import { User } from '../entities/users/User.entity';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import path from 'path';
@@ -41,7 +41,7 @@ const permissionsData = JSON.parse(fs.readFileSync(permissionsPath, 'utf8'));
   moduleEntry.permissions.map((p: any) => ({ permission: p.code }))
 );
 
-console.log(validPermissions)
+
 
   if (process.env.FAKE_AUTH === 'true') {
     const fakeToken = {

@@ -8,7 +8,7 @@ import { MessageService } from '../../../../shared/services/message.service';
 import { delay } from '../../../../shared/helpers/delay.helper';
 import { passwordsMatchValidator } from '../../../users/validators/match-password.validator';
 import { UserService } from '../../../users/services/user.service';
-
+import { validPasswordValidator } from '../../../../features/users/validators/valid-password.validator';
 
 @Component({
   selector: 'login-page',
@@ -57,7 +57,7 @@ export class LoginPage implements OnInit {
       {
 
       username: ["", Validators.required],
-      password: ["", [Validators.required, Validators.minLength(4)]]
+      password: ["", [Validators.required, validPasswordValidator(6)]]
     }
     );
 
@@ -65,8 +65,8 @@ export class LoginPage implements OnInit {
     {
       id: ["", [Validators.required]],
       username: ["", [Validators.required]],
-      password: ["", [Validators.required, Validators.minLength(6)]],
-      passwordRepeat: ["", Validators.required],
+      password: ["", [Validators.required, validPasswordValidator(6)]],
+      passwordRepeat: ["", [Validators.required, validPasswordValidator(6)]],
     },
     {
       validators: passwordsMatchValidator('password', 'passwordRepeat')

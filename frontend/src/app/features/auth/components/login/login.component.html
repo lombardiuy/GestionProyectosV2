@@ -12,10 +12,13 @@
         <input type="password" formControlName="password" class="form-control"
           [ngClass]="{'is-invalid': !!password?.errors, 'is-valid': password?.valid}">
 
-        <div *ngIf="password?.errors as passwordErrors" class="invalid-feedback">
-          <div *ngIf="passwordErrors['required']">El campo es obligatorio</div>
-          <div *ngIf="passwordErrors['minlength']">La clave debe tener al menos 4 caracteres</div>
-        </div>
+
+                    <div *ngIf="password?.errors as passwordErrors" class="invalid-feedback">
+                     <div *ngIf="passwordErrors['required']">El campo es obligatorio</div>
+                     <div *ngIf="passwordErrors['passwordTooShort']">La contraseña debe tener al menos {{ passwordErrors['passwordTooShort'].requiredLength }} caracteres</div>
+                    <div *ngIf="passwordErrors['passwordComplexity']">La contraseña debe contener al menos una letra, un número y un carácter especial.</div>
+                   
+                 </div>
 
         <div class="text-center">
           <button class="btn btn-primary mr-1 mt-3" [disabled]="loginForm.invalid || saving">

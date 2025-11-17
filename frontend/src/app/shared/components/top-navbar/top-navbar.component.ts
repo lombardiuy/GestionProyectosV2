@@ -17,7 +17,7 @@ export class TopNavbarComponent implements OnInit {
 
   profilePicturePath =  environment.publicURL+'users/profilePic/';
   
-  productionMode =environment.productionMode;
+  productionMode =environment.production;
 
   public toggleFlag = false;
 

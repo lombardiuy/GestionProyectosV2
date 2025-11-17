@@ -4,66 +4,85 @@ import { HttpClient } from '@angular/common/http';
 
 import { environment } from '../../../../environments/environment';
 
-import { UserRole } from '../interfaces/userRole.interface';
-import {User} from '../interfaces/user.interface'
+import { User } from '../interfaces/user.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
 
- private apiUrl = environment.apiURL + 'user';
+  private apiUrl = environment.apiURL + 'user';
 
   private usersListSubject = new BehaviorSubject<User[] | null>(null);
   private selectedUserSubject = new BehaviorSubject<User | null>(null);
 
-  
-  
   public usersList$ = this.usersListSubject.asObservable();
   public selectedUser$ = this.selectedUserSubject.asObservable();
 
-
-  constructor(private http: HttpClient) {
-
-  }
-
-
-
-
+  constructor(private http: HttpClient) {}
 
   /***************************************
    * CREATE
   ****************************************/
 
+  createUser(user: User) {
+    // Convertir el objeto User al DTO que espera el backend
+    const dto = {
+      name: user.name,
+      username: user.username,
+      password: user.password,
+      userRole: user.userRole?.id ?? null, // SOLO el ID
+    };
 
-  createUser(user:User) {
+    return this.http.post<any>(`${this.apiUrl}/create`, dto);
+  }
 
-  return this.http.post<any>(`${this.apiUrl}/create`,  user);
+updateUser(user: User) {
 
+  const dto: any = {};
 
+  if (user.name !== undefined) dto.name = user.name;
+  if (user.username !== undefined) dto.username = user.username;
+
+  // IMPORTANTE: solo enviar el ID del rol
+  if (user.userRole?.id !== undefined) {
+    dto.userRole = user.userRole.id;
+  }
+
+  if (user.active !== undefined) dto.active = user.active;
+  if (user.suspended !== undefined) dto.suspended = user.suspended;
+  if (user.hasProfilePicture !== undefined) dto.hasProfilePicture = user.hasProfilePicture;
+
+  return this.http.put<any>(`${this.apiUrl}/update/${user.id}`, dto);
 }
 
-  resetUserPassword(user:User) {
-
-  return this.http.post<any>(`${this.apiUrl}/resetUserPassword`,  user);
 
 
-}
+
+  updateUserProfile(userID: number, actualPassword: string, newPassword: string, hasProfilePicture: boolean) {
+    return this.http.put<any>(`${this.apiUrl}/updateUserProfile`, {
+      userID,
+      actualPassword,
+      newPassword,
+      hasProfilePicture,
+    });
+  }
+
+  resetUserPassword(user: User) {
+    return this.http.post<any>(`${this.apiUrl}/resetUserPassword`, {
+      id: user.id,
+    });
+  }
 
   setUserPassword(id: number, password: string) {
+    return this.http.post<any>(`${this.apiUrl}/setUserPassword`, { id, password });
+  }
 
-  return this.http.post<any>(`${this.apiUrl}/setUserPassword`, { id, password });
-
-
-}
-
-  suspensionUser(user:User) {
-
-  return this.http.post<any>(`${this.apiUrl}/suspension`, user);
-
-
-}
-
+  suspensionUser(user: User) {
+    return this.http.post<any>(`${this.apiUrl}/suspension`, {
+      id: user.id
+    });
+  }
 
 
 
@@ -71,50 +90,33 @@ export class UserService {
    * READ
   ****************************************/
 
-
-async getAllUsers(): Promise<User[] | null> {
-  try {
-    const userList = await firstValueFrom(this.http.get<User[]>(`${this.apiUrl}/list`));
-    this.usersListSubject.next(userList);
-    return userList;
-  } catch (err) {
-    console.error(err);
-    this.usersListSubject.next(null); 
-    return [];
+  async getAllUsers(): Promise<User[] | null> {
+    try {
+      const userList = await firstValueFrom(
+        this.http.get<User[]>(`${this.apiUrl}/list`)
+      );
+      this.usersListSubject.next(userList);
+      return userList;
+    } catch (err) {
+      console.error(err);
+      this.usersListSubject.next(null);
+      return [];
+    }
   }
-}
 
+  async selectUser(id: number): Promise<User> {
+    const selectedUser = await firstValueFrom(
+      this.http.get<User>(`${this.apiUrl}/select/${id}`)
+    );
+    this.selectedUserSubject.next(selectedUser);
+    return selectedUser;
+  }
 
-
-
-async selectUser(id: number): Promise<User> {
-  const selectedUser = await firstValueFrom(
-    this.http.get<User>(`${this.apiUrl}/select/${id}`)
-  )
-  this.selectedUserSubject.next(selectedUser)
-  return selectedUser
-}
-
-
-  /***************************************
-   * UPDATE
-  ****************************************/
-
-
-  /***************************************
-   * DELETE
-  ****************************************/
-
-  
   clearUserList() {
     this.usersListSubject.next(null);
   }
-  
-  
 
   clearSelectedUser() {
     this.selectedUserSubject.next(null);
   }
-
-
 }

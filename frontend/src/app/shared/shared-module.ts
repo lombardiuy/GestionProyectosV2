@@ -15,7 +15,7 @@ import { UnauthorizedPage } from './pages/unauthorized/unauthorized.page';
 @NgModule({
   declarations: [
      UnauthorizedPage,
-    TopNavbarComponent,
+     TopNavbarComponent,
      SideNavbarComponent, 
      FormMessageComponent, 
      TableHeaderFilterCheckboxesMultipleComponent, 

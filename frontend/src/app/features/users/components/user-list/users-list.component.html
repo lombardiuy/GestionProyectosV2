@@ -71,9 +71,9 @@
                     <span *ngIf="!user.suspended && !user.active" class="color-primary">No operativo</span>
                   </td>
                   <td *ngIf="hasPermission('USERS_EDIT') || hasPermission('USERS_SUSPENSION') || hasPermission('USERS_SUSPENSION')" class="align-middle ">
-                    <div class="d-flex w-100 justify-content-center">
+                    <div class="d-flex w-100 justify-content-around">
                   
-                      <i *ngIf="hasPermission('USERS_EDIT') " (click)="editUser(user)" class="fa-solid fa-user-pen color-primary me-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#createUserModal"></i>
+                      <i *ngIf="hasPermission('USERS_EDIT') " (click)="editUser(user)" class="fa-solid fa-user-pen color-primary  cursor-pointer" data-bs-toggle="modal" data-bs-target="#createUserModal"></i>
                       <i *ngIf="!user.suspended && hasPermission('USERS_SUSPENSION')" (click)="userSuspensionFromList(user, true)"   class="fa-solid fa-user-xmark color-danger cursor-pointer" data-bs-toggle="modal" data-bs-target="#userSuspensionModal"></i>
                       <i *ngIf="user.suspended && hasPermission('USERS_SUSPENSION')" (click)="userSuspensionFromList(user, false)"   class="fa-solid fa-user-check color-success cursor-pointer" data-bs-toggle="modal" data-bs-target="#userSuspensionModal"></i>
                     
