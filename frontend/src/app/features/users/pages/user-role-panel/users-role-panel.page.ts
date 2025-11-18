@@ -11,7 +11,7 @@ import { FormArray, FormBuilder,  FormGroup, Validators } from '@angular/forms';
 import { UserRole } from '../../interfaces/userRole.interface';
 
 
-import MODULE_PERMISSIONS from '../../../../../../../modulePermissions.json';
+import MODULE_PERMISSIONS from '../../../../../../../modules.json';
 import { FormMessage, MessageType } from '../../../../shared/interfaces/form-message.interface';
 import { MessageService } from '../../../../shared/services/message.service';
 import { delay } from '../../../../shared/helpers/delay.helper';

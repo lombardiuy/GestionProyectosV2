@@ -10,7 +10,6 @@ export class UpdateUserProfileDto {
 
   @IsOptional()
   @IsString()
-  @MinLength(8)
   newPassword?: string;
 
   @IsOptional()

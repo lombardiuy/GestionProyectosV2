@@ -1,8 +1,11 @@
 import { DataSource } from 'typeorm';
 import 'dotenv/config';
+import { AuditTrail } from './entities/auditTrail/auditTrail.entity';
 import { User } from './entities/users/User.entity'; 
 import { UserRole } from './entities/users/UserRole.entity';
 import { UserRolePermission } from './entities/users/UserRolePermission.entity';
+
+
 
 
 
@@ -17,8 +20,12 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   entities: [
 
-    //1- Users
+    //1 - AuditTrail
+    AuditTrail,
+    //2- Users
     User, UserRole, UserRolePermission
+
+
   ],
   synchronize: true,
   options: {

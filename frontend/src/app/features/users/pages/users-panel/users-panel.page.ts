@@ -58,6 +58,7 @@ export class UsersPanelPage implements OnInit {
 
   //CREAR/EDITAR USUARIOS
     private createUserSubscription?: Subscription;
+    private updateUserSubscription?: Subscription;
     private resetUserPasswordSubscription?: Subscription;
     private userSuspendSubscription?: Subscription;
     private userUnsuspendSubscription?: Subscription;
@@ -438,7 +439,7 @@ async initForm(selectedUser?: User | null) {
     }
 
       if (this.userCreateForm.value.id) {
-        this.createUserSubscription= this.userService.updateUser(
+        this.updateUserSubscription= this.userService.updateUser(
       this.userCreateForm.value,
      
     ).subscribe({
@@ -514,6 +515,7 @@ async initForm(selectedUser?: User | null) {
     await this.userRoleService.clearUserRoleList();
 
     this.createUserSubscription?.unsubscribe();
+    this.updateUserSubscription?.unsubscribe();
     this.resetUserPasswordSubscription?.unsubscribe();
     this.userSuspendSubscription?.unsubscribe();
     this.userUnsuspendSubscription?.unsubscribe();

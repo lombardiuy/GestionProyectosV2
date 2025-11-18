@@ -1,6 +1,19 @@
 import * as userService from '../services/user.service';
 import { Request, Response } from 'express';
 
+
+// 🔹 Tipado local para Request que incluye user
+interface UserRequest extends Request {
+  user?: {
+    id: number;
+    username: string;
+    userRole?: {
+      name: string;
+      userRolePermissions: {  permission: string }[];
+    };
+  };
+}
+
 /**
  * GET /user/list
  */
@@ -45,7 +58,9 @@ export const selectUserById = async (req: Request, res: Response) => {
  * POST /user/create
  * req.body validado por CreateUserDto -> { name, username, password, userRoleId }
  */
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: UserRequest, res: Response) => {
+
+
   try {
     const dto = req.body as {
       name: string;
@@ -54,14 +69,18 @@ export const createUser = async (req: Request, res: Response) => {
       userRoleId: number;
     };
 
-    const user = await userService.create(dto);
+
+if (!req.user) throw new Error("Usuario no autenticado");
+
+
+    const user = await userService.create(dto, req.user.username);
     res.json({ message: 'Usuario creado', user });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (req: UserRequest, res: Response) => {
   try {
     const userId = Number(req.params.id);
 
@@ -74,8 +93,8 @@ export const updateUser = async (req: Request, res: Response) => {
       suspended?: boolean;
       hasProfilePicture?: boolean;
     };
-
-    const updatedUser = await userService.update(userId, dto);
+    if (!req.user) throw new Error("Usuario no autenticado");
+    const updatedUser = await userService.update(userId, dto, req.user.username);
 
     res.json({
       message: "Usuario actualizado",
@@ -92,7 +111,7 @@ export const updateUser = async (req: Request, res: Response) => {
  * POST /user/updateUserProfile
  * req.body validado por UpdateUserProfileDto -> { userID, actualPassword?, newPassword?, hasProfilePicture? }
  */
-export const updateUserProfile = async (req: Request, res: Response) => {
+export const updateUserProfile = async (req: UserRequest, res: Response) => {
   try {
     const { userID, actualPassword, newPassword, hasProfilePicture } = req.body;
 
@@ -103,8 +122,8 @@ export const updateUserProfile = async (req: Request, res: Response) => {
     if (typeof hasProfilePicture !== 'undefined') payload.hasProfilePicture = Boolean(hasProfilePicture);
     if (typeof actualPassword !== 'undefined') payload.actualPassword = String(actualPassword);
     if (typeof newPassword !== 'undefined') payload.newPassword = String(newPassword);
-
-    const updated = await userService.updateUserProfile(payload);
+    if (!req.user) throw new Error("Usuario no autenticado");
+    const updated = await userService.updateUserProfile(payload, req.user.username);
     res.json({ message: 'Perfil actualizado correctamente', user: updated });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -154,12 +173,12 @@ export const saveUserRole = async (req: Request, res: Response) => {
  * POST /user/setUserPassword
  * req.body validado por SetUserPasswordDto -> { id, password }
  */
-export const setUserPassword = async (req: Request, res: Response) => {
+export const setUserPassword = async (req: UserRequest, res: Response) => {
   try {
     const { id, password } = req.body;
     if (!id || !password) return res.status(400).json({ error: 'Faltan datos' });
-
-    const user = await userService.setUserPassword(Number(id), String(password));
+    if (!req.user) throw new Error("Usuario no autenticado");
+    const user = await userService.setUserPassword(Number(id), String(password),req.user.username);
     res.json({ user });
   } catch (error: any) {
     res.status(401).json({ error: error.message });
@@ -170,12 +189,12 @@ export const setUserPassword = async (req: Request, res: Response) => {
  * POST /user/resetUserPassword
  * req.body validado por ResetUserPasswordDto -> { id }
  */
-export const resetUserPassword = async (req: Request, res: Response) => {
+export const resetUserPassword = async (req: UserRequest, res: Response) => {
   try {
     const { id } = req.body;
     if (!id) return res.status(400).json({ error: 'Faltan datos' });
-
-    const user = await userService.resetUserPassword(Number(id));
+    if (!req.user) throw new Error("Usuario no autenticado");
+    const user = await userService.resetUserPassword(Number(id), req.user.username);
     res.json({ user });
   } catch (error: any) {
     res.status(401).json({ error: error.message });
@@ -186,12 +205,12 @@ export const resetUserPassword = async (req: Request, res: Response) => {
  * POST /user/suspension
  * req.body validado por SuspendUserDto -> { id }
  */
-export const suspensionUser = async (req: Request, res: Response) => {
+export const suspensionUser = async (req: UserRequest, res: Response) => {
   try {
     const { id } = req.body;
     if (!id) return res.status(400).json({ error: 'Faltan datos' });
-
-    const user = await userService.suspensionUser(Number(id));
+    if (!req.user) throw new Error("Usuario no autenticado");
+    const user = await userService.suspensionUser(Number(id), req.user.username);
     res.json({ user });
   } catch (error: any) {
     res.status(401).json({ error: error.message });

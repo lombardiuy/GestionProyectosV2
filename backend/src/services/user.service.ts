@@ -4,6 +4,8 @@ import { UserRole } from '../entities/users/UserRole.entity';
 import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 import { UserRolePermission } from '../entities/users/UserRolePermission.entity';
+import { registerInAuditTrail, detectModuleChanges } from './auditTrail.service';
+
 
 const userRepository = AppDataSource.getRepository(User);
 const userRolesRepository = AppDataSource.getRepository(UserRole);
@@ -58,7 +60,8 @@ export const create = async (payload: {
   username: string;
   password: string;
   userRoleId: number;
-}): Promise<Partial<User>> => {
+},  currentUsername: string // <-- el usuario logueado 
+): Promise<Partial<User>> => {
   const { name, username, password, userRoleId } = payload;
 
   return await AppDataSource.transaction(async (manager) => {
@@ -89,6 +92,23 @@ export const create = async (payload: {
     });
 
     const saved = await userRepo.save(newUser);
+
+     // Registrar en auditTrail dentro de la misma transacción
+    await registerInAuditTrail(
+      {
+        entity: 'Usuarios',
+        entityId: saved.id,
+        action: 'CREAR',
+        changes: {message: 'Nuevo usuario: '+ saved.username + " Rol: "+saved.userRole.name},
+        description: 'Versión original.',
+        author: currentUsername,
+        version:saved.version
+       
+      },
+      manager // pasamos el manager para que sea parte de la misma transacción
+    );
+
+
     const { password: _, ...rest } = saved;
     return rest;
   });
@@ -104,54 +124,80 @@ export const update = async (
     name?: string;
     username?: string;
     password?: string;
-    userRoleId?: number;
+    userRole?: any;
     active?: boolean;
     suspended?: boolean;
     hasProfilePicture?: boolean;
-  }
+  },  currentUsername: string // <-- el usuario logueado 
 ): Promise<Partial<User>> => {
+
+
   return await AppDataSource.transaction(async (manager) => {
     const userRepo = manager.getRepository(User);
     const roleRepo = manager.getRepository(UserRole);
 
     // Buscar usuario
     const user = await userRepo.findOne({ where: { id }, relations: ['userRole'] });
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
+    if (!user) throw new Error('Usuario no encontrado');
+    
 
     // Si viene username, verificar duplicado
     if (payload.username && payload.username !== user.username) {
       const exists = await userRepo.findOneBy({ username: payload.username });
-      if (exists) {
-        throw new Error('Ya existe otro usuario con ese nombre de usuario');
-      }
+      if (exists) throw new Error('Ya existe otro usuario con ese nombre de usuario');
+      
     }
+
+       // Procesar rol
+    let newRole = user.userRole;
 
     // Si viene un rol, validar rol
-    if (payload.userRoleId) {
-      const role = await roleRepo.findOneBy({ id: payload.userRoleId });
-      if (!role) {
-        throw new Error('Rol no encontrado');
-      }
-      user.userRole = role;
+    if (payload.userRole) {
+      const role = await roleRepo.findOneBy({ id: payload.userRole });
+      if (!role) throw new Error('Rol no encontrado');
+      
+
+      //Asigno el objeto completo
+       newRole = role;
     }
 
-    // Actualizar campos simples si vienen
-    if (payload.name !== undefined) user.name = payload.name;
-    if (payload.username !== undefined) user.username = payload.username;
-    if (payload.active !== undefined) user.active = payload.active;
-    if (payload.suspended !== undefined) user.suspended = payload.suspended;
-    if (payload.hasProfilePicture !== undefined)
-      user.hasProfilePicture = payload.hasProfilePicture;
+       // Construir objeto "after"
+    const after = {
+      ...user,
+      ...payload,
+      userRole: newRole,
+    };
 
-    // Si viene nueva contraseña → hashear
+      // Detectar cambios genéricos
+    const changes = detectModuleChanges(user, after, {
+      ignore: ["password", "createdAt", "updatedAt"],
+      relations: ["userRole"],
+    });
+
+     // Asignar valores actualizados
+    Object.assign(user, after);
+
+    // Hashear contraseña si vino
     if (payload.password) {
       user.password = await bcrypt.hash(payload.password, 10);
     }
 
-    // Guardar
     const saved = await userRepo.save(user);
+
+         // Registrar en auditTrail dentro de la misma transacción
+    await registerInAuditTrail(
+      {
+        entity: 'Usuarios',
+        entityId: saved.id,
+        action: 'ACTUALIZAR',
+        changes:changes,
+        description: "Actualización de configuración de usuario. Ver detalle en cambios.",
+        author: currentUsername,
+        version:saved.version
+       
+      },
+      manager // pasamos el manager para que sea parte de la misma transacción
+    );
 
     // Quitar password al devolver
     const { password: _, ...rest } = saved;
@@ -167,37 +213,297 @@ export const update = async (
  *
  * payload: { id, actualPassword?, newPassword?, hasProfilePicture? }
  */
-export const updateUserProfile = async (payload: {
-  id: number;
-  actualPassword?: string;
-  newPassword?: string;
-  hasProfilePicture?: boolean;
-}): Promise<Partial<User>> => {
+export const updateUserProfile = async (
+  payload: {
+    id: number;
+    actualPassword?: string;
+    newPassword?: string;
+    hasProfilePicture?: boolean;
+  },
+  currentUsername: string
+): Promise<Partial<User>> => {
+
   const { id, actualPassword, newPassword, hasProfilePicture } = payload;
 
-  const user = await userRepository.findOneBy({ id });
-  if (!user) throw new Error('Usuario desconocido. Si el error persiste contacte al administrador.');
+  return await AppDataSource.transaction(async (manager) => {
+    const userRepo = manager.getRepository(User);
 
-  // Si piden cambiar contraseña, ambos campos deben estar presentes
-  if ((actualPassword && !newPassword) || (!actualPassword && newPassword)) {
-    throw new Error('Para cambiar contraseña debe enviar actualPassword y newPassword.');
-  }
+    // Buscar usuario
+    const user = await userRepo.findOne({
+      where: { id },
+      relations: ["userRole"], // solo por consistencia, no se usa pero mantiene estructura estándar
+    });
 
-  if (actualPassword && newPassword) {
-    const match = await bcrypt.compare(actualPassword, user.password);
-    if (!match) throw new Error('Contraseña actual incorrecta');
-    user.password = await bcrypt.hash(newPassword, 10);
-  }
+    if (!user) {
+      throw new Error('Usuario desconocido. Si el error persiste contacte al administrador.');
+    }
 
-  // Si envían hasProfilePicture, lo actualizamos (no es obligatorio)
-  if (typeof hasProfilePicture === 'boolean') {
-    user.hasProfilePicture = hasProfilePicture;
-  }
+    // Validación de cambio de contraseña
+    if ((actualPassword && !newPassword) || (!actualPassword && newPassword)) {
+      throw new Error('Para cambiar la contraseña debe enviar actualPassword y newPassword.');
+    }
 
-  const saved = await userRepository.save(user);
-  const { password: _, ...rest } = saved;
-  return rest;
+    // Crear objeto AFTER (clonamos user para comparar)
+    const after: any = { ...user };
+
+    // Procesar cambio de contraseña
+    if (actualPassword && newPassword) {
+      const match = await bcrypt.compare(actualPassword, user.password);
+      if (!match) throw new Error('Contraseña actual incorrecta');
+
+      after.password = await bcrypt.hash(newPassword, 10);
+    }
+
+    // Procesar cambio de foto de perfil
+    if (typeof hasProfilePicture === 'boolean') {
+      after.hasProfilePicture = hasProfilePicture;
+    }
+
+    // Detectar cambios
+    const changes = detectModuleChanges(user, after, {
+      ignore: ["createdAt", "updatedAt", "userRole"], 
+      relations: [], // esta función no afecta roles aquí
+    });
+
+    // Si no hubo cambios, evitar guardar y evitar audit vacío
+    if (Object.keys(changes).length === 0) {
+      const { password: _, ...rest } = user;
+      return rest;
+    }
+
+    // Guardar cambios reales
+    Object.assign(user, after);
+    const saved = await userRepo.save(user);
+
+    // Registrar auditoría dentro de la misma transacción
+    await registerInAuditTrail(
+      {
+        entity: "Usuarios",
+        entityId: saved.id,
+        action: "ACTUALIZAR",
+        changes: changes,
+        description: "Actualización de perfil de usuario. Ver detalle en cambios.",
+        author: currentUsername,
+        version: saved.version
+      },
+      manager
+    );
+
+    // Quitar password del retorno
+    const { password: _, ...rest } = saved;
+    return rest;
+  });
 };
+
+
+/**
+ * Cambia la contraseña de un usuario (admin action)
+ */
+export const setUserPassword = async (
+  id: number,
+  newPassword: string,
+  currentUsername: string
+): Promise<Partial<User>> => {
+
+  return await AppDataSource.transaction(async (manager) => {
+    const userRepo = manager.getRepository(User);
+
+    // Buscar usuario
+    const user = await userRepo.findOne({
+      where: { id },
+      relations: ["userRole"], // consistente con updateUserProfile
+    });
+
+    if (!user) {
+      throw new Error('Usuario desconocido. Si el error persiste contacte al administrador.');
+    }
+
+    if (!newPassword || newPassword.trim().length === 0) {
+      throw new Error("Debe enviar una nueva contraseña válida.");
+    }
+
+    // BEFORE (estado actual)
+    const before = { ...user };
+
+    // AFTER (nuevo estado)
+    const after: any = { ...user };
+    after.password = await bcrypt.hash(newPassword, 10);
+    after.active = true;
+
+    // Detectar cambios reales
+    const changes = detectModuleChanges(before, after, {
+      ignore: ["createdAt", "updatedAt", "userRole"],
+      relations: [],
+    });
+
+    // Si no hubo cambios, no guardar
+    if (Object.keys(changes).length === 0) {
+      const { password: _, ...rest } = user;
+      return rest;
+    }
+
+    // Guardar cambios
+    Object.assign(user, after);
+    const saved = await userRepo.save(user);
+
+    // Registrar auditoría
+    await registerInAuditTrail(
+      {
+        entity: "Usuarios",
+        entityId: saved.id,
+        action: "ACTUALIZAR",
+        changes: changes,
+        description: "Actualización de contraseña del usuario. Ver detalle en cambios.",
+        author: currentUsername,
+        version: saved.version,
+      },
+      manager
+    );
+
+    // Retornar sin password
+    const { password: _, ...rest } = saved;
+    return rest;
+  });
+};
+
+
+/**
+ * Resetea la contraseña al DEFAULT_PASSWORD y desactiva la cuenta (admin action)
+ */
+export const resetUserPassword = async (
+  id: number,
+  currentUsername: string
+): Promise<Partial<User>> => {
+
+  return await AppDataSource.transaction(async (manager) => {
+    const userRepo = manager.getRepository(User);
+
+    // Buscar usuario
+    const user = await userRepo.findOne({
+      where: { id },
+      relations: ["userRole"], // consistente con el resto del módulo
+    });
+
+    if (!user) {
+      throw new Error('Usuario desconocido. Si el error persiste contacte al administrador.');
+    }
+
+    const defaultPassword = process.env.DEFAULT_PASSWORD;
+    if (!defaultPassword) {
+      throw new Error("DEFAULT_PASSWORD no está definido en el entorno.");
+    }
+
+    // BEFORE
+    const before = { ...user };
+
+    // AFTER
+    const after: any = { ...user };
+    after.password = await bcrypt.hash(defaultPassword, 10);
+    after.active = false;
+
+    // Detectar cambios
+    const changes = detectModuleChanges(before, after, {
+      ignore: ["createdAt", "updatedAt", "userRole"],
+      relations: [],
+    });
+
+    // Si no hubo cambios, evitar registrar auditoría
+    if (Object.keys(changes).length === 0) {
+      const { password: _, ...rest } = user;
+      return rest;
+    }
+
+    // Guardar cambios
+    Object.assign(user, after);
+    const saved = await userRepo.save(user);
+
+    // Registrar auditoría
+    await registerInAuditTrail(
+      {
+        entity: "Usuarios",
+        entityId: saved.id,
+        action: "RESETEAR_PASSWORD",
+        changes: changes,
+        description: "Reset de contraseña a valor por defecto. Ver detalle en cambios.",
+        author: currentUsername,
+        version: saved.version,
+      },
+      manager
+    );
+
+    // Quitar password del retorno
+    const { password: _, ...rest } = saved;
+    return rest;
+  });
+};
+
+/**
+ * Alterna la suspensión del usuario
+ */
+export const suspensionUser = async (
+  id: number,
+  currentUsername: string
+): Promise<Partial<User>> => {
+
+  return await AppDataSource.transaction(async (manager) => {
+    const userRepo = manager.getRepository(User);
+
+    // Buscar usuario
+    const user = await userRepo.findOne({
+      where: { id },
+      relations: ["userRole"], // consistencia con el módulo
+    });
+
+    if (!user) {
+      throw new Error('Usuario desconocido. Si el error persiste contacte al administrador.');
+    }
+
+    // BEFORE
+    const before = { ...user };
+
+    // AFTER (invertir suspensión)
+    const after: any = { ...user };
+    after.suspended = !user.suspended;
+
+    // Detectar cambios
+    const changes = detectModuleChanges(before, after, {
+      ignore: ["createdAt", "updatedAt", "userRole"],
+      relations: [],
+    });
+
+    // Si no hubo cambios, no guardar ni auditar
+    if (Object.keys(changes).length === 0) {
+      const { password: _, ...rest } = user;
+      return rest;
+    }
+
+    // Guardar cambios
+    Object.assign(user, after);
+    const saved = await userRepo.save(user);
+
+    // Registrar auditoría
+    await registerInAuditTrail(
+      {
+        entity: "Usuarios",
+        entityId: saved.id,
+        action: user.suspended ? "SUSPENDER_USUARIO" : "REACTIVAR_USUARIO",
+        changes: changes,
+        description: user.suspended
+          ? "Suspensión de usuario. Ver detalle en cambios."
+          : "Reactivación  de usuario. Ver detalle en cambios.",
+        author: currentUsername,
+        version: saved.version,
+      },
+      manager
+    );
+
+    // Retornar sin password
+    const { password: _, ...rest } = saved;
+    return rest;
+  });
+};
+
+
 
 /**
  * Crea un rol con permisos (payload: { name, permissions: string[] })
@@ -267,59 +573,5 @@ export const updateUserRole = async (payload: { id: number; name?: string; permi
 
     // devolver rol con permisos actualizados
     return await userRoleRepo.findOne({ where: { id: role.id }, relations: ['userRolePermissions'] }) as UserRole;
-  });
-};
-
-/**
- * Cambia la contraseña de un usuario (admin action)
- */
-export const setUserPassword = async (id: number, newPassword: string): Promise<Partial<User>> => {
-  return await AppDataSource.transaction(async (manager) => {
-    const userRepo = manager.getRepository(User);
-    const user = await userRepo.findOneBy({ id });
-    if (!user) throw new Error('Usuario no encontrado.');
-
-    const hashed = await bcrypt.hash(newPassword, 10);
-    user.password = hashed;
-    user.active = true;
-
-    const updatedUser = await userRepo.save(user);
-    const { password: _, ...rest } = updatedUser;
-    return rest;
-  });
-};
-
-/**
- * Resetea la contraseña al DEFAULT_PASSWORD y desactiva la cuenta (admin action)
- */
-export const resetUserPassword = async (id: number): Promise<Partial<User>> => {
-  return await AppDataSource.transaction(async (manager) => {
-    const userRepo = manager.getRepository(User);
-    const user = await userRepo.findOneBy({ id });
-    if (!user) throw new Error('Usuario no encontrado.');
-
-    const hashed = await bcrypt.hash(process.env.DEFAULT_PASSWORD!, 10);
-    user.password = hashed;
-    user.active = false;
-
-    const updatedUser = await userRepo.save(user);
-    const { password: _, ...rest } = updatedUser;
-    return rest;
-  });
-};
-
-/**
- * Alterna la suspensión del usuario
- */
-export const suspensionUser = async (id: number): Promise<Partial<User>> => {
-  return await AppDataSource.transaction(async (manager) => {
-    const userRepo = manager.getRepository(User);
-    const user = await userRepo.findOneBy({ id });
-    if (!user) throw new Error('Usuario no encontrado.');
-
-    user.suspended = !user.suspended;
-    const updatedUser = await userRepo.save(user);
-    const { password: _, ...rest } = updatedUser;
-    return rest;
   });
 };

@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Carga los permisos desde el JSON en la raíz del proyecto
-const permissionsPath = path.resolve(__dirname, '../../../modulePermissions.json');
+const permissionsPath = path.resolve(__dirname, '../../../modules.json');
 const permissionsData = JSON.parse(fs.readFileSync(permissionsPath, 'utf8'));
 
 interface PermissionEntry {

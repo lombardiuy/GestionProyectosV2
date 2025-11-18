@@ -213,7 +213,6 @@ this.form['newPasswordRepeat'].updateValueAndValidity();
 
   updateUserProfile() {
 
-    console.log(  this.hasProfilePicture?.value)
 
     
           if (this.userProfileForm.invalid) {
