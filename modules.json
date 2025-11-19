@@ -1,5 +1,11 @@
 [
   {
+    "module": { "code": "AuditTrail", "description": "Audit trail", "icon": "<i class='fa-solid fa-book'></i>" },
+    "permissions": [
+      { "code": "AUDIT_TRAIL_VIEW", "description": "Visualizar" }
+    ]
+  },
+  {
     "module": { "code": "Users", "description": "Usuarios", "icon": "<i class='fa-solid fa-users'></i>" },
     "permissions": [
       { "code": "USERS_VIEW", "description": "Visualizar" },

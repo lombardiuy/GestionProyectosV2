@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne } from "typeorm"; 
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, VersionColumn, CreateDateColumn, UpdateDateColumn } from "typeorm"; 
 import { UserRole } from "./UserRole.entity";
 
 
@@ -16,6 +16,14 @@ export class UserRolePermission extends BaseEntity {
     @ManyToOne(() => UserRole, userRole => userRole.userRolePermissions, { onDelete: "CASCADE" })
     public userRole!: UserRole;
 
+    @VersionColumn()
+    public version!:number;
+        
+    @CreateDateColumn()
+    public created!: Date;
+        
+    @UpdateDateColumn()
+    public updated!: Date;
 
 
 

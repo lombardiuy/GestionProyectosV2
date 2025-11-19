@@ -1,32 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm"; 
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from "typeorm"; 
 
-
-@Entity()
+@Entity({ name: "audit_trail" })
+@Index("idx_audit_entity", ["entity"])
+@Index("idx_audit_entity_entityid", ["entity", "entityId"])
+@Index("idx_audit_created", ["created"])
 export class AuditTrail {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column()
-  entity!: string; // User, Unit, Equipment, Process...
+  module!: string;
+
+  @Column()
+  entity!: string; 
 
   @Column()
   entityId!: number;
 
-  @Column()
+  
+  @Column({ default: 1 })
+  version!: number;
+
+  @Column()    
   action!: string; 
-
-  @Column({ type: "nvarchar", length: "max" })
-  changes!: string; 
-
-  @Column()
-  author!: string;
 
   @Column({ nullable: true })
   description!: string;
 
-  @CreateDateColumn()
-  date!: Date;
+  @Column({ type: "nvarchar", length: "max" })
+  changes!: string; 
 
-  @Column({ default: 1 })
-  version!: number;
+
+  @Column()
+  author!: string;
+
+  @CreateDateColumn()
+  created!: Date;
+
 }

@@ -61,7 +61,6 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     const token = this.getToken();
-    console.log(token !== null && this.isTokenValid(token))
     return token !== null && this.isTokenValid(token);
   }
 
@@ -70,7 +69,6 @@ export class AuthService {
       tap(res => {
         localStorage.setItem(this.tokenKey, res.token);
         const decoded = jwtDecode<DecodedToken>(res.token);
-        console.error(decoded)
         this.userProfile$.next(decoded);
       })
     );

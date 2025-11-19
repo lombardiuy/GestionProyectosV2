@@ -55,7 +55,7 @@ export const selectUserById = async (id: number): Promise<Partial<User> | null> 
  * Crea un usuario nuevo.
  * Recibe un objeto con shape validado por DTO: { name, username, password, userRoleId }
  */
-export const create = async (payload: {
+export const createUser = async (payload: {
   name: string;
   username: string;
   password: string;
@@ -96,10 +96,11 @@ export const create = async (payload: {
      // Registrar en auditTrail dentro de la misma transacción
     await registerInAuditTrail(
       {
-        entity: 'Usuarios',
+        module:"Users",
+        entity: 'User',
         entityId: saved.id,
-        action: 'CREAR',
-        changes: {message: 'Nuevo usuario: '+ saved.username + " Rol: "+saved.userRole.name},
+        action: 'USER_CREATE',
+        changes: {action: 'Nuevo usuario: '+ saved.username + " Rol: "+saved.userRole.name},
         description: 'Versión original.',
         author: currentUsername,
         version:saved.version
@@ -118,7 +119,7 @@ export const create = async (payload: {
  * Actualiza un usuario existente.
  * Recibe un objeto parcial validado por DTO.
  */
-export const update = async (
+export const updateUser = async (
   id: number,
   payload: {
     name?: string;
@@ -187,11 +188,12 @@ export const update = async (
          // Registrar en auditTrail dentro de la misma transacción
     await registerInAuditTrail(
       {
-        entity: 'Usuarios',
+        module:'Users',
+        entity: 'User',
         entityId: saved.id,
-        action: 'ACTUALIZAR',
+        action: 'USER_UPDATE',
         changes:changes,
-        description: "Actualización de configuración de usuario. Ver detalle en cambios.",
+        description: "Actualización de configuración de usuario.",
         author: currentUsername,
         version:saved.version
        
@@ -278,11 +280,12 @@ export const updateUserProfile = async (
     // Registrar auditoría dentro de la misma transacción
     await registerInAuditTrail(
       {
-        entity: "Usuarios",
+        module:'Users',
+        entity: "User",
         entityId: saved.id,
-        action: "ACTUALIZAR",
+        action: "USER_PROFILE_UPDATE",
         changes: changes,
-        description: "Actualización de perfil de usuario. Ver detalle en cambios.",
+        description: "Actualización de perfil de usuario.",
         author: currentUsername,
         version: saved.version
       },
@@ -301,8 +304,7 @@ export const updateUserProfile = async (
  */
 export const setUserPassword = async (
   id: number,
-  newPassword: string,
-  currentUsername: string
+  newPassword: string
 ): Promise<Partial<User>> => {
 
   return await AppDataSource.transaction(async (manager) => {
@@ -349,12 +351,13 @@ export const setUserPassword = async (
     // Registrar auditoría
     await registerInAuditTrail(
       {
-        entity: "Usuarios",
+        module:'Users',
+        entity: "User",
         entityId: saved.id,
-        action: "ACTUALIZAR",
+        action: "USER_PASSWORD_RESET",
         changes: changes,
         description: "Actualización de contraseña del usuario. Ver detalle en cambios.",
-        author: currentUsername,
+        author: saved.username,
         version: saved.version,
       },
       manager
@@ -420,11 +423,12 @@ export const resetUserPassword = async (
     // Registrar auditoría
     await registerInAuditTrail(
       {
-        entity: "Usuarios",
+        module:"Users",
+        entity: "User",
         entityId: saved.id,
-        action: "RESETEAR_PASSWORD",
+        action: "USER_PASSWORD_RESET",
         changes: changes,
-        description: "Reset de contraseña a valor por defecto. Ver detalle en cambios.",
+        description: "Reset de contraseña.",
         author: currentUsername,
         version: saved.version,
       },
@@ -484,13 +488,14 @@ export const suspensionUser = async (
     // Registrar auditoría
     await registerInAuditTrail(
       {
-        entity: "Usuarios",
+        module:"Users",
+        entity: "User",
         entityId: saved.id,
-        action: user.suspended ? "SUSPENDER_USUARIO" : "REACTIVAR_USUARIO",
+        action: user.suspended ? "USER_SUSPENSION" : "USER_ACTIVATION",
         changes: changes,
         description: user.suspended
-          ? "Suspensión de usuario. Ver detalle en cambios."
-          : "Reactivación  de usuario. Ver detalle en cambios.",
+          ? "Suspensión de usuario."
+          : "Reactivación  de usuario.",
         author: currentUsername,
         version: saved.version,
       },
@@ -508,70 +513,168 @@ export const suspensionUser = async (
 /**
  * Crea un rol con permisos (payload: { name, permissions: string[] })
  */
-export const createUserRole = async (payload: { name: string; permissions: string[] }): Promise<UserRole> => {
+/**
+ * Crea un rol con permisos (payload: { name, permissions: string[] })
+ */
+export const createUserRole = async (
+  payload: { name: string; permissions: string[] },
+  currentUsername: string
+): Promise<UserRole> => {
+
   const { name, permissions } = payload;
+
+  console.log(name);
+  console.log(permissions)
 
   return await AppDataSource.transaction(async (manager) => {
     const userRoleRepo = manager.getRepository(UserRole);
     const userRolePermissionRepo = manager.getRepository(UserRolePermission);
 
-    if (!name || name.trim() === '') throw new Error('Debe asignar un nombre al rol');
-    if (!Array.isArray(permissions) || permissions.length === 0) throw new Error('Debe asignar al menos 1 permiso al rol');
+    // Validaciones
+    if (!name || name.trim() === '') {
+      throw new Error('Debe asignar un nombre al rol');
+    }
+
+    if (!Array.isArray(permissions) || permissions.length === 0) {
+      throw new Error('Debe asignar al menos 1 permiso al rol');
+    }
 
     const existsUserRole = await userRoleRepo.findOneBy({ name });
-    if (existsUserRole) throw new Error('Ya existe un rol con el mismo nombre');
+    if (existsUserRole) {
+      throw new Error('Ya existe un rol con el mismo nombre');
+    }
 
-    const savedUserRole = await userRoleRepo.save(userRoleRepo.create({ name }));
+    // Crear el rol
+    const newRole = userRoleRepo.create({ name });
+    const savedUserRole = await userRoleRepo.save(newRole);
 
+    // Crear permisos
     const newPerms = permissions.map((code) =>
-      userRolePermissionRepo.create({ permission: code, userRole: savedUserRole })
+      userRolePermissionRepo.create({
+        permission: code,
+        userRole: savedUserRole
+      })
     );
 
     await userRolePermissionRepo.save(newPerms);
+
+    // Registrar en auditTrail como parte de la misma transacción
+    await registerInAuditTrail(
+      {
+        module: "Users",
+        entity: "UserRole",
+        entityId: savedUserRole.id,
+        action: "USER_ROLE_CREATE",
+        changes: {
+          action: `Nuevo rol: ${savedUserRole.name}`,
+          permisos: permissions,
+        },
+        description: "Versión original.",
+        author: currentUsername,
+        version: savedUserRole.version,
+      },
+      manager
+    );
 
     return savedUserRole;
   });
 };
 
+
 /**
  * Actualiza un rol existente y sus permisos
  * payload: { id, name, permissions: string[] }
  */
-export const updateUserRole = async (payload: { id: number; name?: string; permissions: string[] }): Promise<UserRole> => {
+export const updateUserRole = async (
+  payload: { id: number; name?: string; permissions: string[] },
+  currentUsername: string
+): Promise<UserRole> => {
+
   const { id, name, permissions } = payload;
 
   return await AppDataSource.transaction(async (manager) => {
     const userRoleRepo = manager.getRepository(UserRole);
     const userRolePermissionRepo = manager.getRepository(UserRolePermission);
 
-    const role = await userRoleRepo.findOne({ where: { id } });
+    // Buscar rol
+    const role = await userRoleRepo.findOne({
+      where: { id },
+      relations: ['userRolePermissions']
+    });
+
     if (!role) throw new Error('Rol no encontrado');
 
-    if (!Array.isArray(permissions) || permissions.length === 0) throw new Error('Debe asignar al menos 1 permiso al rol');
+    if (!Array.isArray(permissions) || permissions.length === 0) {
+      throw new Error('Debe asignar al menos 1 permiso al rol');
+    }
 
-    if (name && name.trim() !== role.name) {
-      // verificar duplicado por nombre
+    const originalName = role.name;
+    const originalPerms = role.userRolePermissions.map(p => p.permission);
+
+    let nameChanged = false;
+    let permsChanged = false;
+
+    // --- Actualizar nombre ---
+    if (name && name.trim() !== '' && name.trim() !== role.name) {
+
       const exists = await userRoleRepo.findOneBy({ name });
-      if (exists && exists.id !== id) throw new Error('Ya existe un rol con el mismo nombre');
-      role.name = name;
+      if (exists && exists.id !== id) {
+        throw new Error('Ya existe un rol con el mismo nombre');
+      }
+
+      role.name = name.trim();
+      nameChanged = true;
       await userRoleRepo.save(role);
     }
 
-    // borrar permisos viejos del rol
-    // obtenemos IDs y borramos (asegura compatibilidad con distintos drivers)
-    const oldPerms = await userRolePermissionRepo.find({ where: { userRole: { id: role.id } as any } });
+    // --- Actualizar permisos ---
+    // Borrar permisos anteriores
+    const oldPerms = await userRolePermissionRepo.find({
+      where: { userRole: { id: role.id } }
+    });
+
     if (oldPerms.length > 0) {
-      const oldIds = oldPerms.map(p => p.id);
-      await userRolePermissionRepo.delete(oldIds);
+      await userRolePermissionRepo.delete(oldPerms.map(p => p.id));
     }
 
-    // crear y guardar permisos nuevos
-    const newPerms = permissions.map((code) =>
+    // Crear nuevos permisos
+    const newPerms = permissions.map(code =>
       userRolePermissionRepo.create({ permission: code, userRole: role })
     );
+
     await userRolePermissionRepo.save(newPerms);
 
-    // devolver rol con permisos actualizados
-    return await userRoleRepo.findOne({ where: { id: role.id }, relations: ['userRolePermissions'] }) as UserRole;
+    // Detectar cambios de permisos
+    const permsSorted = permissions.slice().sort();
+    const originalSorted = originalPerms.slice().sort();
+    permsChanged = JSON.stringify(permsSorted) !== JSON.stringify(originalSorted);
+
+    // --- Registrar en AuditTrail ---
+    await registerInAuditTrail(
+      {
+        module: "Users",
+        entity: "UserRole",
+        entityId: role.id,
+        action: "USER_ROLE_UPDATE",
+        changes: {
+          nombreOriginal: originalName,
+          nombreNuevo: role.name,
+          nombreCambiado: nameChanged,
+          permisosOriginales: originalPerms,
+          permisosNuevos: permissions,
+          permisosCambiados: permsChanged
+        },
+        description: "Actualización de rol.",
+        author: currentUsername,
+        version: role.version
+      },
+      manager
+    );
+
+    // Devolver rol actualizado
+    return await userRoleRepo.findOne({
+      where: { id: role.id },
+      relations: ['userRolePermissions']
+    }) as UserRole;
   });
 };

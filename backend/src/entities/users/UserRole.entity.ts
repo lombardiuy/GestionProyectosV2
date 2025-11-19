@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToMany } from "typeorm"; 
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, VersionColumn, CreateDateColumn, UpdateDateColumn } from "typeorm"; 
 import { User } from "./User.entity";
 import { UserRolePermission } from "./UserRolePermission.entity";
 
@@ -18,6 +18,15 @@ export class UserRole extends BaseEntity {
 
     @OneToMany(() => UserRolePermission, userRolePermissions => userRolePermissions.userRole, { cascade: true })
     public userRolePermissions!: UserRolePermission[];
+
+    @VersionColumn()
+     public version!:number;
+    
+    @CreateDateColumn()
+    public created!: Date;
+    
+    @UpdateDateColumn()
+    public updated!: Date;
 
 
 

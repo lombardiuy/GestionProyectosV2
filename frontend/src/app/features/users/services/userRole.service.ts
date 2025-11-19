@@ -30,8 +30,12 @@ async getAllUserRoles(): Promise<UserRole[] | null> {
   }
 }
 
- saveUserRole(userRole:UserRole, permissions:string[]): Observable<UserRole> {
-  return this.http.post<UserRole>(`${this.apiUrl}/create`,{ userRole, permissions});
+saveUserRole(userRole: UserRole, permissions: string[]): Observable<UserRole> {
+  return this.http.post<UserRole>(`${this.apiUrl}/create`, {
+    id: userRole.id,
+    name: userRole.name,
+    permissions
+  });
 }
 
 

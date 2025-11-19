@@ -33,12 +33,22 @@
                     
                      
                     </div>
+
+                        <a *ngIf="hasPermission('AUDIT_TRAIL_VIEW')" [routerLink]="['/auditTrail']" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#adminMenu" aria-expanded="false">
+          
+                        <span><i class="fa-solid fa-book"></i> Audit trail</span>
+                        
+                  
+                      
+                      </a>
     
   
                   
                      
                    
                   </div>
+
+                  
 
 
 

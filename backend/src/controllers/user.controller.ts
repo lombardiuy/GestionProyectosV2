@@ -73,7 +73,7 @@ export const createUser = async (req: UserRequest, res: Response) => {
 if (!req.user) throw new Error("Usuario no autenticado");
 
 
-    const user = await userService.create(dto, req.user.username);
+    const user = await userService.createUser(dto, req.user.username);
     res.json({ message: 'Usuario creado', user });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -94,7 +94,7 @@ export const updateUser = async (req: UserRequest, res: Response) => {
       hasProfilePicture?: boolean;
     };
     if (!req.user) throw new Error("Usuario no autenticado");
-    const updatedUser = await userService.update(userId, dto, req.user.username);
+    const updatedUser = await userService.updateUser(userId, dto, req.user.username);
 
     res.json({
       message: "Usuario actualizado",
@@ -134,51 +134,49 @@ export const updateUserProfile = async (req: UserRequest, res: Response) => {
  * POST /user/roles/create
  * req.body validado por SaveUserRoleDto -> { id?, name, permissions }
  */
-export const saveUserRole = async (req: Request, res: Response) => {
+export const saveUserRole = async (req: UserRequest, res: Response) => {
   try {
-    const { userRole, permissions, id, name } = req.body;
+    if (!req.user) throw new Error("Usuario no autenticado");
 
-    // soporta dos formatos: { userRole: { id?, name }, permissions: [...] } o { id?, name, permissions }
-    let payload: { id?: number; name?: string; permissions?: string[] } = {};
+    const { id, name, permissions } = req.body as {
+      id?: number;
+      name: string;
+      permissions: string[];
+    };
 
-    if (userRole) {
-      payload.id = userRole.id;
-      payload.name = userRole.name;
-      payload.permissions = permissions;
-    } else {
-      payload.id = id;
-      payload.name = name;
-      payload.permissions = permissions;
+    if (!id) {
+      // Crear
+      const role = await userService.createUserRole(
+        { name, permissions },
+        req.user.username
+      );
+
+      return res.json({ message: "Rol creado", role });
     }
 
-    if (!payload.id) {
-      // crear
-      const role = await userService.createUserRole({ name: payload.name!, permissions: payload.permissions || [] });
-      res.json({ message: 'Rol creado', role });
-    } else {
-      // actualizar
-      const role = await userService.updateUserRole({
-        id: payload.id,
-        name: payload.name,
-        permissions: payload.permissions || [],
-      });
-      res.json({ message: 'Rol actualizado', role });
-    }
+    // Actualizar
+    const role = await userService.updateUserRole(
+      { id, name, permissions },
+      req.user.username
+    );
+
+    return res.json({ message: "Rol actualizado", role });
+
   } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message });
   }
 };
+
 
 /**
  * POST /user/setUserPassword
  * req.body validado por SetUserPasswordDto -> { id, password }
  */
-export const setUserPassword = async (req: UserRequest, res: Response) => {
+export const setUserPassword = async (req: Request, res: Response) => {
   try {
     const { id, password } = req.body;
     if (!id || !password) return res.status(400).json({ error: 'Faltan datos' });
-    if (!req.user) throw new Error("Usuario no autenticado");
-    const user = await userService.setUserPassword(Number(id), String(password),req.user.username);
+    const user = await userService.setUserPassword(Number(id), String(password));
     res.json({ user });
   } catch (error: any) {
     res.status(401).json({ error: error.message });

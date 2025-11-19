@@ -1,22 +1,132 @@
-
-<div  class="d-flex d-wrap align-items-center justify-content-center w-100 h-100">
+<div class="d-flex d-wrap align-items-center justify-content-center w-100 h-100">
 
   <div class="card w-95 h-95">
 
-    <div class="card-header"><i class="fa-solid fa-book"></i> Audit Trail</div>
-    <div *ngIf="!loading; else loadingSpinner"  class="card-body">
+    <div class="card-header">
+      <i class="fa-solid fa-book"></i> Audit Trail
+    </div>
 
-      Hola
+    <div *ngIf="!loading; else loadingSpinner" class="card-body">
 
- 
+      <!-- FILTROS -->
+      <div class="row mb-3">
 
+        <div class="col">
+          <input class="form-control" placeholder="Buscar..." [(ngModel)]="search" (keyup.enter)="applyFilters()">
+        </div>
+
+        <div class="col">
+         <select class="form-select" [(ngModel)]="entity"  (change)="applyFilters()">
+  <option value="">Todas las entidades</option>
+  <option *ngFor="let e of entities" [value]="e">{{ e }}</option>
+</select>
+
+        </div>
+
+         <div class="col">
+    <select class="form-select" [(ngModel)]="author"  (change)="applyFilters()">
+      <option value="">Autor</option>
+      <option *ngFor="let a of authors" [value]="a">{{ a }}</option>
+    </select>
+  </div>
+
+          <div class="col">
+    <select class="form-select" [(ngModel)]="action"  (change)="applyFilters()">
+      <option value="">Acción</option>
+      <option *ngFor="let ac of actions" [value]="ac">{{ ac }}</option>
+    </select>
+  </div>
+
+      </div>
+
+      <div class="row mb-3">
+
+        <div class="col">
+          <label>Desde</label>
+          <input type="date"   [max]="today" class="form-control" [(ngModel)]="dateFrom">
+        </div>
+
+        <div class="col">
+          <label>Hasta</label>
+          <input type="date"   [max]="today" class="form-control" [(ngModel)]="dateTo">
+        </div>
+
+        <div class="col d-flex align-items-end">
+          <button class="btn btn-primary w-100" (click)="applyFilters()">Filtrar</button>
+        </div>
+      </div>
+
+      <!-- TABLA -->
+      <div class="table-responsive">
+
+        <table class="table table-sm table-striped table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Fecha</th>
+              <th>Entidad</th>
+              <th>ID</th>
+              <th>Acción</th>
+              <th>Descripción</th>
+              <th>Cambios</th>
+              <th>Autor</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let item of logs">
+
+              <td>{{ item.created | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ item.entity }}</td>
+              <td>{{ item.entityId }}</td>
+              <td>{{ item.action }}</td>
+
+              <!-- DESCRIPCIÓN -->
+              <td>{{ item.description || '-' }}</td>
+
+              <!-- CAMBIOS -->
+              <td>
+                <ul class="p-0 m-0" style="list-style:none;">
+                  <li *ngFor="let key of objectKeys(item.changesParsed)">
+                    <strong>{{ key }}:</strong>
+                    <span class="text-danger">{{ item.changesParsed[key]?.oldValue }}</span>
+                    →
+                    <span class="text-success">{{ item.changesParsed[key]?.newValue }}</span>
+                  </li>
+                </ul>
+              </td>
+
+              <td>{{ item.author }}</td>
+
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <!-- PAGINACIÓN -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+
+        <button class="btn btn-outline-secondary" (click)="prevPage()" [disabled]="page === 1">
+          Anterior
+        </button>
+
+        <span>Página {{ page }} de {{ totalPages }}</span>
+
+        <button class="btn btn-outline-secondary" (click)="nextPage()" [disabled]="page === totalPages">
+          Siguiente
+        </button>
+
+      </div>
 
     </div>
+
   </div>
 
 </div>
 
-<ng-template  #loadingSpinner>
+
+<ng-template #loadingSpinner>
   <loading-spinner class="w-100 h-100"></loading-spinner>
 </ng-template>
-
