@@ -1,0 +1,72 @@
+<div class="card">
+
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="fw-bold">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      Control de cambios
+    </div>
+
+    <!-- Toggle -->
+    <i *ngIf="displayVersionControl"
+       (click)="displayVersionControl = false"
+       class="bi bi-x-lg cursor-pointer"></i>
+
+    <i *ngIf="!displayVersionControl"
+       (click)="displayVersionControl = true"
+       class="bi bi-arrows-angle-expand cursor-pointer"></i>
+  </div>
+
+  <div class="card-body" *ngIf="!loading; else loadingSpinner">
+
+    <!-- ⭐ Modo expandido → todas las versiones -->
+    <table *ngIf="displayVersionControl" class="table table-sm ">
+      <thead>
+        <tr>
+          <th class="w-10">Versión</th>
+          <th class="w-50">Descripción</th>
+          <th class="w-20">Autor</th>
+          <th class="w-15">Fecha y hora</th>
+          <th class="w-5"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let v of versions">
+          <td>{{ v.version }}</td>
+          <td>{{ v.description || '-' }}</td>
+          <td>{{ v.author }}</td>
+          <td>{{ v.created | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td><i (click) ="goToAuditTrail(v.id)" class="fa-solid fa-book"></i></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ⭐ Modo colapsado → solo última versión -->
+    <table *ngIf="!displayVersionControl && latestVersion" class="table table-sm text-center">
+      <thead>
+        <tr>
+          <th class="w-10">Versión</th>
+          <th class="w-50">Descripción</th>
+          <th class="w-20">Autor</th>
+          <th class="w-15">Fecha y hora</th>
+          <th class="w-5"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>{{ latestVersion.version }}</td>
+          <td>{{ latestVersion.description || '-' }}</td>
+          <td>{{ latestVersion.author }}</td>
+          <td>{{ latestVersion.created | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+         <td><i (click) ="goToAuditTrail(latestVersion.id)" class="fa-solid fa-book"></i></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<ng-template #loadingSpinner>
+  <loading-spinner></loading-spinner>
+</ng-template>

@@ -6,69 +6,76 @@
       <i class="fa-solid fa-book"></i> Audit Trail
     </div>
 
-    <div *ngIf="!loading; else loadingSpinner" class="card-body">
+    <!-- CONTENIDO -->
+    <div *ngIf="!loading; else loadingSpinner"
+         class="card-body d-flex flex-column"
+         style="height: 100%; overflow: hidden;">
 
-      <!-- FILTROS -->
-      <div class="row mb-3">
+      <!-- FILTROS 1 -->
+      <div class="row mb-3" style="flex-shrink: 0;">
 
         <div class="col">
-          <input class="form-control" placeholder="Buscar..." [(ngModel)]="search" (keyup.enter)="applyFilters()">
+          <input class="form-control" placeholder="Buscar por Descripción, Cambios o #ID del trail" [(ngModel)]="search" (keyup.enter)="applyFilters()">
         </div>
 
         <div class="col">
-         <select class="form-select" [(ngModel)]="entity"  (change)="applyFilters()">
-  <option value="">Todas las entidades</option>
-  <option *ngFor="let e of entities" [value]="e">{{ e }}</option>
-</select>
-
+          <select class="form-select" [(ngModel)]="entity" (change)="applyFilters()">
+            <option value="">Todas las entidades</option>
+            <option *ngFor="let e of entities" [value]="e">{{ e }}</option>
+          </select>
         </div>
 
-         <div class="col">
-    <select class="form-select" [(ngModel)]="author"  (change)="applyFilters()">
-      <option value="">Autor</option>
-      <option *ngFor="let a of authors" [value]="a">{{ a }}</option>
-    </select>
-  </div>
+        <div class="col">
+          <select class="form-select" [(ngModel)]="author" (change)="applyFilters()">
+            <option value="">Autor</option>
+            <option *ngFor="let a of authors" [value]="a">{{ a }}</option>
+          </select>
+        </div>
 
-          <div class="col">
-    <select class="form-select" [(ngModel)]="action"  (change)="applyFilters()">
-      <option value="">Acción</option>
-      <option *ngFor="let ac of actions" [value]="ac">{{ ac }}</option>
-    </select>
-  </div>
+        <div class="col">
+          <select class="form-select" [(ngModel)]="action" (change)="applyFilters()">
+            <option value="">Acción</option>
+            <option *ngFor="let ac of actions" [value]="ac">{{ ac }}</option>
+          </select>
+        </div>
 
       </div>
 
-      <div class="row mb-3">
+      <!-- FILTROS 2 -->
+      <div class="row pb-3 mb-2 border-bottom" style="flex-shrink: 0;">
 
         <div class="col">
           <label>Desde</label>
-          <input type="date"   [max]="today" class="form-control" [(ngModel)]="dateFrom">
+         <input type="date" [max]="dateTo || today" class="form-control" [(ngModel)]="dateFrom">
+
         </div>
 
         <div class="col">
           <label>Hasta</label>
-          <input type="date"   [max]="today" class="form-control" [(ngModel)]="dateTo">
+          <input type="date" [max]="today"   [min]="dateFrom" class="form-control" [(ngModel)]="dateTo">
         </div>
 
         <div class="col d-flex align-items-end">
-          <button class="btn btn-primary w-100" (click)="applyFilters()">Filtrar</button>
+          <button class="btn btn-primary w-100" (click)="applyFilters()"><i class="fa-solid fa-filter"></i>  Filtrar</button>
         </div>
+
       </div>
 
       <!-- TABLA -->
-      <div class="table-responsive">
+      <div class="table-responsive flex-grow-1"
+           style="overflow-y: auto; min-height: 0;">
 
-        <table class="table table-sm table-striped table-hover">
-          <thead class="table-light">
+        <table class="table table-sm text-center ">
+          <thead>
             <tr>
-              <th>Fecha</th>
-              <th>Entidad</th>
-              <th>ID</th>
-              <th>Acción</th>
-              <th>Descripción</th>
-              <th>Cambios</th>
-              <th>Autor</th>
+          
+              <th class="w-10">Entidad</th>
+              <th class="w-5">ID</th>
+              <th class="w-15">Acción</th>
+              <th class="w-20">Cambios</th>
+              <th class="w-30">Descripción</th>
+              <th class="w-10">Autor</th>
+              <th class="w-10">Fecha y hora</th>
             </tr>
           </thead>
 
@@ -76,27 +83,28 @@
 
             <tr *ngFor="let item of logs">
 
-              <td>{{ item.created | date:'dd/MM/yyyy HH:mm' }}</td>
+        
               <td>{{ item.entity }}</td>
               <td>{{ item.entityId }}</td>
               <td>{{ item.action }}</td>
-
-              <!-- DESCRIPCIÓN -->
-              <td>{{ item.description || '-' }}</td>
-
-              <!-- CAMBIOS -->
               <td>
                 <ul class="p-0 m-0" style="list-style:none;">
                   <li *ngFor="let key of objectKeys(item.changesParsed)">
                     <strong>{{ key }}:</strong>
-                    <span class="text-danger">{{ item.changesParsed[key]?.oldValue }}</span>
+                    <span class="text-danger">{{ item.changesParsed[key].oldValue }}</span>
                     →
-                    <span class="text-success">{{ item.changesParsed[key]?.newValue }}</span>
+                    <span class="text-success">{{ item.changesParsed[key].newValue }}</span>
                   </li>
                 </ul>
               </td>
 
+              <td>{{ item.description || '-' }}</td>
+
+              
+
               <td>{{ item.author }}</td>
+
+                    <td>{{ item.created | date:'dd/MM/yyyy HH:mm:ss' }}</td>
 
             </tr>
           </tbody>
@@ -105,16 +113,21 @@
 
       </div>
 
-      <!-- PAGINACIÓN -->
-      <div class="d-flex justify-content-between align-items-center mt-3">
+      <!-- PAGINACIÓN SIEMPRE ABAJO -->
+      <div class="d-flex justify-content-between align-items-center mt-3"
+           style="flex-shrink: 0;">
 
-        <button class="btn btn-outline-secondary" (click)="prevPage()" [disabled]="page === 1">
+        <button class="btn btn-outline-secondary"
+                (click)="prevPage()"
+                [disabled]="page === 1">
           Anterior
         </button>
 
         <span>Página {{ page }} de {{ totalPages }}</span>
 
-        <button class="btn btn-outline-secondary" (click)="nextPage()" [disabled]="page === totalPages">
+        <button class="btn btn-outline-secondary"
+                (click)="nextPage()"
+                [disabled]="page === totalPages">
           Siguiente
         </button>
 

@@ -53,23 +53,55 @@ export const getAuditTrail = async (options: {
     if (action) base.action = action;
 
     // FILTRO FECHAS
-    if (dateFrom && dateTo) {
-      base.created = Between(new Date(dateFrom), new Date(dateTo));
-    } else if (dateFrom) {
-      base.created = MoreThanOrEqual(new Date(dateFrom));
-    } else if (dateTo) {
-      base.created = LessThanOrEqual(new Date(dateTo));
-    }
+  // FILTRO FECHAS (CORREGIDO)
+if (dateFrom || dateTo) {
+
+  let from: Date | undefined;
+  let to: Date | undefined;
+
+ if (dateFrom) {
+  from = new Date(`${dateFrom}T00:00:00.000Z`);
+}
+if (dateTo) {
+  to = new Date(`${dateTo}T23:59:59.999Z`);
+}
+
+  if (from && to) {
+ 
+    base.created = Between(from, to);
+  } else if (from) {
+    base.created = MoreThanOrEqual(from);
+  } else if (to) {
+    base.created = LessThanOrEqual(to);
+  }
+}
+
 
     // SEARCH GLOBAL
-    if (search) {
-      where.push(
-        { ...base, description: ILike(`%${search}%`) },
-        { ...base, changes: ILike(`%${search}%`) }
-      );
-    } else {
-      where.push(base);
-    }
+  // SEARCH GLOBAL
+if (search) {
+  // Detectar si el search es del tipo "#X"
+  const matchIdSearch = search.match(/^#(\d+)$/);
+
+  if (matchIdSearch) {
+    // Extraer el número
+    const idNumber = Number(matchIdSearch[1]);
+
+    // Buscar por ID exacto
+    where.push({ ...base, id: idNumber });
+
+  } else {
+    // Búsqueda normal por texto
+    where.push(
+      { ...base, description: ILike(`%${search}%`) },
+      { ...base, changes: ILike(`%${search}%`) }
+    );
+  }
+
+} else {
+  where.push(base);
+}
+
 
     const [data, total] = await auditRepo.findAndCount({
       where,
@@ -110,6 +142,13 @@ export const registerInAuditTrail = async (params: AuditParams, manager?: any): 
     console.error(error);
     throw new Error('No se pudo registrar el auditTrail');
   }
+};
+
+export const getAuditTrailByEntity = async (entity: string, entityId: number) => {
+  return await auditRepo.find({
+    where: { entity, entityId },
+    order: { version: "ASC" } 
+  });
 };
 
 

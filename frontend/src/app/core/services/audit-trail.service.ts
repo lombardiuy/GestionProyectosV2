@@ -39,6 +39,12 @@ export class AuditTrailService {
     return this.http.get<AuditTrailResponse>(this.apiUrl, { params });
   }
 
+  getAuditTrailByEntity(entity: string, id: number) {
+  return this.http.get<{ data: AuditTrailResponse[] }>(
+    `${this.apiUrl}/versionControl/${entity}/${id}`
+  );
+}
+
   getAuditFilters() {
   return this.http.get<any>(`${this.apiUrl}/filters`);
 }

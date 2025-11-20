@@ -93,22 +93,20 @@ export const createUser = async (payload: {
 
     const saved = await userRepo.save(newUser);
 
-     // Registrar en auditTrail dentro de la misma transacción
+    // ✅ CORRECCIÓN: Normalizar "changes" para crear usuario (usar key 'username' en lugar de 'user')
     await registerInAuditTrail(
       {
         module:"Users",
         entity: 'User',
         entityId: saved.id,
         action: 'USER_CREATE',
-        changes: {action: 'Nuevo usuario: '+ saved.username + " Rol: "+saved.userRole.name},
+        changes: { username: { oldValue: null, newValue: saved.username } }, // ✅ CORRECCIÓN
         description: 'Versión original.',
         author: currentUsername,
-        version:saved.version
-       
+        version: saved.version
       },
       manager // pasamos el manager para que sea parte de la misma transacción
     );
-
 
     const { password: _, ...rest } = saved;
     return rest;
@@ -118,6 +116,12 @@ export const createUser = async (payload: {
 /**
  * Actualiza un usuario existente.
  * Recibe un objeto parcial validado por DTO.
+ *
+ * Nota: payload.userRole puede ser:
+ *  - undefined (no cambiar)
+ *  - número (id del rol) OR objeto UserRole (en cuyo caso se toma su id)
+ *
+ * Mantengo compatibilidad con el uso previo, pero lo documento y lo manejo de forma robusta.
  */
 export const updateUser = async (
   id: number,
@@ -125,7 +129,8 @@ export const updateUser = async (
     name?: string;
     username?: string;
     password?: string;
-    userRole?: any;
+    userRole?: any; // puede ser id o userRoleId
+    userRoleId?: number; // alternativa explícita
     active?: boolean;
     suspended?: boolean;
     hasProfilePicture?: boolean;
@@ -149,33 +154,54 @@ export const updateUser = async (
       
     }
 
-       // Procesar rol
+    // ------------------------------------------------------------
+    // Procesar rol (aceptamos payload.userRole o payload.userRoleId)
+    // ------------------------------------------------------------
     let newRole = user.userRole;
 
-    // Si viene un rol, validar rol
-    if (payload.userRole) {
-      const role = await roleRepo.findOneBy({ id: payload.userRole });
+    const candidateRoleId = typeof payload.userRole === 'number' ? payload.userRole : payload.userRoleId;
+    // Si viene userRole como objeto con id
+    if (!candidateRoleId && payload.userRole && typeof payload.userRole === 'object' && payload.userRole.id) {
+      // ✅ CORRECCIÓN: aceptar objeto rol como payload (backwards compatibility)
+      // (ej: payload.userRole = { id: 3, name: 'X' })
+      const role = await roleRepo.findOneBy({ id: payload.userRole.id });
       if (!role) throw new Error('Rol no encontrado');
-      
-
-      //Asigno el objeto completo
-       newRole = role;
+      newRole = role;
+    } else if (candidateRoleId) {
+      const role = await roleRepo.findOneBy({ id: candidateRoleId });
+      if (!role) throw new Error('Rol no encontrado');
+      newRole = role;
     }
 
-       // Construir objeto "after"
-    const after = {
+    // ------------------------------------------------------------
+    // Construir objeto "after" (clonamos user y aplicamos payload)
+    // ------------------------------------------------------------
+    const after: any = {
       ...user,
       ...payload,
       userRole: newRole,
     };
 
-      // Detectar cambios genéricos
+    // Si vino password la ponemos en after en forma clavada (se hashará más abajo)
+    if (payload.password) {
+      // no guardamos texto plano en DB; solo lo dejamos en 'after' como indicación de cambio
+      after.password = payload.password;
+    }
+
+    // Detectar cambios genéricos
     const changes = detectModuleChanges(user, after, {
+      // ✅ CORRECCIÓN: asegurarnos que cambios en userRole queden detectados auditablemente.
       ignore: ["password", "createdAt", "updatedAt"],
       relations: ["userRole"],
     });
 
-     // Asignar valores actualizados
+    // Si no hubo cambios -> evitar guardar y evitar audit vacío
+    if (Object.keys(changes).length === 0) {
+      const { password: _, ...rest } = user;
+      return rest;
+    }
+
+    // Asignar valores actualizados
     Object.assign(user, after);
 
     // Hashear contraseña si vino
@@ -185,18 +211,17 @@ export const updateUser = async (
 
     const saved = await userRepo.save(user);
 
-         // Registrar en auditTrail dentro de la misma transacción
+    // Registrar en auditTrail dentro de la misma transacción
     await registerInAuditTrail(
       {
         module:'Users',
         entity: 'User',
         entityId: saved.id,
         action: 'USER_UPDATE',
-        changes:changes,
+        changes: changes,
         description: "Actualización de configuración de usuario.",
         author: currentUsername,
-        version:saved.version
-       
+        version: saved.version
       },
       manager // pasamos el manager para que sea parte de la misma transacción
     );
@@ -301,10 +326,13 @@ export const updateUserProfile = async (
 
 /**
  * Cambia la contraseña de un usuario (admin action)
+ *
+ * ✅ CORRECCIÓN: ahora recibe currentUsername para registrar correctamente el autor en auditTrail.
  */
 export const setUserPassword = async (
   id: number,
-  newPassword: string
+  newPassword: string,
+  currentUsername?: string // ✅ CORRECCIÓN: se agregó este parámetro
 ): Promise<Partial<User>> => {
 
   return await AppDataSource.transaction(async (manager) => {
@@ -348,16 +376,16 @@ export const setUserPassword = async (
     Object.assign(user, after);
     const saved = await userRepo.save(user);
 
-    // Registrar auditoría
+    // ✅ CORRECCIÓN: usar currentUsername como author (antes se usaba saved.username por error)
     await registerInAuditTrail(
       {
         module:'Users',
         entity: "User",
         entityId: saved.id,
-        action: "USER_PASSWORD_RESET",
+        action: "USER_PASSWORD_SET",
         changes: changes,
         description: "Actualización de contraseña del usuario. Ver detalle en cambios.",
-        author: saved.username,
+        author: currentUsername || saved.username, // ✅ CORRECCIÓN
         version: saved.version,
       },
       manager
@@ -485,17 +513,17 @@ export const suspensionUser = async (
     Object.assign(user, after);
     const saved = await userRepo.save(user);
 
-    // Registrar auditoría
+    // ✅ CORRECCIÓN: usar el estado AFTER para decidir la acción de auditoría (antes se usaba el estado ANTERIOR)
     await registerInAuditTrail(
       {
         module:"Users",
         entity: "User",
         entityId: saved.id,
-        action: user.suspended ? "USER_SUSPENSION" : "USER_ACTIVATION",
+        action: after.suspended ? "USER_SUSPENSION" : "USER_ACTIVATION", // ✅ CORRECCIÓN
         changes: changes,
-        description: user.suspended
+        description: after.suspended
           ? "Suspensión de usuario."
-          : "Reactivación  de usuario.",
+          : "Reactivación de usuario.",
         author: currentUsername,
         version: saved.version,
       },
@@ -508,11 +536,6 @@ export const suspensionUser = async (
   });
 };
 
-
-
-/**
- * Crea un rol con permisos (payload: { name, permissions: string[] })
- */
 /**
  * Crea un rol con permisos (payload: { name, permissions: string[] })
  */
@@ -522,9 +545,6 @@ export const createUserRole = async (
 ): Promise<UserRole> => {
 
   const { name, permissions } = payload;
-
-  console.log(name);
-  console.log(permissions)
 
   return await AppDataSource.transaction(async (manager) => {
     const userRoleRepo = manager.getRepository(UserRole);
@@ -558,17 +578,14 @@ export const createUserRole = async (
 
     await userRolePermissionRepo.save(newPerms);
 
-    // Registrar en auditTrail como parte de la misma transacción
+    // ✅ CORRECCIÓN: Normalizar "changes" en creación de rol (usar 'name' en lugar de 'user')
     await registerInAuditTrail(
       {
         module: "Users",
         entity: "UserRole",
         entityId: savedUserRole.id,
         action: "USER_ROLE_CREATE",
-        changes: {
-          action: `Nuevo rol: ${savedUserRole.name}`,
-          permisos: permissions,
-        },
+        changes: { name: { oldValue: null, newValue: savedUserRole.name } }, // ✅ CORRECCIÓN
         description: "Versión original.",
         author: currentUsername,
         version: savedUserRole.version,
@@ -584,6 +601,9 @@ export const createUserRole = async (
 /**
  * Actualiza un rol existente y sus permisos
  * payload: { id, name, permissions: string[] }
+ *
+ * ✅ CORRECCIÓN: ahora compara permisos y solo recrea si realmente cambian.
+ * También usa before/after y detectModuleChanges como en el resto del servicio.
  */
 export const updateUserRole = async (
   payload: { id: number; name?: string; permissions: string[] },
@@ -599,74 +619,96 @@ export const updateUserRole = async (
     // Buscar rol
     const role = await userRoleRepo.findOne({
       where: { id },
-      relations: ['userRolePermissions']
+      relations: ["userRolePermissions"],
     });
 
-    if (!role) throw new Error('Rol no encontrado');
+    if (!role) throw new Error("Rol no encontrado");
 
     if (!Array.isArray(permissions) || permissions.length === 0) {
-      throw new Error('Debe asignar al menos 1 permiso al rol');
+      throw new Error("Debe asignar al menos 1 permiso al rol");
     }
 
-    const originalName = role.name;
-    const originalPerms = role.userRolePermissions.map(p => p.permission);
+    // BEFORE (estado original)
+    const before = {
+      name: role.name,
+      permissions: role.userRolePermissions.map((p) => p.permission),
+    };
 
-    let nameChanged = false;
-    let permsChanged = false;
+    // AFTER (armamos el estado final ideal sin tocar DB todavía)
+    const after: any = {
+      name: before.name,
+      permissions: [...before.permissions],
+    };
 
-    // --- Actualizar nombre ---
-    if (name && name.trim() !== '' && name.trim() !== role.name) {
-
-      const exists = await userRoleRepo.findOneBy({ name });
+    // 🔄 CAMBIO DE NOMBRE (si corresponde)
+    if (name && name.trim() !== "" && name.trim() !== role.name) {
+      // ✅ CORRECCIÓN: validar nombre duplicado ANTES de aplicarlo
+      const exists = await userRoleRepo.findOneBy({ name: name.trim() });
       if (exists && exists.id !== id) {
-        throw new Error('Ya existe un rol con el mismo nombre');
+        throw new Error("Ya existe un rol con el mismo nombre");
       }
+      after.name = name.trim();
+    }
 
-      role.name = name.trim();
-      nameChanged = true;
+    // 🔄 CAMBIO DE PERMISOS (valor final)
+    after.permissions = [...permissions];
+
+    // --- Detectar cambios usando detectModuleChanges ---
+    const changes = detectModuleChanges(before, after, {
+      ignore: [],
+      relations: [],
+    });
+
+    // Si no hubo cambios → no auditar ni modificar la BD
+    if (Object.keys(changes).length === 0) {
+      return await userRoleRepo.findOne({
+        where: { id: role.id },
+        relations: ["userRolePermissions"],
+      }) as UserRole;
+    }
+
+    // ------------------------
+    // Aplicar cambios en BD
+    // ------------------------
+
+    // Actualizar nombre si cambió
+    if (before.name !== after.name) {
+      role.name = after.name;
       await userRoleRepo.save(role);
     }
 
-    // --- Actualizar permisos ---
-    // Borrar permisos anteriores
-    const oldPerms = await userRolePermissionRepo.find({
-      where: { userRole: { id: role.id } }
-    });
+    // Comparar permisos de forma estable (ordenadas)
+    const sortArr = (a: string[]) => a.slice().sort();
+    const permsSame = JSON.stringify(sortArr(before.permissions)) === JSON.stringify(sortArr(after.permissions));
 
-    if (oldPerms.length > 0) {
-      await userRolePermissionRepo.delete(oldPerms.map(p => p.id));
+    if (!permsSame) {
+      // ✅ CORRECCIÓN: solo borrar/crear si realmente cambiaron los códigos de permiso
+      const oldPerms = await userRolePermissionRepo.find({
+        where: { userRole: { id: role.id } },
+      });
+
+      if (oldPerms.length > 0) {
+        await userRolePermissionRepo.delete(oldPerms.map((p) => p.id));
+      }
+
+      const newPermissionsEntities = after.permissions.map((code:any) =>
+        userRolePermissionRepo.create({ permission: code, userRole: role })
+      );
+
+      await userRolePermissionRepo.save(newPermissionsEntities);
     }
 
-    // Crear nuevos permisos
-    const newPerms = permissions.map(code =>
-      userRolePermissionRepo.create({ permission: code, userRole: role })
-    );
-
-    await userRolePermissionRepo.save(newPerms);
-
-    // Detectar cambios de permisos
-    const permsSorted = permissions.slice().sort();
-    const originalSorted = originalPerms.slice().sort();
-    permsChanged = JSON.stringify(permsSorted) !== JSON.stringify(originalSorted);
-
-    // --- Registrar en AuditTrail ---
+    // Registrar en AuditTrail
     await registerInAuditTrail(
       {
         module: "Users",
         entity: "UserRole",
         entityId: role.id,
         action: "USER_ROLE_UPDATE",
-        changes: {
-          nombreOriginal: originalName,
-          nombreNuevo: role.name,
-          nombreCambiado: nameChanged,
-          permisosOriginales: originalPerms,
-          permisosNuevos: permissions,
-          permisosCambiados: permsChanged
-        },
+        changes: changes,
         description: "Actualización de rol.",
         author: currentUsername,
-        version: role.version
+        version: role.version,
       },
       manager
     );
@@ -674,7 +716,7 @@ export const updateUserRole = async (
     // Devolver rol actualizado
     return await userRoleRepo.findOne({
       where: { id: role.id },
-      relations: ['userRolePermissions']
+      relations: ["userRolePermissions"],
     }) as UserRole;
   });
 };

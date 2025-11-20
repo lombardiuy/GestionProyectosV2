@@ -178,6 +178,8 @@
         
         
             </form>
+
+               <version-control *ngIf="userCreateForm.value.id"  [entity]="'User'" [entityId]="userCreateForm.value.id" class="w-90 m-2"></version-control>
         </div>
     </div>
 

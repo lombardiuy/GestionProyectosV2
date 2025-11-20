@@ -5,11 +5,11 @@ import { AuditTrailPage } from './pages/audit-trail/audit-trail.page';
 
 
 
-const routes: Routes = 
-[
-   { path: '', component: AuditTrailPage},
-
+const routes: Routes = [
+  { path: '', component: AuditTrailPage, pathMatch: 'full' },
+  { path: ':id', component: AuditTrailPage }   
 ];
+
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

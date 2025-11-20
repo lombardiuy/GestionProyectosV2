@@ -3,7 +3,7 @@
 
         <div class="card w-80 mh-80 Mh-100 overflow-y-auto">
 
-              <div class="card-header alert p-2 alert-secondary" 
+              <div class="card-header" 
         >
          
 
@@ -162,6 +162,9 @@
         
         
             </form>
+      
+
+            <version-control *ngIf="userProfileForm.value.id"  [entity]="'User'" [entityId]="userProfileForm.value.id" class="w-90 m-2"></version-control>
         </div>
 
         </div>

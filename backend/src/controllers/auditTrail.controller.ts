@@ -47,3 +47,16 @@ export const getAuditTrailFilters = async (req: Request, res: Response) => {
   }
 };
 
+export const getAuditTrailByEntity = async (req: Request, res: Response) => {
+  try {
+    const entity = req.params.entity;
+    const entityId = Number(req.params.id);
+
+    const data = await auditTrailService.getAuditTrailByEntity(entity, entityId);
+
+    res.json({ data });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+

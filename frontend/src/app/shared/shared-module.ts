@@ -11,6 +11,7 @@ import { LoadingSpinnerComponent } from './components/loading-spinner/loading-sp
 import { LoadingPointsComponent } from './components/loading-points/loading-points.component';
 
 import { UnauthorizedPage } from './pages/unauthorized/unauthorized.page';
+import { VersionControlComponent } from './components/version-control/version-control.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { UnauthorizedPage } from './pages/unauthorized/unauthorized.page';
      TableHeaderFilterCheckboxesMultipleComponent, 
      LoadingPointsComponent,
     LoadingSpinnerComponent, 
+    VersionControlComponent
     
     ],
   imports: [
@@ -35,6 +37,7 @@ import { UnauthorizedPage } from './pages/unauthorized/unauthorized.page';
     TableHeaderFilterCheckboxesMultipleComponent, 
     LoadingPointsComponent, 
     LoadingSpinnerComponent,
+    VersionControlComponent
    
 
   ]

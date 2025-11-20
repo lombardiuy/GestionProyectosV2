@@ -172,11 +172,12 @@ export const saveUserRole = async (req: UserRequest, res: Response) => {
  * POST /user/setUserPassword
  * req.body validado por SetUserPasswordDto -> { id, password }
  */
-export const setUserPassword = async (req: Request, res: Response) => {
+export const setUserPassword = async (req: UserRequest, res: Response) => {
   try {
     const { id, password } = req.body;
     if (!id || !password) return res.status(400).json({ error: 'Faltan datos' });
-    const user = await userService.setUserPassword(Number(id), String(password));
+
+    const user = await userService.setUserPassword(Number(id), String(password),req.user?.username);
     res.json({ user });
   } catch (error: any) {
     res.status(401).json({ error: error.message });
