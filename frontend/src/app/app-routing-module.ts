@@ -56,6 +56,13 @@ const routes: Routes = [
         loadChildren: () =>
           import('./features/auditTrail/audit-trail-module').then(m => m.AuditTrailModule) 
       },
+      
+       {
+        path: 'factories',
+        loadChildren: () =>
+          import('./features/factories/factories-module').then(m => m.FactoriesModule) 
+      },
+
    
     ]
   },

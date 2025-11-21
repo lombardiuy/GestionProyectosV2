@@ -164,7 +164,7 @@
             </form>
       
 
-            <version-control *ngIf="userProfileForm.value.id"  [entity]="'User'" [entityId]="userProfileForm.value.id" class="w-90 m-2"></version-control>
+            <version-control *ngIf="userProfileForm.value.id"  [hasPermission]="hasPermission.bind(this)" [entity]="'User'" [entityId]="userProfileForm.value.id" class="w-90 m-2"></version-control>
         </div>
 
         </div>

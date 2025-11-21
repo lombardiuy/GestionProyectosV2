@@ -271,6 +271,14 @@ this.form['newPasswordRepeat'].updateValueAndValidity();
 
 
   }
+
+      hasPermission(code: string): boolean {
+    return this.authService.hasPermission(code);
+  }
+
+   
+
+  
     ngOnDestroy(): void {
  
   }

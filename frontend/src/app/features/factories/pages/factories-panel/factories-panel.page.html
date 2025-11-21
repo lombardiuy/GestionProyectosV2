@@ -1,0 +1,50 @@
+
+
+<!--USERS PANEL-->
+
+<div  *ngIf="!loading else loadingSpinner"  class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+  <div class="card w-95 h-95">
+    <div class="card-header w-100">
+      <h5><i class="fa-solid fa-industry"></i> Gestión de Fábricas </h5>
+    </div>
+
+    <div class="card-body d-flex flex-column w-100 h-90">
+
+        <div class="w-100 h-8">
+          <button  *ngIf=" hasPermission('FACTORIES_CREATE') && (formMode === 'select' || formMode === 'edit')" class="btn btn-success position-absolute end-0 me-3"  (click)="createFactory()">
+          <i class="bi bi-plus"></i><i class="fa-solid fa-industry"></i> Crear Fábrica
+        </button>
+
+          <button  (click)="cancelSelection()" *ngIf=" formMode === 'create'" class="btn btn-primary position-absolute end-0 me-3" >
+          <i class="fa-solid fa-industry"></i> Visualizar Fábricas
+        </button>
+
+        <input *ngIf="selectedFactory && !selectedFactory.id" type="text" class="form-control w-50 mb-2" placeholder="Nombre de la fábrica" [(ngModel)]="selectedFactory!.name" >
+                
+           
+      </div>
+
+
+      <div class="w-100 h-92  overflow-auto">
+                    
+
+      </div>
+
+    </div>
+
+
+   
+  </div>
+
+
+
+</div>
+
+
+
+
+
+
+<ng-template  #loadingSpinner>
+  <loading-spinner class="w-100 h-100"></loading-spinner>
+</ng-template>

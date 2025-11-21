@@ -74,12 +74,22 @@
           
                 <span><i class="bi bi-diagram-3-fill"></i>  Proceso</span>
                 <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
+                
           
               
               </a>
               <div class="collapse" id="processMenu">
-                  <a [routerLink]="['equipment']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#processMenu"><i class="bi bi-gear-wide-connected"></i> Equipos</a>
-                
+
+                  <a *ngIf="hasPermission('FACTORIES_VIEW')" [routerLink]="['/factories']" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#adminMenu" aria-expanded="false">
+          
+                        <span><i class="fa-solid fa-industry"></i> Fábricas</span>
+                        
+                  
+                      
+                      </a>
+
+
+             
                
               </div>
 
