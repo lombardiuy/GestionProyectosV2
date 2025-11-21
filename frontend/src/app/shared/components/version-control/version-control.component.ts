@@ -12,12 +12,13 @@ export class VersionControlComponent implements OnChanges {
 
   @Input() entity!: string;
   @Input() entityId!: number;
+  @Input() hasPermission!: (code: string) => boolean;
 
   versions: any[] = [];
   latestVersion: any = null;   // ⭐ NUEVO
   loading = true;
 
-  displayVersionControl: boolean = true;
+  displayVersionControl: boolean = false;
 
   constructor(private auditService: AuditTrailService, public router:Router) {}
 

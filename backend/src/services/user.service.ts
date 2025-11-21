@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 import { UserRolePermission } from '../entities/users/UserRolePermission.entity';
 import { registerInAuditTrail, detectModuleChanges } from './auditTrail.service';
-
+import { In } from "typeorm";
 
 const userRepository = AppDataSource.getRepository(User);
 const userRolesRepository = AppDataSource.getRepository(UserRole);
@@ -671,11 +671,11 @@ export const updateUserRole = async (
     // Aplicar cambios en BD
     // ------------------------
 
-    // Actualizar nombre si cambió
-    if (before.name !== after.name) {
-      role.name = after.name;
-      await userRoleRepo.save(role);
-    }
+   
+
+      role.version++;
+
+     await userRoleRepo.save(role);
 
     // Comparar permisos de forma estable (ordenadas)
     const sortArr = (a: string[]) => a.slice().sort();
@@ -694,6 +694,8 @@ export const updateUserRole = async (
       const newPermissionsEntities = after.permissions.map((code:any) =>
         userRolePermissionRepo.create({ permission: code, userRole: role })
       );
+
+
 
       await userRolePermissionRepo.save(newPermissionsEntities);
     }

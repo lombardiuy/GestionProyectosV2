@@ -68,9 +68,9 @@
         <table class="table table-sm text-center ">
           <thead>
             <tr>
-          
+              <th class="w-2">#</th>
               <th class="w-10">Entidad</th>
-              <th class="w-5">ID</th>
+              <th class="w-3">ID</th>
               <th class="w-15">Acción</th>
               <th class="w-20">Cambios</th>
               <th class="w-30">Descripción</th>
@@ -83,7 +83,7 @@
 
             <tr *ngFor="let item of logs">
 
-        
+              <td>{{ item.id }}</td>
               <td>{{ item.entity }}</td>
               <td>{{ item.entityId }}</td>
               <td>{{ item.action }}</td>

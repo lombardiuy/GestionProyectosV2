@@ -23,10 +23,10 @@
       <thead>
         <tr>
           <th class="w-10">Versión</th>
-          <th class="w-50">Descripción</th>
+          <th [ngClass]="{'w-50':hasPermission('AUDIT_TRAIL_VIEW'), 'w-55':!hasPermission('AUDIT_TRAIL_VIEW')}">Descripción</th>
           <th class="w-20">Autor</th>
           <th class="w-15">Fecha y hora</th>
-          <th class="w-5"></th>
+          <th class="w-5" *ngIf="hasPermission('AUDIT_TRAIL_VIEW')"></th>
         </tr>
       </thead>
 
@@ -36,7 +36,7 @@
           <td>{{ v.description || '-' }}</td>
           <td>{{ v.author }}</td>
           <td>{{ v.created | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-          <td><i (click) ="goToAuditTrail(v.id)" class="fa-solid fa-book"></i></td>
+          <td *ngIf="hasPermission('AUDIT_TRAIL_VIEW')"><i (click) ="goToAuditTrail(v.id)" class="fa-solid fa-book"></i></td>
         </tr>
       </tbody>
     </table>
@@ -46,7 +46,7 @@
       <thead>
         <tr>
           <th class="w-10">Versión</th>
-          <th class="w-50">Descripción</th>
+             <th [ngClass]="{'w-50':hasPermission('AUDIT_TRAIL_VIEW'), 'w-55':!hasPermission('AUDIT_TRAIL_VIEW')}">Descripción</th>
           <th class="w-20">Autor</th>
           <th class="w-15">Fecha y hora</th>
           <th class="w-5"></th>
@@ -59,7 +59,7 @@
           <td>{{ latestVersion.description || '-' }}</td>
           <td>{{ latestVersion.author }}</td>
           <td>{{ latestVersion.created | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-         <td><i (click) ="goToAuditTrail(latestVersion.id)" class="fa-solid fa-book"></i></td>
+        <td *ngIf="hasPermission('AUDIT_TRAIL_VIEW')"><i (click) ="goToAuditTrail(latestVersion.id)" class="fa-solid fa-book"></i></td>
         </tr>
       </tbody>
     </table>
