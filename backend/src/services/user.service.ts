@@ -59,10 +59,12 @@ export const createUser = async (payload: {
   name: string;
   username: string;
   password: string;
-  userRoleId: number;
+  userRole: number;
 },  currentUsername: string // <-- el usuario logueado 
 ): Promise<Partial<User>> => {
-  const { name, username, password, userRoleId } = payload;
+  const { name, username, password, userRole } = payload;
+
+  console.log(payload)
 
   return await AppDataSource.transaction(async (manager) => {
     const userRepo = manager.getRepository(User);
@@ -74,13 +76,15 @@ export const createUser = async (payload: {
       throw new Error('El usuario ya existe');
     }
 
-    const role = await roleRepo.findOneBy({ id: userRoleId });
+    console.log
+    const role = await roleRepo.findOneBy({ id: userRole });
     if (!role) {
       throw new Error('Rol no encontrado');
     }
 
     const hashed = await bcrypt.hash(password, 10);
 
+    console.log(role)
     const newUser = userRepo.create({
       name,
       username,

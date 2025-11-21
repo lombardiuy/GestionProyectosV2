@@ -46,10 +46,10 @@
       <thead>
         <tr>
           <th class="w-10">Versión</th>
-             <th [ngClass]="{'w-50':hasPermission('AUDIT_TRAIL_VIEW'), 'w-55':!hasPermission('AUDIT_TRAIL_VIEW')}">Descripción</th>
+          <th [ngClass]="{'w-50':hasPermission('AUDIT_TRAIL_VIEW'), 'w-55':!hasPermission('AUDIT_TRAIL_VIEW')}">Descripción</th>
           <th class="w-20">Autor</th>
           <th class="w-15">Fecha y hora</th>
-          <th class="w-5"></th>
+          <th class="w-5" *ngIf="hasPermission('AUDIT_TRAIL_VIEW')"></th>
         </tr>
       </thead>
 

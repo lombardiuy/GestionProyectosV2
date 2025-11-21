@@ -107,6 +107,14 @@
                     <td>{{ item.created | date:'dd/MM/yyyy HH:mm:ss' }}</td>
 
             </tr>
+
+              <!-- MENSAJE CUANDO NO HAY REGISTROS -->
+  <tr *ngIf="logs.length === 0">
+    <td colspan="8" class="text-center text-muted py-4">
+      No se encontraron registros.
+    </td>
+  </tr>
+  
           </tbody>
 
         </table>

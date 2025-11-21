@@ -60,13 +60,15 @@ export const selectUserById = async (req: Request, res: Response) => {
  */
 export const createUser = async (req: UserRequest, res: Response) => {
 
+  console.log(req.body)
+
 
   try {
     const dto = req.body as {
       name: string;
       username: string;
       password: string;
-      userRoleId: number;
+      userRole: number;
     };
 
 

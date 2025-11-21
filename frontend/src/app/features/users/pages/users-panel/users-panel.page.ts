@@ -134,7 +134,7 @@ createEmptyForm() {
       username: ['', Validators.required],
       password: [''],
       hasProfilePicture: [null],
-      userRole: ['', Validators.required],
+      userRole: [null, Validators.required],
       active:[null],
       suspended:[null]
     }, {
@@ -386,6 +386,8 @@ async initForm(selectedUser?: User | null) {
 
 
   saveUser() {
+
+    console.log(this.userCreateForm.value)
 
 
  
