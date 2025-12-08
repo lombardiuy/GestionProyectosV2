@@ -1,0 +1,23 @@
+
+      <!-- Filtro y botón -->
+      <div class="w-100 d-flex justify-content-between">
+     
+
+          <select [(ngModel)]="selectedFactory"
+        (ngModelChange)="selectFactory($event)"
+        class="form-control form-select form-select-sm w-100"> 
+  <option [ngValue]="null" disabled>
+    Seleccione una fábrica para visualizarla
+  </option>
+  <option *ngFor="let factory of factoriesList" [ngValue]="factory">
+    {{ factory.name }}
+  </option>
+</select>
+
+    
+
+            
+        
+ 
+      </div>
+

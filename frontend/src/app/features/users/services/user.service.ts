@@ -17,7 +17,7 @@ export class UserService {
   private selectedUserSubject = new BehaviorSubject<User | null>(null);
 
   public usersList$ = this.usersListSubject.asObservable();
-  public selectedUser$ = this.selectedUserSubject.asObservable();
+
 
   constructor(private http: HttpClient) {}
 
@@ -93,7 +93,7 @@ updateUser(user: User) {
   async getAllUsers(): Promise<User[] | null> {
     try {
       const userList = await firstValueFrom(
-        this.http.get<User[]>(`${this.apiUrl}/list`)
+        this.http.get<User[]>(`${this.apiUrl}`)
       );
       this.usersListSubject.next(userList);
       return userList;

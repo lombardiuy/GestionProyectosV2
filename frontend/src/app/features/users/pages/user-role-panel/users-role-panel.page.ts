@@ -111,6 +111,7 @@ permissionDependencies: PermissionMap = {
    
   this.loading = false;
 
+  console.log(this.selectedUserRole)
    
    
   
@@ -143,6 +144,7 @@ permissionDependencies: PermissionMap = {
   }
 
 selectUserRole(event: any) {
+  console.log(event)
   this.createEmptyForm(); // crea todos los controles
   this.selectedUserRole = event;
   this.formMode = 'edit';
@@ -218,7 +220,7 @@ cancelSelection() {
 
 
     this.userRoleService.saveUserRole(this.selectedUserRole!, selectedPermissions).subscribe({
-      next: async() => {
+      next: async(role:any) => {
         this.formMessage = this.messageService.createFormMessage(MessageType.SUCCESS,'Rol guardado con éxito!' )
         await this.userRoleService.getAllUserRoles();
         await delay(1000);
@@ -226,6 +228,23 @@ cancelSelection() {
         this.saving = false;
         this.selectedUserRole = null;
         this.formMode = 'select';
+
+      // Esperar lista actualizada
+const roles = await firstValueFrom(this.userRolesList$);
+
+console.log(roles)
+
+// Buscar el rol completo por ID
+const fullRole = roles?.find(r => r.id === role.role.id);
+
+if (fullRole) {
+  this.selectedUserRole = null as any;
+ await delay(10); 
+this.selectedUserRole = { ...fullRole };
+  this.selectUserRole(fullRole);
+}
+
+
     
     
         
@@ -242,6 +261,8 @@ cancelSelection() {
       },
     });
   }
+
+  
 
 
 

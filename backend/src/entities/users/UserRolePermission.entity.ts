@@ -16,6 +16,8 @@ export class UserRolePermission extends BaseEntity {
     @ManyToOne(() => UserRole, userRole => userRole.userRolePermissions, { onDelete: "CASCADE" })
     public userRole!: UserRole;
 
+    
+
     @VersionColumn()
     public version!:number;
         

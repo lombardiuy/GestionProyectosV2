@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { SharedRoutingModule } from './shared-routing-module';
 
+import { TooltipDirective } from './directives/tooltip.directive';
+
 import { SideNavbarComponent } from './components/side-navbar/side-navbar.component';
 import { TopNavbarComponent } from './components/top-navbar/top-navbar.component';
 import { FormMessageComponent } from './components/form-message/form-message.component';
@@ -13,8 +15,11 @@ import { LoadingPointsComponent } from './components/loading-points/loading-poin
 import { UnauthorizedPage } from './pages/unauthorized/unauthorized.page';
 import { VersionControlComponent } from './components/version-control/version-control.component';
 
+
+
 @NgModule({
   declarations: [
+    TooltipDirective,
      UnauthorizedPage,
      TopNavbarComponent,
      SideNavbarComponent, 
@@ -30,6 +35,7 @@ import { VersionControlComponent } from './components/version-control/version-co
     SharedRoutingModule
   ], 
   exports:[
+    TooltipDirective,
      UnauthorizedPage,
     TopNavbarComponent, 
     SideNavbarComponent, 

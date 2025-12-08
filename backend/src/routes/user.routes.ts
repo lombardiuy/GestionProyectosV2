@@ -30,7 +30,7 @@ const router = Router()
 
 //USERS
 
-router.get('/list', authMiddleware, requirePermissionMiddleware("USERS_VIEW"), getAllUsers)
+router.get('/', authMiddleware, requirePermissionMiddleware("USERS_VIEW"), getAllUsers)
 router.get('/select/:id', authMiddleware, requirePermissionMiddleware("USERS_EDIT"), selectUserById)
 
 router.post('/create', authMiddleware,requirePermissionMiddleware("USERS_CREATE"),  validateDto(CreateUserDto),  createUser)

@@ -20,7 +20,7 @@ app.use(fileUpload());
 app.use('/', routes)
 
 const assetsRoute = path.resolve(process.env.ASSETS_ROUTE || '');
-console.log(assetsRoute)
+
 app.use('/public', express.static(assetsRoute))
 
 

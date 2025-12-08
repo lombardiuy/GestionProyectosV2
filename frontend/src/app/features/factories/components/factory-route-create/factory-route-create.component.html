@@ -1,0 +1,114 @@
+
+<div class="modal-dialog modal-dialog-centered modal-lg">
+ <div class="modal-content">
+
+     <div class="modal-header">   
+   
+        <button  #btnClose type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        
+</div>
+
+ <div class="modal-body">
+
+
+    <div *ngIf="!loadingFactoryRouteCreateForm else loadingSpinner"  class="card w-100 h-100">
+
+        <div class="card-header alert p-2" [ngClass] = "{
+            'alert-primary': !id?.value,
+            'alert-success': id?.value && active?.value,
+            'alert-danger':id?.value && !active?.value,
+           
+           }">
+            <h6 ><i class="fa-solid fa-route"></i> Crear ruta</h6>
+
+
+ 
+        </div>
+
+       
+        <div class="card-body">
+
+
+
+            <form  [formGroup]="factoryRouteCreateForm">
+
+                <div class="d-flex w-100 h-100 flex-column">
+                    <div class="w-100  d-flex flex-column justify-content-between">
+                   
+            
+                <label>Nombre:</label>
+                <input type="text" formControlName="name" class="form-control" [ngClass]="{'is-invalid': !!name?.errors, 'is-valid': name?.valid}">
+
+                  <div *ngIf="name?.errors as nameErrors" class="invalid-feedback">
+                        <div *ngIf="nameErrors['required']">El campo es obligatorio</div>
+              
+                 </div>
+
+
+                <label>Descripción:</label>
+
+                <textarea type="text"  rows="3" formControlName="description" class="form-control" [ngClass]="{'is-invalid': !!description?.errors, 'is-valid': description?.valid}" ></textarea>
+
+                  <div *ngIf="description?.errors as descriptionErrors" class="invalid-feedback">
+                        <div *ngIf="descriptionErrors['required']">El campo es obligatorio</div>
+              
+                 </div>
+
+                
+
+                </div>
+                </div>
+
+                <div class="d-flex w-100 flex-column align-items-center">
+
+                    
+                <div class="text-center">
+        
+                    <button   (click) = "saveFactoryRoute()" class="btn btn-success mr-1 mt-2" [disabled] = "factoryRouteCreateForm.invalid || savingFactoryRoute || !factoryRouteCreateForm.dirty">
+
+
+                        
+                        <span *ngIf ="savingFactoryRoute" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                      <span *ngIf="!id?.value"><i class="fa-solid fa-floppy-disk"></i> Crear ruta </span>
+                        <span *ngIf="id?.value"> <i class="fa-solid fa-floppy-disk"></i> Guardar cambios</span>
+
+                    </button>
+
+            
+
+                 
+                </div>
+        
+          
+        
+                </div>
+
+                <form-message [formMessage]="factoryRouteFormMessage"></form-message>
+
+        
+                
+        
+        
+        
+            </form>
+
+               <version-control   *ngIf="factoryRouteCreateForm.value.id" [hasPermission]="hasPermission.bind(this)"[entity]="'Factory'" [entityId]="factoryRouteCreateForm.value.id" class="w-90 m-2"></version-control>
+        </div>
+    </div>
+
+    
+
+    
+
+ </div>
+
+ </div>
+
+</div>
+
+
+  
+
+<ng-template  #loadingSpinner>
+  <loading-spinner class="w-100 h-100"></loading-spinner>
+</ng-template>

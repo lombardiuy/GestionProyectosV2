@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, VersionColumn, CreateDateColumn, UpdateDateColumn  } from "typeorm";
 import { Material } from "./material.entity";
 import { MaterialParameter } from "./material-parameter.entity";
+
 
 @Entity({ name: "catalogue_material" })
 export class CatalogueMaterial {
@@ -16,13 +17,19 @@ export class CatalogueMaterial {
   @Column({ type: "nvarchar", length: 255, nullable: true })
   provider!: string;
 
-  @Column({ type: "int" })
-  materialId!: number;
-
-  @ManyToOne(() => Material, { nullable: true, onDelete: "SET NULL" })
-  @JoinColumn({ name: "material_id" })
+  @ManyToOne(() => Material, (m) => m.classes, { nullable: true, onDelete: "SET NULL" })
   material!: Material;
 
   @OneToMany(() => MaterialParameter, (p) => p.catalogueMaterial, { cascade: true })
   parameters!: MaterialParameter[];
+
+  @VersionColumn()
+  public version!:number;
+    
+  @CreateDateColumn()
+  public created!: Date;
+    
+  @UpdateDateColumn()
+  public updated!: Date;
+
 }

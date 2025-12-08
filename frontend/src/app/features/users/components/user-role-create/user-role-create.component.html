@@ -32,7 +32,7 @@
               <tbody >
                 <tr *ngFor="let mod of modules">
         
-                  <td class="align-middle text-center w-20  bold"> <span [innerHTML]="mod.module.icon"></span>{{ mod.module.description }} </td>
+                  <td class="align-middle text-center w-20  bold " > <span class="me-1" [innerHTML]="mod.module.icon"></span>{{ mod.module.description }} </td>
                   <td class="w-80 align-middle text-center">
 
                         <div class="d-flex flex-wrap gap-5 w-100">
@@ -78,7 +78,7 @@
       (hasPermission('USERS_ROLE_EDIT') && formMode === 'edit')
     )
     
-    " (click)="saveUserRole()" class="btn btn-primary" type="submit"  [disabled] = "userRoleCreateForm!.invalid || saving || selectedUserRole?.name === '' || !userRoleCreateForm!.dirty">
+    " (click)="saveUserRole()" class="btn btn-primary btn-sm" type="submit"  [disabled] = "userRoleCreateForm!.invalid || saving || selectedUserRole?.name === '' || !userRoleCreateForm!.dirty">
       Guardar
     </button>
         <form-message *ngIf="saving" [formMessage]="formMessage"></form-message>

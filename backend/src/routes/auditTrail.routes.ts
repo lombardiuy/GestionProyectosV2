@@ -8,6 +8,6 @@ const router = Router();
 
 router.get("/", authMiddleware, requirePermissionMiddleware("AUDIT_TRAIL_VIEW"), getAuditTrail);
 router.get("/versionControl/:entity/:id", authMiddleware, getAuditTrailByEntity);
-router.get("/filters",requirePermissionMiddleware("AUDIT_TRAIL_VIEW"),getAuditTrailFilters);
+router.get("/filters",authMiddleware, requirePermissionMiddleware("AUDIT_TRAIL_VIEW"),getAuditTrailFilters);
 
 export default router;

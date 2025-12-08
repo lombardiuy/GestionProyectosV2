@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Factory } from "./factory.entity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, VersionColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Factory } from "../factories/factory.entity";
 import { Area } from "../areas/area.entity";
 
 @Entity({ name: "factory_route" })
@@ -10,13 +10,26 @@ export class FactoryRoute {
   @Column({ type: "nvarchar", length: 255 })
   name!: string;
 
-  @Column({ type: "nvarchar", length: 1000, nullable: true })
+  @Column({ type: "nvarchar", length: 255 })
   description!: string;
 
-  @OneToMany(() => Factory, (f) => f.routes)
-  factories!: Factory[];
+  @Column()
+  active!: boolean;
 
-  // opcional: áreas asociadas a la ruta
-  @OneToMany(() => Area, (a) => a.route)
+  @ManyToOne(() => Factory, factory => factory.routes, { nullable: false })
+  factory!: Factory;
+
+  @ManyToMany(() => Area, area => area.routes)
   areas!: Area[];
+
+  @VersionColumn()
+  public version!:number;
+    
+  @CreateDateColumn()
+  public created!: Date;
+    
+  @UpdateDateColumn()
+  public updated!: Date;
+
+
 }

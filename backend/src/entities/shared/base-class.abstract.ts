@@ -6,4 +6,7 @@ export abstract class BaseClassAbstract {
 
   @Column({ type: "nvarchar", length: 255 })
   name!: string;
+
+  @Column()
+  active!: boolean;
 }

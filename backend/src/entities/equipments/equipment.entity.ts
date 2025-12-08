@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, VersionColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { EquipmentParameter } from "./equipment-parameter.entity";
 import { Area } from "../areas/area.entity";
+import { EquipmentClass } from "./equipment-class.entity";
+
 
 @Entity({ name: "equipment" })
 export class Equipment {
@@ -25,11 +27,29 @@ export class Equipment {
   @Column({ type: "nvarchar", length: 255, nullable: true })
   model!: string;
 
-  // Relación con el area (opcional)
+  @Column()
+  hasPicture!: boolean; 
+
+  @Column()
+  active!: boolean;
+
   @ManyToOne(() => Area, (a) => a.equipments, { nullable: true, onDelete: "SET NULL" })
-  @JoinColumn({ name: "area_id" })
   area!: Area;
+
+  @ManyToOne(() => EquipmentClass, (c) => c.equipments)
+  equipmentClass!: EquipmentClass;
 
   @OneToMany(() => EquipmentParameter, (p) => p.equipment, { cascade: true })
   parameters!: EquipmentParameter[];
+
+  @VersionColumn()
+  public version!:number;
+    
+  @CreateDateColumn()
+  public created!: Date;
+    
+  @UpdateDateColumn()
+  public updated!: Date;
+
+  
 }

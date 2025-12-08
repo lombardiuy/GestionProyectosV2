@@ -69,7 +69,7 @@ export class UsersPanelPage implements OnInit {
 
 
   public userCreateForm!: FormGroup;
-  public selectedUser$: Observable<User | null>;
+
   public userRolesList$:Observable<UserRole[] | null>;
   
  
@@ -96,7 +96,6 @@ export class UsersPanelPage implements OnInit {
 
      this.usersList$ = this.userService.usersList$;
      this.userRolesList$ = this.userRoleService.userRolesList$;
-     this.selectedUser$ = this.userService.selectedUser$;
      this.timestamp$ = this.timeService.timestamp$;
 
      

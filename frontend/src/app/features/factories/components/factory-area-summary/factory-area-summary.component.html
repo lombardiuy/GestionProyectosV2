@@ -1,0 +1,38 @@
+<div  class="border rounded p-2 m-2 area d-flex flex-column  position-relative">
+
+               
+
+ <i    class="fa-solid fa-pen-to-square top-0 position-absolute top-0 end-0 m-1 text-secondary cursor-pointer" style="font-size:12px" ></i>
+ 
+
+ <div class="w-100  h-40 text-center d-flex flex-column text-secondary border-bottom">
+
+    <div style="font-size:12px" class="bold text-center mb-2"> {{area.name}}</div>
+    
+
+    <div class="text-start" style="font-size:10px">Tipo de área: {{area.areaClass.name}}</div>
+    <div class="text-start" style="font-size:10px">
+      
+      <span *ngIf="area.routes.length < 2">Ruta: </span>
+      <span *ngIf="area.routes.length > 1">Rutas: </span>
+
+      <span *ngFor = "let route of area.routes">
+         {{route.name}}
+      </span>
+
+    </div>
+    <div class=" text-start" style="font-size:10px">Código: {{area.code}}</div>
+
+ </div>
+
+ <div class="w-100 d-flex flex-wrap justify-content-around align-items-center h-60">
+  <img *ngFor="let equipment of area.equipments" [src]="equipment?.hasPicture? equipmentPicturePath+'/EquipmentPic_'+equipment.id+'.jpeg' + '?t=' + timestamp : equipmentClassPicturePath  +'/EquipmentClassPic_' + equipment.equipmentClass.id+'.jpeg' + '?t=' + timestamp" alt="..." class="avatar-sm"   [Tooltip]="equipment.name" tooltipPlacement="bottom" tooltipClass="tooltip-secondary">
+
+      
+        
+        </div>
+        
+
+     
+            
+ </div>

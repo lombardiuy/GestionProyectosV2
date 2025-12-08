@@ -1,0 +1,111 @@
+<div class="card w-100 d-flex mb-3">
+
+    <div *ngIf="route?.active" class="card-header"  >
+
+    <div class="w-100 d-flex justify-content-between">
+
+      <div class="cursor-pointer" [Tooltip]="route?.description!" tooltipPlacement="bottom" tooltipClass="tooltip-secondary">
+            
+     <i class="fa-solid fa-route"></i> 
+     Ruta: {{ route?.name }}
+    
+    </div>
+     
+      <div>
+
+
+        <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION')"
+  
+    class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
+     (click)="factoryRouteSuspension(route!, false)"
+     data-bs-toggle="modal"
+     data-bs-target="#factoryRouteSuspensionModal"class="fa-solid fa-solid fa-toggle-on color-success cursor-pointer " ></i>
+
+
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!route?.active" class="card-header p-2 alert alert-danger border-0"  style="border-bottom: 1px solid rgba(0,0,0,.125) !important;" >
+
+    <div class="w-100 d-flex justify-content-between">
+
+      <div class="cursor-pointer" [Tooltip]="route?.description!" tooltipPlacement="bottom" tooltipClass="tooltip-secondary">
+            
+     <i class="fa-solid fa-route"></i> 
+     Ruta: {{ route?.name }}
+    
+    </div>
+     
+      <div>
+
+  <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION')"
+  
+    class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
+     (click)="factoryRouteSuspension(route!, true)"
+     data-bs-toggle="modal"
+     data-bs-target="#factoryRouteSuspensionModal" class="fa-solid fa-solid fa-toggle-off color-danger cursor-pointer " ></i>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+
+
+
+<div class="d-flex flex-wrap w-100">
+
+  
+      <!-- Componentes de área -->
+      <factory-area-summary-component
+        *ngFor="let area of route!.areas; trackBy: trackByArea"
+        [area]="area"
+        [equipmentClassPicturePath]="equipmentClassPicturePath"
+        [equipmentPicturePath]="equipmentPicturePath"
+        [timestamp]="timestamp">
+      </factory-area-summary-component>
+
+      <!-- Botón agregar área -->
+      <div class="cursor-pointer area rounded p-2 m-2 border-success color-success 
+                  d-flex flex-column justify-content-around align-items-center add-btn"
+           style="border:dashed; border-width:1px"
+           (mouseover)="createAreaBtnLegend = route!.id"
+           (mouseout)="createAreaBtnLegend = null">
+
+        <span *ngIf="createAreaBtnLegend === route!.id">&nbsp;</span>
+        <i class="bi bi-plus-lg" style="font-size:30px"></i>
+        <span *ngIf="createAreaBtnLegend === route!.id">Agregar área</span>
+
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+</div>
+
+
+<ng-template  #noFactoryRoutes>
+<div class="alert alert-danger">Esta fábrica no posee ninguna ruta.</div>
+
+
+
+</ng-template>

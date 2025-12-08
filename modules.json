@@ -19,12 +19,70 @@
     ]
   }, 
   {
-    "module": { "code": "Factories", "description": "Fábrica", "icon": "<i class='fa-solid fa-industry'></i>" },
+    "module": { "code": "Factories", "description": "Fábricas", "icon": "<i class='fa-solid fa-industry'></i>" },
     "permissions": [
       { "code": "FACTORIES_VIEW", "description": "Visualizar" },
       { "code": "FACTORIES_CREATE", "description": "Crear" },
       { "code": "FACTORIES_EDIT", "description": "Editar" },
-      { "code": "FACTORIES_SUSPENSION", "description": "Suspender/Reactivar" }
+      { "code": "FACTORIES_SUSPENSION", "description": "Suspender/Reactivar" },
+      { "code": "FACTORIES_ROUTES_VIEW", "description": "Visualizar" },
+      { "code": "FACTORIES_ROUTES_CREATE", "description": "Crear" },
+      { "code": "FACTORIES_ROUTES_EDIT", "description": "Editar" },
+      { "code": "FACTORIES_ROUTES_SUSPENSION", "description": "Suspender/Reactivar" }
+    ]
+  },
+   {
+    "module": { "code": "Areas", "description": "Áreas", "icon": "<i class='fa-solid fa-square-full'></i>" },
+    "permissions": [
+
+
+      { "code": "AREAS_VIEW", "description": "Visualizar" },
+      { "code": "AREAS_CREATE", "description": "Crear" },
+      { "code": "AREAS_EDIT", "description": "Editar " },
+      { "code": "AREAS_SUSPENSION", "description": "Suspender/Reactivar" },
+
+      { "code": "AREAS_CLASS_VIEW", "description": "Visualizar definiciones" },
+      { "code": "AREAS_CLASS_CREATE", "description": "Crear definiciones" },
+      { "code": "AREAS_CLASS_EDIT", "description": "Editar definiciones" },
+      { "code": "AREAS_CLASS_SUSPENSION", "description": "Suspender/Reactivar definiciones" }
+
+
+    ]
+  },
+    {
+    "module": { "code": "Materials", "description": "Materias primas", "icon": "<i class='fa-solid fa-box'></i>" },
+    "permissions": [
+
+
+      { "code": "MATERIALS_VIEW", "description": "Visualizar" },
+      { "code": "MATERIAL_CREATE", "description": "Crear" },
+      { "code": "MATERIALS_EDIT", "description": "Editar " },
+      { "code": "MATERIALS_SUSPENSION", "description": "Suspender/Reactivar" },
+
+      { "code": "MATERIALS_CLASS_VIEW", "description": "Visualizar definiciones" },
+      { "code": "MATERIALS_CLASS_CREATE", "description": "Crear definiciones" },
+      { "code": "MATERIALS_CLASS_EDIT", "description": "Editar definiciones" },
+      { "code": "MATERIALS_CLASS_SUSPENSION", "description": "Suspender/Reactivar definiciones" }
+
+
+    ]
+  }, 
+    {
+    "module": { "code": "Equipments", "description": "Equipos", "icon": "<i class='fa-solid fa-gear'></i>" },
+    "permissions": [
+
+
+      { "code": "EQUIPMENTS_VIEW", "description": "Visualizar" },
+      { "code": "EQUIPMENTS_CREATE", "description": "Crear" },
+      { "code": "EQUIPMENTS_EDIT", "description": "Editar " },
+      { "code": "EQUIPMENTS_SUSPENSION", "description": "Suspender/Reactivar" },
+
+      { "code": "EQUIPMENTS_CLASS_VIEW", "description": "Visualizar definiciones" },
+      { "code": "EQUIPMENTS_CLASS_CREATE", "description": "Crear definiciones" },
+      { "code": "EQUIPMENTS_CLASS_EDIT", "description": "Editar definiciones" },
+      { "code": "EQUIPMENTS_CLASS_SUSPENSION", "description": "Suspender/Reactivar definiciones" }
+
+
     ]
   }
 ]

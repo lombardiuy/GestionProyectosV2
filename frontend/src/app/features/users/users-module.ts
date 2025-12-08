@@ -7,7 +7,7 @@ import { SharedModule } from '../../shared/shared-module';
 
 
 import { UsersPanelPage } from './pages/users-panel/users-panel.page';
-import { UsersListComponent } from './components/user-list/users-list.component';
+import { UsersListComponent } from './components/users-list/users-list.component';
 import { UserCreateComponent } from './components/user-create/user-create.component';
 import { UserPasswordResetComponent } from './components/user-password-reset/user-password-reset.component';
 import { UserSuspensionComponent } from './components/user-suspension/user-suspension.component';

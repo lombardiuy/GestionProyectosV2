@@ -58,12 +58,13 @@
                   </td>
                   <td class="align-middle">{{ user.name }} </td>
                   <td class="align-middle">{{ user.username }}</td>
-                 <td class="align-middle" 
+                 <td class="align-middle"  
                  [class.link-primary]="hasPermission('USERS_ROLE_VIEW')"
                 [class.text-decoration-underline]="hasPermission('USERS_ROLE_VIEW')"
                  [class.cursor-pointer]="hasPermission('USERS_ROLE_VIEW')"
                 [routerLink]="hasPermission('USERS_ROLE_VIEW') ? ['/users/roles/'+user.userRole.name] : null">
                 {{ user.userRole.name }}
+                
                 </td>
                   <td class="align-middle">
                     <span *ngIf="user.suspended" class="color-danger">Suspendido</span>
@@ -71,11 +72,40 @@
                     <span *ngIf="!user.suspended && !user.active" class="color-primary">No operativo</span>
                   </td>
                   <td *ngIf="hasPermission('USERS_EDIT') || hasPermission('USERS_SUSPENSION') || hasPermission('USERS_SUSPENSION')" class="align-middle ">
-                    <div class="d-flex w-100 justify-content-around">
-                  
-                      <i *ngIf="hasPermission('USERS_EDIT') " (click)="editUser(user)" class="fa-solid fa-user-pen color-primary  cursor-pointer" data-bs-toggle="modal" data-bs-target="#createUserModal"></i>
-                      <i *ngIf="!user.suspended && hasPermission('USERS_SUSPENSION')" (click)="userSuspensionFromList(user, true)"   class="fa-solid fa-user-xmark color-danger cursor-pointer" data-bs-toggle="modal" data-bs-target="#userSuspensionModal"></i>
-                      <i *ngIf="user.suspended && hasPermission('USERS_SUSPENSION')" (click)="userSuspensionFromList(user, false)"   class="fa-solid fa-user-check color-success cursor-pointer" data-bs-toggle="modal" data-bs-target="#userSuspensionModal"></i>
+                    <div class="d-flex w-100 justify-content-center">
+<!-- EDITAR -->
+<span *ngIf="hasPermission('USERS_EDIT')">
+
+  <i class="fa-solid fa-pen-to-square color-secondary cursor-pointer me-2"
+     (click)="editUser(user)"
+     data-bs-toggle="modal"
+     data-bs-target="#createUserModal">
+  </i>
+
+</span>
+
+<!-- SUSPENDER -->
+<span *ngIf="!user.suspended && hasPermission('USERS_SUSPENSION')">
+
+  <i class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
+     (click)="userSuspensionFromList(user, true)"
+     data-bs-toggle="modal"
+     data-bs-target="#userSuspensionModal">
+  </i>
+
+</span>
+
+<!-- REACTIVAR -->
+<span *ngIf="user.suspended && hasPermission('USERS_SUSPENSION')">
+
+  <i class="fa-solid fa-toggle-off color-danger  cursor-pointer ms-3"
+     (click)="userSuspensionFromList(user, false)"
+     data-bs-toggle="modal"
+     data-bs-target="#userSuspensionModal">
+  </i>
+
+</span>
+
                     
                     </div>
           

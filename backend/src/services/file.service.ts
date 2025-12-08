@@ -47,7 +47,7 @@ export async function remove(type: string, fileName: string): Promise<void> {
   for (const ext of possibleExtensions) {
     const fullPath = path.join(folderPath, fileName + ext);
     try {
-      console.log(fullPath);
+  
       await fs.unlink(fullPath);
       return; // borrado exitoso
     } catch (err: any) {

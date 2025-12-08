@@ -19,6 +19,8 @@ export class UserRole extends BaseEntity {
     @OneToMany(() => UserRolePermission, userRolePermissions => userRolePermissions.userRole, { cascade: true })
     public userRolePermissions!: UserRolePermission[];
 
+    
+
     @VersionColumn()
      public version!:number;
     

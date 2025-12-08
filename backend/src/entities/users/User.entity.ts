@@ -9,25 +9,29 @@ export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column()
+    @Column({ nullable: false })
     name!: string;
 
     @Column({unique:true})
     username!: string;
 
-    @Column()
+    @Column({ nullable: false })
     password!: string;
 
-    @Column()
+    @Column({ nullable: false })
     hasProfilePicture!: boolean; //Si tengo foto de perfil es la ID del usuario.
     
-    @Column()
+    @Column({ nullable: false })
     active!: boolean;
 
-    @Column()
+    @Column({ nullable: false })
     suspended!: boolean;
  
+    @ManyToOne(() => UserRole, userRole => userRole.users)
+    public userRole!: UserRole;
+ 
 
+    
     @VersionColumn()
     public version!:number;
 
@@ -37,9 +41,5 @@ export class User extends BaseEntity {
     @UpdateDateColumn()
     public updated!: Date;
 
-  
-    @ManyToOne(() => UserRole, userRole => userRole.users)
-    public userRole!: UserRole;
- 
    
 }

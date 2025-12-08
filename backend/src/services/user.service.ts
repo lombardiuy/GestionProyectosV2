@@ -64,7 +64,7 @@ export const createUser = async (payload: {
 ): Promise<Partial<User>> => {
   const { name, username, password, userRole } = payload;
 
-  console.log(payload)
+ 
 
   return await AppDataSource.transaction(async (manager) => {
     const userRepo = manager.getRepository(User);
@@ -84,7 +84,7 @@ export const createUser = async (payload: {
 
     const hashed = await bcrypt.hash(password, 10);
 
-    console.log(role)
+ 
     const newUser = userRepo.create({
       name,
       username,
@@ -712,7 +712,7 @@ export const updateUserRole = async (
         entityId: role.id,
         action: "USER_ROLE_UPDATE",
         changes: changes,
-        description: "Actualización de rol.",
+        description: "Actualización de rol por cambio de permisos.",
         author: currentUsername,
         version: role.version,
       },

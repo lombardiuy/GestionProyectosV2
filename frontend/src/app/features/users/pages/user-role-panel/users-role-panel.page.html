@@ -3,20 +3,27 @@
 <div *ngIf="!loading else loadingSpinner" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
   <div class="card w-95 h-95">
     <div class="card-header w-100 ">
-      <h5><i class="bi bi-person-fill-gear"></i> Roles y permisos</h5>
+
+      <div class="w-100 d-flex justify-content-between">
+
+        <h5><i class="bi bi-person-fill-gear"></i> Roles y permisos</h5>
+
+              <button  *ngIf=" hasPermission('USERS_ROLE_CREATE') && (formMode === 'select' || formMode === 'edit')" class="btn btn-success btn-sm"  (click)="createUserRole()">
+          <i class="bi bi-plus"></i><i class="bi bi-person-fill-gear"></i> Crear Rol
+        </button>
+
+          <button  (click)="cancelSelection()" *ngIf=" formMode === 'create'" class="btn btn-primary btn-sm " >
+          <i class="bi bi-person-fill-gear"></i> Visualizar roles
+        </button>
+      </div>
+      
    
     </div>
 
     <div class="card-body d-flex flex-column align-items-center w-100 overflow-auto ">
 
       <div class="w-100 h-8">
-          <button  *ngIf=" hasPermission('USERS_ROLE_CREATE') && (formMode === 'select' || formMode === 'edit')" class="btn btn-success position-absolute end-0 me-3"  (click)="createUserRole()">
-          <i class="bi bi-plus"></i><i class="bi bi-person-fill-gear"></i> Crear Rol
-        </button>
-
-          <button  (click)="cancelSelection()" *ngIf=" formMode === 'create'" class="btn btn-primary position-absolute end-0 me-3" >
-          <i class="bi bi-person-fill-gear"></i> Visualizar roles
-        </button>
+    
 
         <input *ngIf="selectedUserRole && !selectedUserRole.id" type="text" class="form-control w-50 mb-2" placeholder="Nombre del Rol" [(ngModel)]="selectedUserRole!.name" >
                 
@@ -31,7 +38,7 @@
 
       <div class="w-100 h-92  overflow-auto">
                     
-   <user-role-create-component    *ngIf="selectedUserRole"  class="w-100"
+   <user-role-create-component    *ngIf="selectedUserRole; else noUserRoleSelected"  class="w-100"
               
   
   
@@ -46,6 +53,8 @@
    
    
    ></user-role-create-component>
+
+
 
        <version-control *ngIf="selectedUserRole?.id" [hasPermission]="hasPermission.bind(this)" [entity]="'UserRole'" [entityId]="selectedUserRole!.id!" class="w-90"></version-control>
 
@@ -71,3 +80,15 @@
 <ng-template  #loadingSpinner>
   <loading-spinner class="w-100 h-100"></loading-spinner>
 </ng-template>
+
+<ng-template  #noUserRoleSelected>
+   <div class="cursor-pointer area rounded h-100 border-success color-success 
+                  d-flex flex-column justify-content-around align-items-center add-btn"
+           style="border:dashed; border-width:1px">
+          Una vez seleccione un rol de usuario podrá visualizar sus permisos en este menú.</div>
+
+
+
+</ng-template>
+
+

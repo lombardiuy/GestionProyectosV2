@@ -22,8 +22,8 @@ export class UserCreateComponent {
   
    @Input() hasPermission!: (code: string) => boolean;
 
-     @Input() saving:boolean |undefined;
-     @Input() loadingCreateForm:boolean |undefined;
+  @Input() saving:boolean |undefined;
+  @Input() loadingCreateForm:boolean |undefined;
 
 
    @Input() profilePicturePath!: string | null;
@@ -41,7 +41,7 @@ export class UserCreateComponent {
    @Output() setProfilePictureEvent = new EventEmitter<File>();
   
 
-  @ViewChild('btnClose') btnClose!: ElementRef;  
+    @ViewChild('btnClose') btnClose!: ElementRef;  
 
    
 

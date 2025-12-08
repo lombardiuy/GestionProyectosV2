@@ -18,7 +18,7 @@ export class AuditTrail {
   entityId!: number;
 
   
-  @Column({ default: 1 })
+  @Column()
   version!: number;
 
   @Column()    

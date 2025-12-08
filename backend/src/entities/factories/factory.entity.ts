@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, VersionColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { FactoryRoute } from "./factory-route.entity";
-import { CatalogueMaterial } from "../materials/catalogue-material.entity";
+
 
 @Entity({ name: "factory" })
 export class Factory {
@@ -19,14 +19,21 @@ export class Factory {
   @Column({ type: "nvarchar", length: 255, nullable: true })
   contact!: string;
 
-  @Column({ type: "int", nullable: true })
-  levels!: number;
+  @Column()
+  active!: boolean;
 
-  // si querés que una factory tenga múltiples rutas
-  @OneToMany(() => FactoryRoute, (r) => r.factories, { cascade: true })
+  @OneToMany(() => FactoryRoute, route => route.factory)
   routes!: FactoryRoute[];
 
-  // catálogo de materiales asociado a la factory
-  @OneToMany(() => CatalogueMaterial, (cm) => cm /* no backref */, { cascade: true })
-  catalogueMaterials!: CatalogueMaterial[];
+  
+  @VersionColumn()
+  public version!:number;
+  
+  @CreateDateColumn()
+  public created!: Date;
+  
+  @UpdateDateColumn()
+  public updated!: Date;
+  
+
 }

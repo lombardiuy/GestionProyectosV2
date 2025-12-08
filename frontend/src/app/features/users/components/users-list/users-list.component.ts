@@ -1,8 +1,7 @@
 import { Component, OnInit, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { User } from '../../interfaces/user.interface';
-import { UserRole } from '../../interfaces/userRole.interface';
-import { UserService } from '../../services/user.service';
+
 
 @Component({
   selector: 'users-list-component',
@@ -31,8 +30,7 @@ export class UsersListComponent implements OnInit {
   public showUserStatusFilter: boolean | undefined;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private userService: UserService
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {

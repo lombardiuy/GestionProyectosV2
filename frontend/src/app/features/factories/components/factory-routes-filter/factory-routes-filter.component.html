@@ -1,0 +1,17 @@
+ <select *ngIf="selectedFactory?.routes?.length"
+          class="form-control form-select form-select-sm w-100"
+          [ngModel]="selectedRouteId"
+          (ngModelChange)="onRouteFilterChange($event)">
+
+           <option [ngValue]="null" disabled>
+    Filtrar por ruta
+  </option>
+
+   <option value="">Todas las rutas</option>
+
+    <option *ngFor="let route of selectedFactory!.routes"
+            [ngValue]="route.id">
+      {{ route.name }}
+    </option>
+
+  </select>

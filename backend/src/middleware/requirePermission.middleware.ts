@@ -31,7 +31,7 @@ interface UserRequest extends Request {
 export function requirePermissionMiddleware(requiredPermission: string) {
   return (req: UserRequest, res: Response, next: NextFunction) => {
     const user = req.user; // ✅ ya tipado correctamente
-    console.log(user?.userRole)
+
 
     if (!user?.userRole?.userRolePermissions) {
       return res.status(403).json({ message: 'Acceso denegado: usuario sin permisos.' });

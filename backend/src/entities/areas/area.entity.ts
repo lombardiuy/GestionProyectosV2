@@ -1,7 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany, VersionColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Factory } from "../factories/factory.entity";
+import { FactoryRoute } from "../factories/factory-route.entity";
 import { AreaParameter } from "./area-parameter.entity";
 import { Equipment } from "../equipments/equipment.entity";
-import { FactoryRoute } from "../factories/factory-route.entity";
+import { AreaClass } from "./area-class.entity";
+
 
 @Entity({ name: "area" })
 export class Area {
@@ -11,19 +14,36 @@ export class Area {
   @Column({ type: "nvarchar", length: 255 })
   name!: string;
 
-  @Column({ type: "nvarchar", length: 100 })
+  @Column({ type: "nvarchar", length: 255 })
   code!: string;
 
-  @Column({ type: "int", nullable: true })
-  routeId!: number;
+  @Column()
+  active!: boolean;
 
-  @ManyToOne(() => FactoryRoute, (r) => r.areas, { nullable: true, onDelete: "SET NULL" })
-  @JoinColumn({ name: "route_id" })
-  route!: FactoryRoute;
 
-  @OneToMany(() => AreaParameter, (p) => p.area, { cascade: true })
+  @ManyToOne(() => AreaClass, (c) => c.areas)
+  areaClass!: AreaClass;
+
+  @ManyToMany(() => FactoryRoute, route => route.areas)
+  @JoinTable({
+    name: "area_factory_route",
+    joinColumn: { name: "area_id" },
+    inverseJoinColumn: { name: "route_id" }
+  })
+  routes!: FactoryRoute[];
+
+  @OneToMany(() => AreaParameter, p => p.area)
   parameters!: AreaParameter[];
 
-  @OneToMany(() => Equipment, (e) => e.area, { cascade: true })
+  @OneToMany(() => Equipment, e => e.area)
   equipments!: Equipment[];
+
+    @VersionColumn()
+    public version!:number;
+    
+    @CreateDateColumn()
+    public created!: Date;
+    
+    @UpdateDateColumn()
+    public updated!: Date;
 }

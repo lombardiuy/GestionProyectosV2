@@ -6,9 +6,9 @@ export interface Factory {
   location: string;
   owner: string;
   contact: string;
-  levels: number;
-
+  active: boolean;
   routes: FactoryRoute[];
+
 }
 
 

@@ -1,50 +1,219 @@
+<!-- FACTORIES PANEL -->
 
+<div *ngIf="!loading else loadingSpinner"
+     class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
 
-<!--USERS PANEL-->
+  <div class="card w-95 h-95 d-flex flex-column">
 
-<div  *ngIf="!loading else loadingSpinner"  class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
-  <div class="card w-95 h-95">
+    <!-- HEADER -->
     <div class="card-header w-100">
-      <h5><i class="fa-solid fa-industry"></i> Gestión de Fábricas </h5>
+
+      <div class="w-100 d-flex justify-content-between">
+         <h5><i class="fa-solid fa-industry"></i> Gestión de Fábricas </h5>
+        <button
+          *ngIf="hasPermission('FACTORIES_CREATE')"
+          class="btn btn-success btn-sm"
+          (click)="createFactory()" data-bs-toggle="modal" data-bs-target="#createFactoryModal">
+          <i class="bi bi-plus"></i><i class="fa-solid fa-industry "></i> Crear Fábrica
+        </button>
+      </div>
+     
     </div>
 
-    <div class="card-body d-flex flex-column w-100 h-90">
+    <!-- BODY (scroll interno, no mueve el footer) -->
+    <div class="card-body flex-grow-1 d-flex flex-column overflow-auto w-100">
 
-        <div class="w-100 h-8">
-          <button  *ngIf=" hasPermission('FACTORIES_CREATE') && (formMode === 'select' || formMode === 'edit')" class="btn btn-success position-absolute end-0 me-3"  (click)="createFactory()">
-          <i class="bi bi-plus"></i><i class="fa-solid fa-industry"></i> Crear Fábrica
-        </button>
+      <div class="w-100 h-8 d-flex justify-content-between align-items-center  ">
 
-          <button  (click)="cancelSelection()" *ngIf=" formMode === 'create'" class="btn btn-primary position-absolute end-0 me-3" >
-          <i class="fa-solid fa-industry"></i> Visualizar Fábricas
-        </button>
 
-        <input *ngIf="selectedFactory && !selectedFactory.id" type="text" class="form-control w-50 mb-2" placeholder="Nombre de la fábrica" [(ngModel)]="selectedFactory!.name" >
-                
-           
+    
+
+        <factories-list-component
+          class="w-30 mb-3"
+          [selectedFactory]="selectedFactory"
+          [factoriesList]="factoriesList$ | async"
+          (selectFactoryEvent)="selectFactory($event)">
+
+
+        </factories-list-component>
+
+        
+
+
+
+        
+
+
+
+     
+      
+
       </div>
 
+         <div *ngIf="(filteredFactory$ | async) as filteredFactory; else noFactorySelected" class="card">
+          <div class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
 
-      <div class="w-100 h-92  overflow-auto">
-                    
+            <div class="d-flex"><i class="fa-solid fa-industry me-1"></i><h6> {{filteredFactory.name}} </h6></div>
 
-      </div>
+            <div class="d-flex w-50 justify-content-end">
+               <factory-routes-filter-component class="w-40 me-1"
+          *ngIf="selectFactory "
+        
+          [selectedFactory]="selectedFactory$ | async"
+          (routeFilterChange)="selectRoute($event)">
+        </factory-routes-filter-component>
 
-    </div>
+        <button
+          *ngIf="hasPermission('FACTORIES_CREATE') && (selectedFactory$ | async) "
+          class="btn btn-primary btn-xs me-1"
+          (click)="createFactoryRoute()" data-bs-toggle="modal" data-bs-target="#createFactoryRouteModal">
+         <i class="bi bi-plus"></i> <i class="fa-solid fa-route"></i> Agregar ruta
+        </button>
 
 
+
+  <ng-container *ngIf="!(showInactiveRoutes$ | async); else showActive">
+
+    <button
+  class="btn btn-xs btn-danger"
+  (click)="toggleRoutes()"><i class="fa-solid fa-trash me-1"></i> Visualizar rutas inactivas
+</button>
+
+
+  </ng-container>
+
+  <ng-template #showActive>
+
+        <button
+  class="btn btn-xs btn-success"
+  (click)="toggleRoutes()">   <i class="fa-solid fa-check me-1"></i> Visualizar rutas activas
+</button>
+
+  </ng-template>
+
+
+
+
+            </div>
+
+         
+ 
+          
    
+            
+             
+            </div>
+            
+            
+            
+            
+          <div class="card-body">
+
+     
+  
+
+                  <!-- ROUTES LIST -->
+    <div 
+     class="w-100 mt-3 overflow-auto">
+
+  <!-- Si la fábrica no tiene rutas -->
+  <ng-container *ngIf="filteredFactory.routes!.length > 0; else noFactoryRoutes">
+
+    <!-- Iterar rutas -->
+    <factory-route-panel-component
+      *ngFor="let route of filteredFactory.routes; trackBy: trackByRoute"
+      class="w-100"
+      [hasPermission]="hasPermission.bind(this)"
+      [route]="route"
+      [timestamp]="timestamp$ | async"
+      [loading]="loading">
+    </factory-route-panel-component>
+
+  </ng-container>
+
+</div>
+          </div>
+        </div>
+       
+
+
+
+
+    </div>
+
+
+  </div>
+</div>
+
+<ng-template #loadingSpinner>
+  <loading-spinner class="w-100 h-100"></loading-spinner>
+</ng-template>
+
+
+
+<!--FACTORY CREATE MODAL -->
+
+  <div class="modal fade" id="createFactoryModal" tabindex="-1" aria-hidden="true">
+   <factory-create-component     *ngIf="factoryCreateForm && hasPermission('FACTORIES_CREATE')" class="w-100 h-100"
+   
+    [hasPermission]="hasPermission.bind(this)"
+    [factoryCreateForm]="factoryCreateForm"
+    [factoriesList]="factoriesList$ | async"
+    [factoryFormMessage] = "factoryFormMessage"
+    [savingFactory] = "savingFactory"
+    [loadingFactoryCreateForm] = "loadingFactoryCreateForm"
+ 
+    (saveFactoryEvent)="saveFactory()"
+
+    
+     
+   
+
+
+   ></factory-create-component>
+
+
+  </div>
+
+
+  <!--FACTORY ROUTE CREATE MODAL -->
+
+  <div class="modal fade" id="createFactoryRouteModal" tabindex="-1" aria-hidden="true">
+   <factory-route-create-component     *ngIf="factoryCreateForm && hasPermission('FACTORIES_CREATE')" class="w-100 h-100"
+   
+    [hasPermission]="hasPermission.bind(this)"
+    [factoryRouteCreateForm]="factoryRouteCreateForm"
+    [factoryRouteFormMessage] = "factoryRouteFormMessage"
+    [savingFactoryRoute] = "savingFactoryRoute"
+    [loadingFactoryRouteCreateForm] = "loadingFactoryRouteCreateForm"
+ 
+    (saveFactoryRouteEvent)="saveFactoryRoute()"
+
+    
+     
+   
+
+
+   ></factory-route-create-component>
+
+
   </div>
 
 
 
-</div>
+  <ng-template  #noFactorySelected>
+   <div class="cursor-pointer area rounded h-100 border-success color-success 
+                  d-flex flex-column justify-content-around align-items-center add-btn"
+           style="border:dashed; border-width:1px">
+          Una vez seleccione una fábrica podrá visualizar sus rutas en este menú.</div>
 
 
 
+</ng-template>
+
+<ng-template  #noFactoryRoutes>
+<div class="alert alert-danger text-center">Esta fábrica no posee ninguna ruta.</div>
 
 
 
-<ng-template  #loadingSpinner>
-  <loading-spinner class="w-100 h-100"></loading-spinner>
 </ng-template>

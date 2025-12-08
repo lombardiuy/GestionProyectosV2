@@ -1,0 +1,21 @@
+.area {
+    width:200px;
+    height:200px;
+}
+
+
+
+.edit-btn:hover {
+  color:var(--bs-primary) !important
+}
+
+.add-btn:hover {
+  border-width: 2px !important;
+}
+
+.fa-pen-to-square:hover{
+  color:var(--bs-primary);
+  font-size: 14px !important;
+  
+}
+
