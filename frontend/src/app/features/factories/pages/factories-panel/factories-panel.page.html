@@ -56,10 +56,11 @@
             <div class="d-flex"><i class="fa-solid fa-industry me-1"></i><h6> {{filteredFactory.name}} </h6></div>
 
             <div class="d-flex w-50 justify-content-end">
+              
                <factory-routes-filter-component class="w-40 me-1"
           *ngIf="selectFactory "
         
-          [selectedFactory]="selectedFactory$ | async"
+          [availableRoutesForSelect]="availableRoutesForSelect$ | async"
           (routeFilterChange)="selectRoute($event)">
         </factory-routes-filter-component>
 
@@ -71,25 +72,30 @@
         </button>
 
 
+<ng-container *ngIf="hasInactiveRoutes$ | async">
 
   <ng-container *ngIf="!(showInactiveRoutes$ | async); else showActive">
 
     <button
-  class="btn btn-xs btn-danger"
-  (click)="toggleRoutes()"><i class="fa-solid fa-trash me-1"></i> Visualizar rutas inactivas
-</button>
-
+      class="btn btn-xs btn-danger"
+      (click)="toggleRoutes()">
+      <i class="fa-solid fa-trash me-1"></i>
+      Rutas inactivas
+    </button>
 
   </ng-container>
 
   <ng-template #showActive>
-
-        <button
-  class="btn btn-xs btn-success"
-  (click)="toggleRoutes()">   <i class="fa-solid fa-check me-1"></i> Visualizar rutas activas
-</button>
-
+    <button
+      class="btn btn-xs btn-success"
+      (click)="toggleRoutes()">
+      <i class="fa-solid fa-check me-1"></i>
+      Rutas activas
+    </button>
   </ng-template>
+
+</ng-container>
+
 
 
 
@@ -126,6 +132,7 @@
       [hasPermission]="hasPermission.bind(this)"
       [route]="route"
       [timestamp]="timestamp$ | async"
+      (suspendFactoryRouteEvent)="marckFactoryRouteToSuspend($event)"
       [loading]="loading">
     </factory-route-panel-component>
 
@@ -198,6 +205,30 @@
 
 
   </div>
+
+
+
+  <!--FACTORYROUTE SUSPENSION MODAL -->
+
+<div class="modal fade" id="factoryRouteSuspensionModal" tabindex="-1" aria-hidden="true">
+
+<factory-route-suspension-component  
+    #factoryRouteSuspensionComponent
+    *ngIf="factoryRouteCreateForm && hasPermission('FACTORIES_ROUTE_SUSPENSION')"
+    class="w-100 h-100"
+    
+    [hasPermission]="hasPermission.bind(this)"
+    [factoryRouteToSuspend]="factoryRouteToSuspend "
+    [suspend] = "suspend"
+    [savingSuspensionFactoryRoute]="savingSuspensionFactoryRoute"
+    [formMessage]="factoryRouteFormMessage"
+
+    (suspensionFactoryRouteEvent)="suspensionFactoryRoute()"
+>
+</factory-route-suspension-component>
+
+
+</div>
 
 
 

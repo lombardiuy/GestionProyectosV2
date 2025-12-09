@@ -97,4 +97,11 @@ export class FactoryService {
       return this.http.post<any>(`${this.apiUrl}/route/create`, dto);
     }
   
+
+  suspensionFactoryRoute(factoryRouteID: number) {
+        return this.http.post<any>(`${this.apiUrl}/route/suspension`, {
+          id: factoryRouteID
+        });
+      }
+    
 }

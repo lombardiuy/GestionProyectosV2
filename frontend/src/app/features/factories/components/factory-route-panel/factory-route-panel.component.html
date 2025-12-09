@@ -17,7 +17,7 @@
         <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION')"
   
     class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
-     (click)="factoryRouteSuspension(route!, false)"
+     (click)="factoryRouteSuspension(route!, true)"
      data-bs-toggle="modal"
      data-bs-target="#factoryRouteSuspensionModal"class="fa-solid fa-solid fa-toggle-on color-success cursor-pointer " ></i>
 
@@ -42,7 +42,7 @@
   <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION')"
   
     class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
-     (click)="factoryRouteSuspension(route!, true)"
+     (click)="factoryRouteSuspension(route!, false)"
      data-bs-toggle="modal"
      data-bs-target="#factoryRouteSuspensionModal" class="fa-solid fa-solid fa-toggle-off color-danger cursor-pointer " ></i>
 

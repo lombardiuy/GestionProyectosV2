@@ -42,7 +42,7 @@ export class FactoryRoutePanelComponent implements OnInit {
 
     factoryRouteSuspension(factoryRoute: FactoryRoute | null, suspend: boolean) {
       if (factoryRoute && factoryRoute.id) {
-        this.suspendFactoryRouteEvent.emit({ id: factoryRoute.id, suspend });
+        this.suspendFactoryRouteEvent.emit({ id: factoryRoute.id, name:factoryRoute.name, suspend });
       }
     }
   

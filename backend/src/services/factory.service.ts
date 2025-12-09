@@ -262,5 +262,71 @@ export const createFactoryRoute = async (
 
 
 
+/**
+ * Alterna la suspensión del usuario
+ */
+export const suspensionFactoryRoute = async (
+  id: number,
+  currentUsername: string
+): Promise<Partial<FactoryRoute>> => {
+
+  return await AppDataSource.transaction(async (manager) => {
+    const factoryRouteRepo = manager.getRepository(FactoryRoute);
+
+    // Buscar usuario
+    const factoryRoute = await factoryRouteRepo.findOne({
+      where: { id },
+      relations: ["factory"], // consistencia con el módulo
+    });
+
+    if (!factoryRoute) {
+      throw new Error('Ruta desconocida. Si el error persiste contacte al administrador.');
+    }
+
+    // BEFORE
+    const before = { ...factoryRoute };
+
+    // AFTER (invertir suspensión)
+    const after: any = { ...factoryRoute };
+    after.active = !factoryRoute.active;
+
+    // Detectar cambios
+    const changes = detectModuleChanges(before, after, {
+      ignore: ["createdAt", "updatedAt", "factory"],
+      relations: [],
+    });
+
+    // Si no hubo cambios, no guardar ni auditar
+    if (Object.keys(changes).length === 0) {
+      const { ...rest } = factoryRoute;
+      return rest;
+    }
+
+    // Guardar cambios
+    Object.assign(factoryRoute, after);
+    const saved = await factoryRouteRepo.save(factoryRoute);
+
+    // ✅ CORRECCIÓN: usar el estado AFTER para decidir la acción de auditoría (antes se usaba el estado ANTERIOR)
+    await registerInAuditTrail(
+      {
+        module: "Factories",
+        entity: "FactoryRoute",
+        entityId: saved.id,
+        action: after.active ? "FACTORY_ROUTE_ACTIVATION" : "FACTORY_ROUTE_SUSPENSION", // ✅ CORRECCIÓN
+        changes: changes,
+        description: after.active
+          ? "Reactivación de ruta."
+          : "Inactivación de ruta.",
+        author: currentUsername,
+        version: saved.version,
+      },
+      manager
+    );
+
+    return saved;
+  });
+};
+
+
 
 

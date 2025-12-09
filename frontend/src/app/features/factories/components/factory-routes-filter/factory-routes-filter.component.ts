@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
-import { Factory } from '../../interfaces/factory.interface';
+import { FactoryRoute } from '../../interfaces/factory-route.interface';
 
 
 @Component({
@@ -13,7 +13,7 @@ import { Factory } from '../../interfaces/factory.interface';
 
 export class FactoryRoutesFilterComponent implements OnInit {
 
-@Input() selectedFactory!:Factory | null;
+@Input() availableRoutesForSelect!:FactoryRoute[] | null | undefined;
 @Output() routeFilterChange = new EventEmitter<number | null>();
 
   public selectedRouteId: number | null = null;
