@@ -3,7 +3,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { Factory } from '../../interfaces/factory.interface';
 import { FactoryRoute } from '../../interfaces/factory-route.interface';
 import { FactoryService } from '../../services/factory.service';
-import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable, pipe, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable, of, pipe, Subscription } from 'rxjs';
 import { TimeService } from '../../../../shared/services/time.service';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormMessage, MessageType } from '../../../../shared/interfaces/form-message.interface';
@@ -12,7 +12,6 @@ import { MessageService } from '../../../../shared/services/message.service';
 import { delay } from '../../../../shared/helpers/delay.helper';
 import { FactoryRouteCreateComponent } from '../../components/factory-route-create/factory-route-create.component';
 import { FactoryRouteSuspensionComponent } from '../../components/factory-route-suspension/factory-route-suspension.component';
-
 
 
 
@@ -27,7 +26,7 @@ import { FactoryRouteSuspensionComponent } from '../../components/factory-route-
 export class FactoriesPanelPage implements OnInit {
 
     public selectedFactory:Factory | null | undefined = null;
-    public selectedRouteId: number | null = null;
+    public selectedFactoryRouteId: number | null = null;
 
     public loading:boolean = true;
     public loadingFactoryCreateForm:boolean = true;
@@ -46,31 +45,36 @@ export class FactoriesPanelPage implements OnInit {
     public selectedFactory$: Observable<Factory | null>;
     public filteredFactory$!: Observable<Factory | null>;
 
-    public selectedRouteId$ = new BehaviorSubject<number | null>(null);
+    public selectedFactoryRouteId$ = new BehaviorSubject<number | null>(null);
 
     public factoryCreateForm!:FormGroup;
     public factoryRouteCreateForm!:FormGroup;
 
-    public factoryFormMessage:FormMessage | null | undefined;
-    public factoryRouteFormMessage:FormMessage | null | undefined;
+    public factoryCreateFormMessage:FormMessage | null | undefined;
+    public factoryRouteCreateFormMessage:FormMessage | null | undefined;
     public factoryRouteSuspensionFormMessage:FormMessage | null | undefined;
 
     private createFactorySubscription?:Subscription;
     private createFactoryRouteSubscription?:Subscription;
     private suspendFactoryRouteSubscription?:Subscription;
 
-    public hasInactiveRoutes$!: Observable<boolean>;
-    public availableRoutesForSelect$!: Observable<FactoryRoute[] | undefined>;
-    public showInactiveRoutes$ = new BehaviorSubject<boolean>(false);
+    public hasInactiveFactoryRoutes$!: Observable<boolean>;
+    public availableFactoryRoutesForSelect$!: Observable<FactoryRoute[] | undefined>;
+    public showInactiveFactoryRoutes$ = new BehaviorSubject<boolean>(false);
+
+    public hasInactiveFactories$!: Observable<boolean>;
+    public availableFactoriesForSelect$!: Observable<Factory[] | null >;
+    public showInactiveFactories$ = new BehaviorSubject<boolean>(false);
 
     @ViewChild(FactoryCreateComponent) factoryCreateComponent!: FactoryCreateComponent;
     @ViewChild(FactoryRouteCreateComponent) factoryRouteCreateComponent!: FactoryRouteCreateComponent;
     @ViewChild(FactoryRouteSuspensionComponent) factoryRouteSuspensionComponent!: FactoryRouteSuspensionComponent;
 
     public factoryRouteToSuspend:Partial<FactoryRoute> | null | undefined;
-    public suspend:boolean | undefined;
+    public factoryRouteSuspend:boolean | undefined;
 
-
+    public factoryToSuspend:Partial<Factory> | null | undefined;
+    public factorySuspend:boolean | undefined;
 
     
 
@@ -86,8 +90,13 @@ export class FactoriesPanelPage implements OnInit {
 
 
     this.getFilteredFactories(),
-    this.getHasInactiveRoutes();
-    this.getAvailableRoutesForSelect();
+
+    this.getHasInactiveFactories();
+    this.getAvailableFactoriesForSelect();
+
+
+    this.getHasInactiveFactoryRoutes();
+    this.getAvailableFactoryRoutesForSelect();
 
   }
 
@@ -105,8 +114,8 @@ get factoryRouteForm() {
   getFilteredFactories() {
     this.filteredFactory$ = combineLatest([
   this.selectedFactory$,
-  this.selectedRouteId$,
-  this.showInactiveRoutes$
+  this.selectedFactoryRouteId$,
+  this.showInactiveFactoryRoutes$
 ]).pipe(
   map(([factory, routeId, showInactive]) => {
     if (!factory) return null;
@@ -128,8 +137,8 @@ get factoryRouteForm() {
 
   }
 
-  getHasInactiveRoutes() {
-    this.hasInactiveRoutes$ = this.selectedFactory$.pipe(
+  getHasInactiveFactoryRoutes() {
+    this.hasInactiveFactoryRoutes$ = this.selectedFactory$.pipe(
   map(factory => {
     if (!factory || !factory.routes) return false;
     return factory.routes.some(r => r.active === false);
@@ -139,11 +148,25 @@ get factoryRouteForm() {
 
   }
 
+  getHasInactiveFactories() {
+    this.hasInactiveFactories$ = this.factoriesList$.pipe(
+  map(factories => {
+    if (!factories || factories.length === 0) return false;
+    return factories.some(f => f.active === false);
+  })
+);
 
-  getAvailableRoutesForSelect() {
-    this.availableRoutesForSelect$ = combineLatest([
+
+  }
+
+
+  
+
+
+  getAvailableFactoryRoutesForSelect() {
+    this.availableFactoryRoutesForSelect$ = combineLatest([
   this.selectedFactory$,
-  this.showInactiveRoutes$
+  this.showInactiveFactoryRoutes$
 ]).pipe(
   map(([factory, showInactive]) => {
     if (!factory || !factory.routes) return [];
@@ -158,6 +181,24 @@ get factoryRouteForm() {
 );
 
   }
+
+getAvailableFactoriesForSelect() {
+  this.availableFactoriesForSelect$ = combineLatest([
+    this.factoriesList$,
+    this.showInactiveFactories$
+  ]).pipe(
+    map(([factories, showInactive]) => {
+      if (!factories) return [];
+
+      if (showInactive === null) return factories;                // todas
+      if (showInactive === false) return factories.filter(f => f.active); // activas
+      if (showInactive === true) return factories.filter(f => !f.active); // inactivas
+
+      return factories; // fallback TS
+    })
+  );
+}
+
 
 
 
@@ -224,7 +265,7 @@ resetFactoryForm() {
 
   });
 
-  this.factoryFormMessage = null;
+  this.factoryCreateFormMessage = null;
   this.savingFactory = false;
 }
 
@@ -237,7 +278,7 @@ resetFactoryRouteForm() {
     description: ''
   });
 
-  this.factoryRouteFormMessage = null;
+  this.factoryRouteCreateFormMessage = null;
   this.savingFactoryRoute = false;
 }
 
@@ -307,7 +348,7 @@ resetFactoryRouteForm() {
   saveFactory() {
 
     if (this.factoryCreateForm.invalid) {
-      this.factoryFormMessage = this.messageService.createFormMessage(MessageType.ERROR, 'Por favor, completa todos los campos correctamente.');
+      this.factoryCreateFormMessage = this.messageService.createFormMessage(MessageType.ERROR, 'Por favor, completa todos los campos correctamente.');
       return;
     }
 
@@ -317,14 +358,14 @@ resetFactoryRouteForm() {
       this.createFactorySubscription = this.factoryService.createFactory(this.factoryCreateForm.value).subscribe({
         next: async(res)=> {
 
-          this.factoryFormMessage = this.messageService.createFormMessage(MessageType.SUCCESS, 'Fábricada creada con éxito');
+          this.factoryCreateFormMessage = this.messageService.createFormMessage(MessageType.SUCCESS, 'Fábricada creada con éxito');
           this.savingFactory = false;
           await delay(1000);
           await this.factoryService.getAllFactories();
           this.factoryCreateComponent.closeModal();
         }, 
         error:((err)=> {
-          this.factoryFormMessage = this.messageService.createFormMessage(MessageType.ERROR, err.error.error);
+          this.factoryCreateFormMessage = this.messageService.createFormMessage(MessageType.ERROR, err.error.error);
           this.savingFactory = false
         })
       })
@@ -336,7 +377,7 @@ resetFactoryRouteForm() {
 async saveFactoryRoute() {
 
   if (this.factoryRouteCreateForm.invalid) {
-    this.factoryRouteFormMessage = this.messageService.createFormMessage(
+    this.factoryRouteCreateFormMessage = this.messageService.createFormMessage(
       MessageType.ERROR,
       'Por favor, completa todos los campos correctamente.'
     );
@@ -354,7 +395,7 @@ async saveFactoryRoute() {
       .subscribe({
         next: async (res) => {
 
-          this.factoryRouteFormMessage = this.messageService.createFormMessage(
+          this.factoryRouteCreateFormMessage = this.messageService.createFormMessage(
             MessageType.SUCCESS,
             'Ruta creada con éxito'
           );
@@ -384,7 +425,7 @@ async saveFactoryRoute() {
         },
 
         error: (err) => {
-          this.factoryRouteFormMessage = this.messageService.createFormMessage(
+          this.factoryRouteCreateFormMessage = this.messageService.createFormMessage(
             MessageType.ERROR,
             err.error.error
           );
@@ -398,7 +439,7 @@ marckFactoryRouteToSuspend(event:any) {
 
 
   this.factoryRouteToSuspend = event;
-  this.suspend = event.suspend;
+  this.factoryRouteSuspend = event.suspend;
  
 
 }
@@ -420,13 +461,13 @@ async suspensionFactoryRoute() {
       await delay(1000);
       
       await this.selectFactory(this.selectedFactory);
-      this.getHasInactiveRoutes();
+      this.getHasInactiveFactoryRoutes();
 
-       const hasInactiveRoutes = await firstValueFrom(this.hasInactiveRoutes$);
+       const hasInactiveRoutes = await firstValueFrom(this.hasInactiveFactoryRoutes$);
        console.log(hasInactiveRoutes)
 
        if (!hasInactiveRoutes) {
-        this.toggleRoutes();
+        this.toggleFactoryRoutes();
        }
   
       this.factoryRouteSuspensionComponent.closeModal();
@@ -448,7 +489,8 @@ async suspensionFactoryRoute() {
 
 
       this.selectedFactory = event;
-      await this.factoryService.selectFactory(event.id)
+      await this.factoryService.selectFactory(event.id);
+       this.getFilteredFactories();
 
 
 
@@ -461,7 +503,7 @@ async suspensionFactoryRoute() {
      async selectRoute(event:any) {
 
 
-          this.selectedRouteId$.next(event);
+          this.selectedFactoryRouteId$.next(event);
 
 
 
@@ -478,9 +520,14 @@ async suspensionFactoryRoute() {
     return route.id;
   }
  
+  toggleFactories() {
+   this.showInactiveFactories$.next(!this.showInactiveFactories$.value);
+   this.filteredFactory$ = of(null);
 
-  toggleRoutes() {
-   this.showInactiveRoutes$.next(!this.showInactiveRoutes$.value);
+
+}
+  toggleFactoryRoutes() {
+   this.showInactiveFactoryRoutes$.next(!this.showInactiveFactoryRoutes$.value);
 }
 
   ngOnDestroy() {
@@ -490,6 +537,7 @@ async suspensionFactoryRoute() {
     
     this.createFactorySubscription?.unsubscribe();
     this.createFactoryRouteSubscription?.unsubscribe();
+    this.suspendFactoryRouteSubscription?.unsubscribe();
   }
 
  

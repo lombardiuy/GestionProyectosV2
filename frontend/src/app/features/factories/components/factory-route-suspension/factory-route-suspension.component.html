@@ -22,19 +22,19 @@
 
     <div class="card w-100 h-100">
 
-        <div *ngIf="suspend" class="card-header alert p-2 alert-danger">  <i class="fa-solid fa-user-xmark me-1"></i>  Desactivar ruta</div>
-        <div *ngIf="!suspend" class="card-header alert p-2 alert-danger">   <i class="fa-solid fa-user-check me-1"></i>  Reactivar ruta</div>
+        <div *ngIf="factoryRouteSuspend" class="card-header alert p-2 alert-danger">  <i class="fa-solid fa-user-xmark me-1"></i>  Desactivar ruta</div>
+        <div *ngIf="!factoryRouteSuspend" class="card-header alert p-2 alert-danger">   <i class="fa-solid fa-user-check me-1"></i>  Reactivar ruta</div>
 
        
         <div class="card-body">
 
-            <div  *ngIf="suspend" class="text-center">¿Seguro que desea desactivar la ruta <strong>{{factoryRouteToSuspend?.name}}</strong>?</div>
-            <div  *ngIf="!suspend" class="text-center">¿Seguro que desea reactivar la ruta <strong>{{factoryRouteToSuspend?.name}}</strong>?</div>
+            <div  *ngIf="factoryRouteSuspend" class="text-center">¿Seguro que desea desactivar la ruta <strong>{{factoryRouteToSuspend?.name}}</strong>?</div>
+            <div  *ngIf="!factoryRouteSuspend" class="text-center">¿Seguro que desea reactivar la ruta <strong>{{factoryRouteToSuspend?.name}}</strong>?</div>
                 <div *ngIf="!savingSuspensionFactoryRoute; else loadingSpinner" class="d-flex align-items-center justify-content-center">
                 
                     <button  data-bs-dismiss="modal"  class="btn btn-secondary m-3 ">Cancelar</button>
-                        <button *ngIf="suspend" (click)="suspensionFactoryRoute()" class="btn btn-danger m-3">Desactivar ruta</button>
-                       <button *ngIf="!suspend" (click)="suspensionFactoryRoute()" class="btn btn-success m-3">Reactivar ruta</button>
+                        <button *ngIf="factoryRouteSuspend" (click)="suspensionFactoryRoute()" class="btn btn-danger m-3">Desactivar ruta</button>
+                       <button *ngIf="!factoryRouteSuspend" (click)="suspensionFactoryRoute()" class="btn btn-success m-3">Reactivar ruta</button>
                 </div>
 
                    <form-message [formMessage]="formMessage"></form-message>

@@ -16,7 +16,7 @@ export class FactoryRoutesFilterComponent implements OnInit {
 @Input() availableRoutesForSelect!:FactoryRoute[] | null | undefined;
 @Output() routeFilterChange = new EventEmitter<number | null>();
 
-  public selectedRouteId: number | null = null;
+  public selectedFactoryRouteId: number | null = null;
 
   constructor() {
 
@@ -33,13 +33,13 @@ export class FactoryRoutesFilterComponent implements OnInit {
 onRouteFilterChange(value: any) {
 
   if (value === "" || value === null) {
-    this.selectedRouteId = null;
+    this.selectedFactoryRouteId = null;
   } else {
     const id = Number(value);
-    this.selectedRouteId = isNaN(id) ? null : id;
+    this.selectedFactoryRouteId = isNaN(id) ? null : id;
   }
 
-  this.routeFilterChange.emit(this.selectedRouteId);
+  this.routeFilterChange.emit(this.selectedFactoryRouteId);
 }
 
 

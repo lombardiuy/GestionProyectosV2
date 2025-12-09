@@ -6,16 +6,47 @@
   <div class="card w-95 h-95 d-flex flex-column">
 
     <!-- HEADER -->
-    <div class="card-header w-100">
+    <div *ngIf="!(showInactiveFactories$ | async)" class="card-header w-100">
 
       <div class="w-100 d-flex justify-content-between">
          <h5><i class="fa-solid fa-industry"></i> Gestión de Fábricas </h5>
-        <button
+  
+         <div class="d-flex">
+            <button
           *ngIf="hasPermission('FACTORIES_CREATE')"
-          class="btn btn-success btn-sm"
+          class="btn btn-success btn-sm me-1"
           (click)="createFactory()" data-bs-toggle="modal" data-bs-target="#createFactoryModal">
           <i class="bi bi-plus"></i><i class="fa-solid fa-industry "></i> Crear Fábrica
         </button>
+         <button *ngIf="(hasInactiveFactories$ | async)"
+      class="btn btn-xs btn-danger"
+      (click)="toggleFactories()">
+      <i class="fa-solid fa-trash me-1"></i>
+      Fábricas inactivas
+    </button>
+              
+         </div>
+      
+
+      </div>
+     
+    </div>
+
+     <div *ngIf="(showInactiveFactories$ | async)" class="card-header w-100">
+
+      <div class="w-100 d-flex justify-content-between">
+         <h5 class="color-danger"><i class="fa-solid fa-industry"></i> Fábricas inactivas</h5>
+  
+         <div class="d-flex">
+  <button
+      class="btn btn-xs btn-success"
+      (click)="toggleFactories()">
+      <i class="fa-solid fa-angles-left me-1"></i>
+      Fábricas activas
+    </button>
+         </div>
+      
+
       </div>
      
     </div>
@@ -31,7 +62,7 @@
         <factories-list-component
           class="w-30 mb-3"
           [selectedFactory]="selectedFactory"
-          [factoriesList]="factoriesList$ | async"
+          [factoriesList]="availableFactoriesForSelect$ | async"
           (selectFactoryEvent)="selectFactory($event)">
 
 
@@ -51,16 +82,16 @@
       </div>
 
          <div *ngIf="(filteredFactory$ | async) as filteredFactory; else noFactorySelected" class="card">
-          <div class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
+          <div *ngIf="!(showInactiveFactoryRoutes$ | async)" class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
 
-            <div class="d-flex"><i class="fa-solid fa-industry me-1"></i><h6> {{filteredFactory.name}} </h6></div>
+            <div class="d-flex "><i class="fa-solid fa-industry me-1"></i><h6> {{filteredFactory.name}}</h6></div>
 
             <div class="d-flex w-50 justify-content-end">
               
                <factory-routes-filter-component class="w-40 me-1"
           *ngIf="selectFactory "
         
-          [availableRoutesForSelect]="availableRoutesForSelect$ | async"
+          [availableRoutesForSelect]="availableFactoryRoutesForSelect$ | async"
           (routeFilterChange)="selectRoute($event)">
         </factory-routes-filter-component>
 
@@ -71,30 +102,14 @@
          <i class="bi bi-plus"></i> <i class="fa-solid fa-route"></i> Agregar ruta
         </button>
 
-
-<ng-container *ngIf="hasInactiveRoutes$ | async">
-
-  <ng-container *ngIf="!(showInactiveRoutes$ | async); else showActive">
-
-    <button
+          <button *ngIf="(hasInactiveFactoryRoutes$ | async)"
       class="btn btn-xs btn-danger"
-      (click)="toggleRoutes()">
+      (click)="toggleFactoryRoutes()">
       <i class="fa-solid fa-trash me-1"></i>
       Rutas inactivas
     </button>
 
-  </ng-container>
 
-  <ng-template #showActive>
-    <button
-      class="btn btn-xs btn-success"
-      (click)="toggleRoutes()">
-      <i class="fa-solid fa-check me-1"></i>
-      Rutas activas
-    </button>
-  </ng-template>
-
-</ng-container>
 
 
 
@@ -110,6 +125,40 @@
              
             </div>
             
+
+              <div *ngIf="(showInactiveFactoryRoutes$ | async)" class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
+
+            <div class="d-flex color-danger"><i class="fa-solid fa-industry me-1"></i><h6> {{filteredFactory.name}}  (rutas inactivas) </h6></div>
+
+            <div class="d-flex w-50 justify-content-end">
+
+                <button
+      class="btn btn-xs btn-success"
+      (click)="toggleFactoryRoutes()">
+      <i class="fa-solid fa-angles-left me-1"></i>
+      Rutas activas
+    </button>
+              
+    
+
+       
+
+
+
+
+
+
+
+
+            </div>
+
+         
+ 
+          
+   
+            
+             
+            </div>
             
             
             
@@ -166,7 +215,7 @@
     [hasPermission]="hasPermission.bind(this)"
     [factoryCreateForm]="factoryCreateForm"
     [factoriesList]="factoriesList$ | async"
-    [factoryFormMessage] = "factoryFormMessage"
+    [factoryCreateFormMessage] = "factoryCreateFormMessage"
     [savingFactory] = "savingFactory"
     [loadingFactoryCreateForm] = "loadingFactoryCreateForm"
  
@@ -190,7 +239,7 @@
    
     [hasPermission]="hasPermission.bind(this)"
     [factoryRouteCreateForm]="factoryRouteCreateForm"
-    [factoryRouteFormMessage] = "factoryRouteFormMessage"
+    [factoryRouteCreateFormMessage] = "factoryRouteCreateFormMessage"
     [savingFactoryRoute] = "savingFactoryRoute"
     [loadingFactoryRouteCreateForm] = "loadingFactoryRouteCreateForm"
  
@@ -219,9 +268,9 @@
     
     [hasPermission]="hasPermission.bind(this)"
     [factoryRouteToSuspend]="factoryRouteToSuspend "
-    [suspend] = "suspend"
+    [factoryRouteSuspend] = "factoryRouteSuspend"
     [savingSuspensionFactoryRoute]="savingSuspensionFactoryRoute"
-    [formMessage]="factoryRouteFormMessage"
+    [formMessage]="factoryRouteCreateFormMessage"
 
     (suspensionFactoryRouteEvent)="suspensionFactoryRoute()"
 >

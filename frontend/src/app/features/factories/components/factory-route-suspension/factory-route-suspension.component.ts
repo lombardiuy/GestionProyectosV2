@@ -16,7 +16,7 @@ export class FactoryRouteSuspensionComponent {
   @ViewChild('btnClose') btnClose!: ElementRef;  
 
    @Input() factoryRouteToSuspend: Partial<FactoryRoute> | null | undefined;
-   @Input() suspend: boolean | null | undefined;
+   @Input() factoryRouteSuspend: boolean | null | undefined;
    @Input() formMessage: FormMessage | null | undefined;
    @Input() hasPermission!: (code: string) => boolean;
    @Input() savingSuspensionFactoryRoute:boolean | undefined;

@@ -19,7 +19,7 @@ export class FactoryRouteCreateComponent  {
   @Input() savingFactoryRoute:boolean | undefined;
   @Input() loadingFactoryRouteCreateForm:boolean | undefined;
   @Input() factoryRouteCreateForm!:FormGroup;
-  @Input() factoryRouteFormMessage:FormMessage | null | undefined;
+  @Input() factoryRouteCreateFormMessage:FormMessage | null | undefined;
 
   @Output() saveFactoryRouteEvent = new EventEmitter<void>();
 

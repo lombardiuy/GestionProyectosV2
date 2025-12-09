@@ -20,7 +20,7 @@ export class FactoryCreateComponent  {
   @Input() loadingFactoryCreateForm:boolean | undefined;
   @Input() factoriesList!: Factory[] | null;
   @Input() factoryCreateForm!:FormGroup;
-  @Input() factoryFormMessage:FormMessage | null | undefined;
+  @Input() factoryCreateFormMessage:FormMessage | null | undefined;
 
   @Output() saveFactoryEvent = new EventEmitter<void>();
 

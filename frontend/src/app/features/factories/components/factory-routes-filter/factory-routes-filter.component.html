@@ -1,6 +1,6 @@
  <select *ngIf="availableRoutesForSelect?.length"
           class="form-control form-select form-select-sm w-100"
-          [ngModel]="selectedRouteId"
+          [ngModel]="selectedFactoryRouteId"
           (ngModelChange)="onRouteFilterChange($event)">
 
            <option [ngValue]="null" disabled>
