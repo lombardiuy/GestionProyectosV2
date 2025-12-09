@@ -109,7 +109,34 @@
       Rutas inactivas
     </button>
 
+    <div *ngIf="selectedFactory?.active" class="d-flex align-items-center ms-1">
+           <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION')"
+  
+    class="fa-solid fa-toggle-on color-success cursor-pointer"
+     (click)="marckFactoryToSuspend(selectedFactory!,true)"
+     data-bs-toggle="modal"
+     data-bs-target="#factorySuspensionModal"class="fa-solid fa-solid fa-toggle-on color-success cursor-pointer " ></i>
 
+
+
+    </div>
+
+    
+    <div *ngIf="!selectedFactory?.active" class="d-flex align-items-center ms-1">
+           <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION')"
+  
+    class="fa-solid fa-toggle-off color-success cursor-pointer"
+     (click)="marckFactoryToSuspend(selectedFactory!,false)"
+     data-bs-toggle="modal"
+     data-bs-target="#factorySuspensionModal"class="fa-solid fa-solid fa-toggle-off color-danger cursor-pointer " ></i>
+
+
+
+    </div>
+
+
+    
+   
 
 
 
@@ -255,6 +282,27 @@
 
   </div>
 
+  <!--FACTORY SUSPENSION MODAL -->
+
+<div class="modal fade" id="factorySuspensionModal" tabindex="-1" aria-hidden="true">
+
+<factory-suspension-component  
+    #factorySuspensionComponent
+    *ngIf="factoryCreateForm && hasPermission('FACTORIES_SUSPENSION')"
+    class="w-100 h-100"
+    
+    [hasPermission]="hasPermission.bind(this)"
+    [factoryToSuspend]="factoryToSuspend "
+    [factorySuspend] = "factorySuspend"
+    [savingSuspensionFactory]="savingSuspensionFactory"
+    [formMessage]="factoryRouteSuspensionFormMessage"
+
+    (suspensionFactoryEvent)="suspensionFactory()"
+>
+</factory-suspension-component>
+
+
+</div>
 
 
   <!--FACTORYROUTE SUSPENSION MODAL -->
@@ -270,7 +318,7 @@
     [factoryRouteToSuspend]="factoryRouteToSuspend "
     [factoryRouteSuspend] = "factoryRouteSuspend"
     [savingSuspensionFactoryRoute]="savingSuspensionFactoryRoute"
-    [formMessage]="factoryRouteCreateFormMessage"
+    [formMessage]="factoryRouteSuspensionFormMessage"
 
     (suspensionFactoryRouteEvent)="suspensionFactoryRoute()"
 >

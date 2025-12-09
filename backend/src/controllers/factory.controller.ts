@@ -98,6 +98,22 @@ if (!req.user) throw new Error("Usuario no autenticado");
 };
 
 /**
+ * POST /factory/suspension
+ * req.body validado por SuspendFactoryRouteDto -> { id }
+ */
+export const suspensionFactory = async (req: UserRequest, res: Response) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ error: 'Faltan datos' });
+    if (!req.user) throw new Error("Usuario no autenticado");
+    const user = await factoryService.suspensionFactory(Number(id), req.user.username);
+    res.json({ user });
+  } catch (error: any) {
+    res.status(401).json({ error: error.message });
+  }
+};
+
+/**
  * POST /factory/route/suspension
  * req.body validado por SuspendFactoryRouteDto -> { id }
  */

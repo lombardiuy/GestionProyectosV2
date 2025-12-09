@@ -12,7 +12,7 @@ import { MessageService } from '../../../../shared/services/message.service';
 import { delay } from '../../../../shared/helpers/delay.helper';
 import { FactoryRouteCreateComponent } from '../../components/factory-route-create/factory-route-create.component';
 import { FactoryRouteSuspensionComponent } from '../../components/factory-route-suspension/factory-route-suspension.component';
-
+import { FactorySuspensionComponent } from '../../components/factory-suspension/factory-suspension.component';
 
 
 @Component({
@@ -34,6 +34,7 @@ export class FactoriesPanelPage implements OnInit {
 
     public savingFactory:boolean = false;
     public savingFactoryRoute:boolean = false;
+    public savingSuspensionFactory:boolean = false;
     public savingSuspensionFactoryRoute:boolean = false;
 
     public timestamp$: Observable<number>;
@@ -52,10 +53,12 @@ export class FactoriesPanelPage implements OnInit {
 
     public factoryCreateFormMessage:FormMessage | null | undefined;
     public factoryRouteCreateFormMessage:FormMessage | null | undefined;
+    public factorySuspensionFormMessage:FormMessage | null | undefined;
     public factoryRouteSuspensionFormMessage:FormMessage | null | undefined;
 
     private createFactorySubscription?:Subscription;
     private createFactoryRouteSubscription?:Subscription;
+    private suspendFactorySubscription?:Subscription;
     private suspendFactoryRouteSubscription?:Subscription;
 
     public hasInactiveFactoryRoutes$!: Observable<boolean>;
@@ -68,6 +71,7 @@ export class FactoriesPanelPage implements OnInit {
 
     @ViewChild(FactoryCreateComponent) factoryCreateComponent!: FactoryCreateComponent;
     @ViewChild(FactoryRouteCreateComponent) factoryRouteCreateComponent!: FactoryRouteCreateComponent;
+    @ViewChild(FactorySuspensionComponent) factorySuspensionComponent!: FactorySuspensionComponent;
     @ViewChild(FactoryRouteSuspensionComponent) factoryRouteSuspensionComponent!: FactoryRouteSuspensionComponent;
 
     public factoryRouteToSuspend:Partial<FactoryRoute> | null | undefined;
@@ -110,6 +114,8 @@ get factoryForm() {
 get factoryRouteForm() {
   return this.factoryRouteCreateForm?.controls;
 }
+
+
 
   getFilteredFactories() {
     this.filteredFactory$ = combineLatest([
@@ -444,6 +450,16 @@ marckFactoryRouteToSuspend(event:any) {
 
 }
 
+marckFactoryToSuspend(factoryToSuspend:Factory, suspend:boolean) {
+
+
+
+  this.factoryToSuspend = factoryToSuspend;
+  this.factorySuspend = suspend;
+ 
+
+}
+
 async suspensionFactoryRoute() {
 
   this.savingSuspensionFactoryRoute = true;
@@ -479,6 +495,48 @@ async suspensionFactoryRoute() {
     error:(err)=> {
         this.factoryRouteSuspensionFormMessage = this.messageService.createFormMessage(MessageType.ERROR, err.error.errror);
           this.savingSuspensionFactoryRoute = false;
+    }
+  })
+  
+}
+
+async suspensionFactory() {
+
+  this.savingSuspensionFactory = true;
+
+  this.suspendFactorySubscription = this.factoryService.suspensionFactory(
+    this.factoryToSuspend?.id!
+  ).subscribe({
+    next:async(res) => {
+      if (res) {
+        this.factorySuspensionFormMessage = this.messageService.createFormMessage(MessageType.SUCCESS, 'Fábrica activada con éxito!')
+      }else {
+        this.factorySuspensionFormMessage = this.messageService.createFormMessage(MessageType.ERROR, 'Fábrica desactivada con éxito!')
+      }
+
+      //falta pulir aca un poco 
+      await delay(1000);
+      await this.getFilteredFactories();
+      
+      await this.getAvailableFactoriesForSelect();
+      this.getHasInactiveFactories();
+
+       const hasInactiveFactories = await firstValueFrom(this.hasInactiveFactories$);
+
+
+       if (!hasInactiveFactories) {
+        this.toggleFactories();
+       }
+  
+      this.factorySuspensionComponent.closeModal();
+      this.factorySuspensionFormMessage = null;
+        this.savingSuspensionFactory = false;
+
+      
+    }, 
+    error:(err)=> {
+        this.factorySuspensionFormMessage = this.messageService.createFormMessage(MessageType.ERROR, err.error.errror);
+          this.savingSuspensionFactory = false;
     }
   })
   

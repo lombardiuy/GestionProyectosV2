@@ -1,0 +1,59 @@
+
+<div class="modal-dialog modal-dialog-centered modal-lg">
+ <div class="modal-content">
+
+     <div class="modal-header">   
+   
+      <button 
+
+ #btnClose
+  type="button" 
+  class="btn-close" 
+  data-bs-dismiss="modal" 
+  aria-label="Close">
+</button>
+
+
+        
+</div>
+
+ <div class="modal-body">
+
+
+    <div class="card w-100 h-100">
+
+        <div *ngIf="factorySuspend" class="card-header alert p-2 alert-danger">  <i class="fa-solid fa-industry me-1"></i>  Desactivar fábrica</div>
+        <div *ngIf="!factorySuspend" class="card-header alert p-2 alert-danger">   <i class="fa-solid fa-industry me-1"></i>  Reactivar fábrica</div>
+
+       
+        <div class="card-body">
+
+            <div  *ngIf="factorySuspend" class="text-center">¿Seguro que desea desactivar fábrica <strong>{{factoryToSuspend?.name}}</strong>?</div>
+            <div  *ngIf="!factorySuspend" class="text-center">¿Seguro que desea reactivar fábrica <strong>{{factoryToSuspend?.name}}</strong>?</div>
+                <div *ngIf="!savingSuspensionFactory; else loadingSpinner" class="d-flex align-items-center justify-content-center">
+                
+                    <button  data-bs-dismiss="modal"  class="btn btn-secondary m-3 ">Cancelar</button>
+                        <button *ngIf="factorySuspend" (click)="suspensionFactory()" class="btn btn-danger m-3">Desactivar fábrica</button>
+                       <button *ngIf="!factorySuspend" (click)="suspensionFactory()" class="btn btn-success m-3">Reactivar fábrica</button>
+                </div>
+
+                   <form-message [formMessage]="formMessage"></form-message>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+ </div>
+
+ </div>
+
+</div>
+
+
+<ng-template  #loadingSpinner>
+  <loading-spinner class="w-100 h-100"></loading-spinner>
+</ng-template>

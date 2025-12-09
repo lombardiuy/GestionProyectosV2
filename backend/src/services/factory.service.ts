@@ -263,7 +263,11 @@ export const createFactoryRoute = async (
 
 
 /**
- * Alterna la suspensión del usuario
+ * Alterna la suspensión de la ruta
+ */
+/**
+ * Alterna la suspensión de una ruta de fábrica (activar/inactivar)
+ * — Además registra auditoría de la ruta y, si corresponde, auditoría de la fábrica (versionado).
  */
 export const suspensionFactoryRoute = async (
   id: number,
@@ -272,58 +276,223 @@ export const suspensionFactoryRoute = async (
 
   return await AppDataSource.transaction(async (manager) => {
     const factoryRouteRepo = manager.getRepository(FactoryRoute);
+    const factoryRepo = manager.getRepository(Factory);
 
-    // Buscar usuario
+    // 1) OBTENER LA RUTA (con su fábrica para posible auditoría)
     const factoryRoute = await factoryRouteRepo.findOne({
       where: { id },
-      relations: ["factory"], // consistencia con el módulo
+      relations: ["factory"],
     });
 
     if (!factoryRoute) {
-      throw new Error('Ruta desconocida. Si el error persiste contacte al administrador.');
+      throw new Error(
+        "Ruta desconocida. Si el error persiste contacte al administrador."
+      );
     }
 
-    // BEFORE
-    const before = { ...factoryRoute };
+    // 2) BEFORE (snapshot)
+    const beforeRoute = { ...factoryRoute };
 
-    // AFTER (invertir suspensión)
-    const after: any = { ...factoryRoute };
-    after.active = !factoryRoute.active;
+    // 3) AFTER (toggle active)
+    const afterRoute = {
+      ...factoryRoute,
+      active: !factoryRoute.active,
+    };
 
-    // Detectar cambios
-    const changes = detectModuleChanges(before, after, {
+    // 4) Detectar cambios en la ruta
+    const routeChanges = detectModuleChanges(beforeRoute, afterRoute, {
       ignore: ["createdAt", "updatedAt", "factory"],
       relations: [],
     });
 
-    // Si no hubo cambios, no guardar ni auditar
-    if (Object.keys(changes).length === 0) {
-      const { ...rest } = factoryRoute;
+    // Si no hay cambios en la ruta, devolver sin tocar nada
+    if (Object.keys(routeChanges).length === 0) {
+      const { factory, ...rest } = factoryRoute;
       return rest;
     }
 
-    // Guardar cambios
-    Object.assign(factoryRoute, after);
-    const saved = await factoryRouteRepo.save(factoryRoute);
+    // 5) Guardar cambios en la ruta
+    Object.assign(factoryRoute, afterRoute);
+    const savedRoute = await factoryRouteRepo.save(factoryRoute);
 
-    // ✅ CORRECCIÓN: usar el estado AFTER para decidir la acción de auditoría (antes se usaba el estado ANTERIOR)
+    // 6) Auditoría de la ruta (usar el estado AFTER para decidir la acción)
+    const routeAction = afterRoute.active
+      ? "FACTORY_ROUTE_ACTIVATION"
+      : "FACTORY_ROUTE_SUSPENSION";
+
     await registerInAuditTrail(
       {
         module: "Factories",
         entity: "FactoryRoute",
-        entityId: saved.id,
-        action: after.active ? "FACTORY_ROUTE_ACTIVATION" : "FACTORY_ROUTE_SUSPENSION", // ✅ CORRECCIÓN
-        changes: changes,
-        description: after.active
+        entityId: savedRoute.id,
+        action: routeAction,
+        changes: routeChanges,
+        description: afterRoute.active
           ? "Reactivación de ruta."
-          : "Inactivación de ruta.",
+          : "Suspensión de ruta.",
         author: currentUsername,
-        version: saved.version,
+        version: savedRoute.version,
       },
       manager
     );
 
-    return saved;
+    // 7) --- AUDITORÍA DE LA FÁBRICA POR CAMBIO EN RUTA ---
+    // Obtener entidad fábrica actual (ya estaba en relations, pero mejor recargar para consistencia)
+    const factoryEntity = await factoryRepo.findOne({
+      where: { id: factoryRoute.factory?.id },
+    });
+
+    if (!factoryEntity) {
+      // Si por alguna razón no existe la fábrica (improbable), devolvemos la ruta guardada.
+      const { factory, ...rest } = savedRoute;
+      return rest;
+    }
+
+    // snapshot BEFORE factory (usar copia previa a cambios)
+    const beforeFactory = { ...factoryEntity };
+
+    // Aplicar el cambio que consideremos (aquí lo típico: incrementar versión de la fábrica)
+    factoryEntity.version = (factoryEntity.version ?? 0) + 1;
+
+    // snapshot AFTER factory
+    const afterFactory = { ...factoryEntity };
+
+    // Detectar cambios en la fábrica (ignorar timestamps)
+    const factoryChanges = detectModuleChanges(beforeFactory, afterFactory, {
+      ignore: ["createdAt", "updatedAt"],
+    });
+
+    // Si hubo cambios en la fábrica, guardar y auditar
+    if (Object.keys(factoryChanges).length > 0) {
+      const savedFactory = await factoryRepo.save(factoryEntity);
+
+      await registerInAuditTrail(
+        {
+          module: "Factories",
+          entity: "Factory",
+          entityId: savedFactory.id,
+          action: "FACTORY_UPDATE",
+          changes: factoryChanges,
+          description: `${afterRoute.active ? "Reactivación" : "Suspensión"} de la ruta ${savedRoute.name}`,
+          author: currentUsername,
+          version: savedFactory.version,
+        },
+        manager
+      );
+    }
+
+    // 8) Devolver la ruta guardada (sin relations para consistencia)
+    const { factory, ...rest } = savedRoute;
+    return rest;
+  });
+};
+
+
+/**
+ * Alterna la suspensión de la fabrica
+ */
+export const suspensionFactory = async (
+  id: number,
+  currentUsername: string
+): Promise<Partial<Factory>> => {
+
+  return await AppDataSource.transaction(async (manager) => {
+    const factoryRepo = manager.getRepository(Factory);
+    const routeRepo = manager.getRepository(FactoryRoute);
+
+    const factory = await factoryRepo.findOne({
+      where: { id },
+      relations: ["routes"],
+    });
+
+    if (!factory) {
+      throw new Error("Fábrica desconocida. Si el error persiste contacte al administrador.");
+    }
+
+    // BEFORE
+    const beforeFactory = { ...factory };
+
+    // AFTER
+    const afterFactory = { ...factory };
+    afterFactory.active = !factory.active;
+
+    // Detectar cambios
+    const factoryChanges = detectModuleChanges(beforeFactory, afterFactory, {
+      ignore: ["createdAt", "updatedAt", "routes"],
+      relations: [],
+    });
+
+    // No hubo cambios → no auditar
+    if (Object.keys(factoryChanges).length === 0) {
+      return factory;
+    }
+
+    // Guardar estado de fábrica
+    Object.assign(factory, afterFactory);
+    const savedFactory = await factoryRepo.save(factory);
+
+    // ***********************************************
+    //  🔥 SUSPENSIÓN / ACTIVACIÓN DE TODAS LAS RUTAS
+    // ***********************************************
+    const newRouteState = afterFactory.active; // true = activar, false = suspender
+
+    for (const route of factory.routes) {
+      if (route.active === newRouteState) continue;
+
+      const beforeRoute = { ...route };
+      const afterRoute = { ...route, active: newRouteState };
+
+      const routeChanges = detectModuleChanges(beforeRoute, afterRoute, {
+        ignore: ["createdAt", "updatedAt", "factory"],
+        relations: [],
+      });
+
+      // Guardar
+      Object.assign(route, afterRoute);
+      const savedRoute = await routeRepo.save(route);
+
+      // Auditoría de la ruta
+      await registerInAuditTrail(
+        {
+          module: "Factories",
+          entity: "FactoryRoute",
+          entityId: savedRoute.id,
+          action: newRouteState
+            ? "ROUTE_ACTIVATION_BY_FACTORY"
+            : "ROUTE_SUSPENSION_BY_FACTORY",
+          changes: routeChanges,
+          description: newRouteState
+            ? "Reactivación de ruta debido a reactivación de fábrica."
+            : "Suspensión de ruta debido a suspensión de fábrica.",
+          author: currentUsername,
+          version: savedRoute.version,
+        },
+        manager
+      );
+    }
+
+    // ***********************************************
+    //  🔥 Auditoría de la fábrica
+    // ***********************************************
+    await registerInAuditTrail(
+      {
+        module: "Factories",
+        entity: "Factory",
+        entityId: savedFactory.id,
+        action: afterFactory.active
+          ? "FACTORY_ACTIVATION"
+          : "FACTORY_SUSPENSION",
+        changes: factoryChanges,
+        description: afterFactory.active
+          ? "Reactivación de fábrica."
+          : "Suspensión de fábrica.",
+        author: currentUsername,
+        version: savedFactory.version,
+      },
+      manager
+    );
+
+    return savedFactory;
   });
 };
 

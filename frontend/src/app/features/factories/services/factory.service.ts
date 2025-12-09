@@ -98,10 +98,15 @@ export class FactoryService {
     }
   
 
-  suspensionFactoryRoute(factoryRouteID: number) {
+  suspensionFactory(factoryID: number) {
+        return this.http.post<any>(`${this.apiUrl}/suspension`, {
+          id: factoryID
+        });
+      }
+    
+        suspensionFactoryRoute(factoryRouteID: number) {
         return this.http.post<any>(`${this.apiUrl}/route/suspension`, {
           id: factoryRouteID
         });
       }
-    
 }

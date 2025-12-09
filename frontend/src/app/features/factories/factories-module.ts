@@ -13,12 +13,13 @@ import { FactoryCreateComponent } from './components/factory-create/factory-crea
 import { FactoryRoutesFilterComponent } from './components/factory-routes-filter/factory-routes-filter.component';
 import { FactoryRouteCreateComponent } from './components/factory-route-create/factory-route-create.component';
 import { FactoryRouteSuspensionComponent } from './components/factory-route-suspension/factory-route-suspension.component';
+import { FactorySuspensionComponent } from './components/factory-suspension/factory-suspension.component';
 
 @NgModule({
   declarations: [
     FactoriesPanelPage, 
     FactoriesListComponent, FactoryRoutePanelComponent, FactoryAreaSummaryComponent, FactoryAreaCreateComponent,
-    FactoryCreateComponent, FactoryRoutesFilterComponent, FactoryRouteCreateComponent, FactoryRouteSuspensionComponent
+    FactoryCreateComponent, FactoryRoutesFilterComponent, FactoryRouteCreateComponent, FactorySuspensionComponent, FactoryRouteSuspensionComponent
 
   ],
   imports: [
