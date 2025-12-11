@@ -6,7 +6,7 @@
   <div class="card w-95 h-95 d-flex flex-column">
 
     <!-- HEADER -->
-    <div *ngIf="!(showInactiveFactories$ | async)" class="card-header w-100">
+    <div *ngIf="(showActiveFactories$ | async)" class="card-header w-100">
 
       <div class="w-100 d-flex justify-content-between">
          <h5><i class="fa-solid fa-industry"></i> Gestión de Fábricas </h5>
@@ -18,9 +18,11 @@
           (click)="createFactory()" data-bs-toggle="modal" data-bs-target="#createFactoryModal">
           <i class="bi bi-plus"></i><i class="fa-solid fa-industry "></i> Crear Fábrica
         </button>
+
+
          <button *ngIf="(hasInactiveFactories$ | async)"
       class="btn btn-xs btn-danger"
-      (click)="toggleFactories()">
+      (click)="toggleFactories(false)">
       <i class="fa-solid fa-trash me-1"></i>
       Fábricas inactivas
     </button>
@@ -32,15 +34,15 @@
      
     </div>
 
-     <div *ngIf="(showInactiveFactories$ | async)" class="card-header w-100">
+     <div *ngIf="!(showActiveFactories$ | async)" class="card-header w-100">
 
       <div class="w-100 d-flex justify-content-between">
          <h5 class="color-danger"><i class="fa-solid fa-industry"></i> Fábricas inactivas</h5>
   
          <div class="d-flex">
-  <button
+  <button *ngIf="(hasActiveFactories$ | async)"
       class="btn btn-xs btn-success"
-      (click)="toggleFactories()">
+      (click)="toggleFactories(true)">
       <i class="fa-solid fa-angles-left me-1"></i>
       Fábricas activas
     </button>
@@ -59,7 +61,7 @@
 
     
 
-        <factories-list-component
+        <factories-list-component 
           class="w-30 mb-3"
           [selectedFactory]="selectedFactory"
           [factoriesList]="availableFactoriesForSelect$ | async"
@@ -82,37 +84,33 @@
       </div>
 
          <div *ngIf="(filteredFactory$ | async) as filteredFactory; else noFactorySelected" class="card">
-          <div *ngIf="!(showInactiveFactoryRoutes$ | async)" class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
+          <div *ngIf="(showActiveFactoryRoutes$ | async)" class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
 
             <div class="d-flex "><i class="fa-solid fa-industry me-1"></i><h6> {{filteredFactory.name}}</h6></div>
 
             <div class="d-flex w-50 justify-content-end">
               
-               <factory-routes-filter-component class="w-40 me-1"
-          *ngIf="selectFactory "
-        
+               <factory-routes-filter-component class="w-40 me-1" *ngIf="selectedFactory && hasPermission('FACTORIES_ROUTES_VIEW')"
           [availableRoutesForSelect]="availableFactoryRoutesForSelect$ | async"
           (routeFilterChange)="selectRoute($event)">
         </factory-routes-filter-component>
 
         <button
-          *ngIf="hasPermission('FACTORIES_CREATE') && (selectedFactory$ | async) "
+          *ngIf="hasPermission('FACTORIES_ROUTE_CREATE') && (selectedFactory$ | async)?.active "
           class="btn btn-primary btn-xs me-1"
           (click)="createFactoryRoute()" data-bs-toggle="modal" data-bs-target="#createFactoryRouteModal">
          <i class="bi bi-plus"></i> <i class="fa-solid fa-route"></i> Agregar ruta
         </button>
 
-          <button *ngIf="(hasInactiveFactoryRoutes$ | async)"
+          <button *ngIf="(hasInactiveFactoryRoutes$ | async) && hasPermission('FACTORIES_ROUTES_VIEW')"
       class="btn btn-xs btn-danger"
-      (click)="toggleFactoryRoutes()">
+      (click)="toggleFactoryRoutes(false)">
       <i class="fa-solid fa-trash me-1"></i>
       Rutas inactivas
     </button>
 
-    <div *ngIf="selectedFactory?.active" class="d-flex align-items-center ms-1">
-           <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION')"
-  
-    class="fa-solid fa-toggle-on color-success cursor-pointer"
+    <div *ngIf="selectedFactory?.active && hasPermission('FACTORIES_SUSPENSION')" class="d-flex align-items-center ms-1">
+           <i class="fa-solid fa-toggle-on color-success cursor-pointer"
      (click)="marckFactoryToSuspend(selectedFactory!,true)"
      data-bs-toggle="modal"
      data-bs-target="#factorySuspensionModal"class="fa-solid fa-solid fa-toggle-on color-success cursor-pointer " ></i>
@@ -122,10 +120,8 @@
     </div>
 
     
-    <div *ngIf="!selectedFactory?.active" class="d-flex align-items-center ms-1">
-           <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION')"
-  
-    class="fa-solid fa-toggle-off color-success cursor-pointer"
+    <div *ngIf="!selectedFactory?.active && hasPermission('FACTORIES_SUSPENSION')" class="d-flex align-items-center ms-1">
+           <i class="fa-solid fa-toggle-off color-success cursor-pointer"
      (click)="marckFactoryToSuspend(selectedFactory!,false)"
      data-bs-toggle="modal"
      data-bs-target="#factorySuspensionModal"class="fa-solid fa-solid fa-toggle-off color-danger cursor-pointer " ></i>
@@ -153,7 +149,7 @@
             </div>
             
 
-              <div *ngIf="(showInactiveFactoryRoutes$ | async)" class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
+              <div *ngIf="!(showActiveFactoryRoutes$ | async)" class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
 
             <div class="d-flex color-danger"><i class="fa-solid fa-industry me-1"></i><h6> {{filteredFactory.name}}  (rutas inactivas) </h6></div>
 
@@ -161,10 +157,33 @@
 
                 <button
       class="btn btn-xs btn-success"
-      (click)="toggleFactoryRoutes()">
+      (click)="toggleFactoryRoutes(true)">
       <i class="fa-solid fa-angles-left me-1"></i>
       Rutas activas
     </button>
+    
+    <div *ngIf="selectedFactory?.active" class="d-flex align-items-center ms-1">
+           <i class="fa-solid fa-toggle-on color-success cursor-pointer"
+     (click)="marckFactoryToSuspend(selectedFactory!,true)"
+     data-bs-toggle="modal"
+     data-bs-target="#factorySuspensionModal"class="fa-solid fa-solid fa-toggle-on color-success cursor-pointer " ></i>
+
+
+
+    </div>
+
+    
+    <div *ngIf="!selectedFactory?.active" class="d-flex align-items-center ms-1">
+           <i  *ngIf="hasPermission('FACTORIES_SUSPENSION')"
+  
+    class="fa-solid fa-toggle-off color-success cursor-pointer"
+     (click)="marckFactoryToSuspend(selectedFactory!,false)"
+     data-bs-toggle="modal"
+     data-bs-target="#factorySuspensionModal"class="fa-solid fa-solid fa-toggle-off color-danger cursor-pointer " ></i>
+
+
+
+    </div>
               
     
 
@@ -184,7 +203,7 @@
           
    
             
-             
+                     <version-control   *ngIf="selectedFactory?.id" [hasPermission]="hasPermission.bind(this)"[entity]="'Factory'" [entityId]="selectedFactory?.id!" class="w-90 m-2"></version-control>
             </div>
             
             
@@ -206,6 +225,7 @@
       *ngFor="let route of filteredFactory.routes; trackBy: trackByRoute"
       class="w-100"
       [hasPermission]="hasPermission.bind(this)"
+      [factory]="(selectedFactory$ | async)"
       [route]="route"
       [timestamp]="timestamp$ | async"
       (suspendFactoryRouteEvent)="marckFactoryRouteToSuspend($event)"
@@ -215,6 +235,7 @@
   </ng-container>
 
 </div>
+        <version-control   *ngIf="selectedFactory?.id" [hasPermission]="hasPermission.bind(this)"[entity]="'Factory'" [entityId]="selectedFactory?.id!" class="w-90 m-2"></version-control>
           </div>
         </div>
        
@@ -227,6 +248,9 @@
 
   </div>
 </div>
+
+
+       
 
 <ng-template #loadingSpinner>
   <loading-spinner class="w-100 h-100"></loading-spinner>

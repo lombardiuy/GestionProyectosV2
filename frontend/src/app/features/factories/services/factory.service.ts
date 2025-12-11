@@ -53,7 +53,7 @@ export class FactoryService {
     const selectedFactory = await firstValueFrom(
       this.http.get<Factory>(`${this.apiUrl}/select/${id}`)
     );
-    console.log(selectedFactory)
+   
     this.selectedFactorySubject.next(selectedFactory);
     return selectedFactory;
   }

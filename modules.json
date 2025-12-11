@@ -25,10 +25,10 @@
       { "code": "FACTORIES_CREATE", "description": "Crear" },
       { "code": "FACTORIES_EDIT", "description": "Editar" },
       { "code": "FACTORIES_SUSPENSION", "description": "Suspender/Reactivar" },
-      { "code": "FACTORIES_ROUTES_VIEW", "description": "Visualizar" },
-      { "code": "FACTORIES_ROUTE_CREATE", "description": "Crear" },
-      { "code": "FACTORIES_ROUTE_EDIT", "description": "Editar" },
-      { "code": "FACTORIES_ROUTE_SUSPENSION", "description": "Suspender/Reactivar" }
+      { "code": "FACTORIES_ROUTES_VIEW", "description": "Visualizar rutas" },
+      { "code": "FACTORIES_ROUTE_CREATE", "description": "Crear rutas" },
+      { "code": "FACTORIES_ROUTE_EDIT", "description": "Editar rutas" },
+      { "code": "FACTORIES_ROUTE_SUSPENSION", "description": "Suspender/Reactivar rutas" }
     ]
   },
    {

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FactoryRoute } from '../../interfaces/factory-route.interface';
+import { Factory } from '../../interfaces/factory.interface';
 import { Area } from '../../../areas/interfaces/area.interface';
 import { environment } from '../../../../../environments/environment';
 
@@ -14,6 +15,7 @@ export class FactoryRoutePanelComponent implements OnInit {
   // Inputs que usabas antes
   @Input() hasPermission!: (code: string) => boolean;
   @Input() route!: FactoryRoute | null | undefined;
+  @Input() factory!: Factory| null | undefined;
   @Input() loading!: boolean | undefined;
   @Input() timestamp!: number | null;
 

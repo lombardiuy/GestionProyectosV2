@@ -34,7 +34,7 @@ export const selectFactoryById = async (factoryId: number): Promise<any | null> 
   const factory = await factoryRepository.findOne({
     where: { id: factoryId },
     relations: ["routes"],
-    select: ["id", "name", "location", "owner", "contact"]
+    select: ["id", "name", "location", "owner", "contact", "active"]
   });
 
   if (!factory) return null;
@@ -458,8 +458,8 @@ export const suspensionFactory = async (
           entity: "FactoryRoute",
           entityId: savedRoute.id,
           action: newRouteState
-            ? "ROUTE_ACTIVATION_BY_FACTORY"
-            : "ROUTE_SUSPENSION_BY_FACTORY",
+            ? "FACTORY_ROUTE_ACTIVATIONY"
+            : "FACTORY_ROUTE_SUSPENSION",
           changes: routeChanges,
           description: newRouteState
             ? "Reactivación de ruta debido a reactivación de fábrica."
