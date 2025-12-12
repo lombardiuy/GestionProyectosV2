@@ -34,7 +34,7 @@ export const selectFactoryById = async (factoryId: number): Promise<any | null> 
   const factory = await factoryRepository.findOne({
     where: { id: factoryId },
     relations: ["routes"],
-    select: ["id", "name", "location", "owner", "contact", "active"]
+    select: ["id", "name", "location", "owner", "contact", "active", "version"]
   });
 
   if (!factory) return null;

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { Area} from '../../../areas/interfaces/area.interface';
+import { Area} from '../../../../areas/interfaces/area.interface';
 import { Tooltip } from 'bootstrap';
 
 @Component({

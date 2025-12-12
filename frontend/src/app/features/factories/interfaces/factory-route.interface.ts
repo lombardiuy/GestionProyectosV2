@@ -7,5 +7,6 @@ export interface FactoryRoute {
   description: string;
   active: boolean;
   areas:Area[];
-  factory:Factory
+  factory:Factory;
+  version:number
 }

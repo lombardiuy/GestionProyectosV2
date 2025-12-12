@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FactoryRoute } from '../../interfaces/factory-route.interface';
-import { Factory } from '../../interfaces/factory.interface';
-import { Area } from '../../../areas/interfaces/area.interface';
-import { environment } from '../../../../../environments/environment';
+import { FactoryRoute } from '../../../interfaces/factory-route.interface';
+import { Factory } from '../../../interfaces/factory.interface';
+import { Area } from '../../../../areas/interfaces/area.interface';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'factory-route-panel-component',

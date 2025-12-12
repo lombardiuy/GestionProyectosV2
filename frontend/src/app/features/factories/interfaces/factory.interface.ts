@@ -7,6 +7,7 @@ export interface Factory {
   owner: string;
   contact: string;
   active: boolean;
+  version:number;
   routes: FactoryRoute[];
 
 }

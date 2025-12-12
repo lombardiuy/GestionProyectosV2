@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
-import { FactoryRoute } from '../../interfaces/factory-route.interface';
+import { FactoryRoute } from '../../../interfaces/factory-route.interface';
 
 
 @Component({

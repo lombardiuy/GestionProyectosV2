@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, ViewChild, ElementRef, Input } from '@angular/core';
-import {FormMessage} from "../../../../shared/interfaces/form-message.interface"
-import { FactoryRoute } from '../../interfaces/factory-route.interface';
+import {FormMessage} from "../../../../../shared/interfaces/form-message.interface"
+import { FactoryRoute } from '../../../interfaces/factory-route.interface';
 
 @Component({
   selector: 'factory-route-suspension-component',

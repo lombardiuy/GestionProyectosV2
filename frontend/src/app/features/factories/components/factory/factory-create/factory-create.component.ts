@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, SimpleChanges, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
-import { Factory } from '../../interfaces/factory.interface';
+import { Factory } from '../../../interfaces/factory.interface';
 import { FormGroup } from '@angular/forms';
-import { FormMessage } from '../../../../shared/interfaces/form-message.interface';
+import { FormMessage } from '../../../../../shared/interfaces/form-message.interface';
 
 
 @Component({

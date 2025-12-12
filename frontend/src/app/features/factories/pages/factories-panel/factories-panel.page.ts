@@ -7,12 +7,12 @@ import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable, of, pi
 import { TimeService } from '../../../../shared/services/time.service';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormMessage, MessageType } from '../../../../shared/interfaces/form-message.interface';
-import { FactoryCreateComponent } from '../../components/factory-create/factory-create.component';
+import { FactoryCreateComponent } from '../../components/factory/factory-create/factory-create.component';
 import { MessageService } from '../../../../shared/services/message.service';
 import { delay } from '../../../../shared/helpers/delay.helper';
-import { FactoryRouteCreateComponent } from '../../components/factory-route-create/factory-route-create.component';
-import { FactoryRouteSuspensionComponent } from '../../components/factory-route-suspension/factory-route-suspension.component';
-import { FactorySuspensionComponent } from '../../components/factory-suspension/factory-suspension.component';
+import { FactoryRouteCreateComponent } from '../../components/factory-route/factory-route-create/factory-route-create.component';
+import { FactoryRouteSuspensionComponent } from '../../components/factory-route/factory-route-suspension/factory-route-suspension.component';
+import { FactorySuspensionComponent } from '../../components/factory/factory-suspension/factory-suspension.component';
 
 
 @Component({
@@ -101,7 +101,7 @@ export class FactoriesPanelPage implements OnInit {
   async ngOnInit(): Promise<void> {
 
 
-     this.initFactories();
+    await this.initFactories();
     this.createEmptyFactoryForm();
     this.createEmptyFactoryRouteForm();
 
@@ -494,8 +494,9 @@ async saveFactoryRoute() {
           this.savingFactoryRoute = false;
           await delay(1000);
 
+          
           // 🔄 Recargar todas las fábricas
-          await this.factoryService.getAllFactories();
+        //  await this.factoryService.getAllFactories();
 
           // 🆕 Tomar la lista ya actualizada
           const factories = await firstValueFrom(this.factoryService.factoryList$);
@@ -504,12 +505,17 @@ async saveFactoryRoute() {
           const updatedFactory = factories?.find(f => f.id === selectedFactory.id) || null;
 
           // 🔄 Re-asignar la referencia correcta
-          this.selectedFactory = updatedFactory;
+         // this.selectedFactory = updatedFactory;
 
           // 🔄 Avisar al servicio cual es la fábrica actual
           if (updatedFactory) {
             await this.factoryService.selectFactory(updatedFactory.id!);
           }
+
+        //  this.initFactories();
+          this.initFactoryRoutes();
+
+           await this.factoryService.selectFactory(updatedFactory!.id!);
 
           // 👌 Cerrar modal
           this.factoryRouteCreateComponent.closeModal();
@@ -667,7 +673,9 @@ async suspensionFactory() {
  
   toggleFactories(active:boolean) {
    this.showActiveFactories$.next(active);
+   this.selectedFactory = null;
    this.filteredFactory$ = of(null);
+
 
 
 }

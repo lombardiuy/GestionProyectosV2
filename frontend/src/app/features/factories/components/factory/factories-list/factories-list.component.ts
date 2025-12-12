@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
 
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Factory } from '../../interfaces/factory.interface';
+import { Factory } from '../../../interfaces/factory.interface';
 
 
 
