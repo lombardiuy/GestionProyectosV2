@@ -30,21 +30,21 @@ const router = Router()
 
 //USERS
 
-router.get('/', authMiddleware, requirePermissionMiddleware("USERS_VIEW"), getAllUsers)
-router.get('/select/:id', authMiddleware, requirePermissionMiddleware("USERS_EDIT"), selectUserById)
+router.get('/', authMiddleware, requirePermissionMiddleware("USER_VIEW"), getAllUsers)
+router.get('/select/:id', authMiddleware, requirePermissionMiddleware("USER_EDIT"), selectUserById)
 
-router.post('/create', authMiddleware,requirePermissionMiddleware("USERS_CREATE"),  validateDto(CreateUserDto),  createUser)
-router.put('/update/:id',authMiddleware,requirePermissionMiddleware("USERS_EDIT"),validateDto(UpdateUserDto),updateUser);
+router.post('/create', authMiddleware,requirePermissionMiddleware("USER_CREATE"),  validateDto(CreateUserDto),  createUser)
+router.put('/update/:id',authMiddleware,requirePermissionMiddleware("USER_EDIT"),validateDto(UpdateUserDto),updateUser);
 router.put('/updateUserProfile', authMiddleware, validateDto(UpdateUserProfileDto), updateUserProfile);
-router.post('/resetUserPassword', authMiddleware, requirePermissionMiddleware("USERS_PASSWORD_RESET"), validateDto(ResetUserPasswordDto), resetUserPassword)
+router.post('/resetUserPassword', authMiddleware, requirePermissionMiddleware("USER_PASSWORD_RESET"), validateDto(ResetUserPasswordDto), resetUserPassword)
 router.post('/setUserPassword', validateDto(SetUserPasswordDto), setUserPassword)
-router.post('/suspension', authMiddleware,requirePermissionMiddleware("USERS_SUSPENSION"), validateDto(SuspendUserDto), suspensionUser)
+router.post('/suspension', authMiddleware,requirePermissionMiddleware("USER_SUSPENSION"), validateDto(SuspendUserDto), suspensionUser)
 
 
 //USER ROLES
 
-router.get('/roles', authMiddleware, requireAnyPermissionMiddleware('USERS_VIEW', 'USERS_ROLE_VIEW'), getUserRoles )
-router.post('/roles/create', authMiddleware,requirePermissionMiddleware("USERS_ROLE_CREATE"),  validateDto(SaveUserRoleDto), saveUserRole)
+router.get('/roles', authMiddleware, requireAnyPermissionMiddleware('USER_VIEW', 'USER_ROLE_VIEW'), getUserRoles )
+router.post('/roles/create', authMiddleware,requirePermissionMiddleware("USER_ROLE_CREATE"),  validateDto(SaveUserRoleDto), saveUserRole)
 
 
 

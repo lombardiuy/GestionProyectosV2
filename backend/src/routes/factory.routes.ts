@@ -24,12 +24,12 @@ const router = Router()
 
 //FACTORY ROUTES
 
-router.get('/', authMiddleware, requirePermissionMiddleware("FACTORIES_VIEW"), getAllFactories)
-router.get('/select/:id', authMiddleware, requirePermissionMiddleware("FACTORIES_EDIT"), selectFactoryById)
-router.post('/create', authMiddleware,requirePermissionMiddleware("FACTORIES_CREATE"),  validateDto(CreateFactoryDto),  createFactory)
-router.post('/route/create', authMiddleware,requirePermissionMiddleware("FACTORIES_CREATE"),  validateDto(CreateFactoryRouteDto),  createFactoryRoute)
-router.post('/suspension', authMiddleware,requirePermissionMiddleware("FACTORIES_SUSPENSION"), validateDto(SuspendFactoryDto), suspensionFactory)
-router.post('/route/suspension', authMiddleware,requirePermissionMiddleware("FACTORIES_ROUTE_SUSPENSION"), validateDto(SuspendFactoryRouteDto), suspensionFactoryRoute)
+router.get('/', authMiddleware, requirePermissionMiddleware("FACTORY_VIEW"), getAllFactories)
+router.get('/select/:id', authMiddleware, requirePermissionMiddleware("FACTORY_EDIT"), selectFactoryById)
+router.post('/create', authMiddleware,requirePermissionMiddleware("FACTORY_CREATE"),  validateDto(CreateFactoryDto),  createFactory)
+router.post('/route/create', authMiddleware,requirePermissionMiddleware("FACTORY_CREATE"),  validateDto(CreateFactoryRouteDto),  createFactoryRoute)
+router.post('/suspension', authMiddleware,requirePermissionMiddleware("FACTORY_SUSPENSION"), validateDto(SuspendFactoryDto), suspensionFactory)
+router.post('/route/suspension', authMiddleware,requirePermissionMiddleware("FACTORY_ROUTE_SUSPENSION"), validateDto(SuspendFactoryRouteDto), suspensionFactoryRoute)
 
 
 

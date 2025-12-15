@@ -30,7 +30,7 @@ interface UserRequest extends Request {
 /**
  * Middleware que permite el acceso si el usuario tiene **al menos uno** de los permisos requeridos.
  * @example
- * router.post('/suspension', authMiddleware, requireAnyPermission('USERS_SUSPENSION', 'USERS_SUSPENSION'), suspensionUser);
+ * router.post('/suspension', authMiddleware, requireAnyPermission('USER_SUSPENSION', 'USER_SUSPENSION'), suspensionUser);
  */
 export function requireAnyPermissionMiddleware(...requiredPermissions: string[]) {
   return (req: UserRequest, res: Response, next: NextFunction) => {

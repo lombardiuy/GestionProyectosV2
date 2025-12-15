@@ -54,12 +54,12 @@
                 <div *ngIf="id?.value" class="d-flex flex-column w-100 align-items-center">
                  
 
-          <button *ngIf="!suspended?.value && hasPermission('USERS_SUSPENSION')"   class="btn btn-sm btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
+          <button *ngIf="!suspended?.value && hasPermission('USER_SUSPENSION')"   class="btn btn-sm btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
                                  <i class="fa-solid fa-user-xmark me-1"></i> Suspender usuario
            </button>
 
                            
-              <button *ngIf="suspended?.value && hasPermission('USERS_SUSPENSION')"   class="btn btn-sm btn-success mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
+              <button *ngIf="suspended?.value && hasPermission('USER_SUSPENSION')"   class="btn btn-sm btn-success mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
                                  <i class="fa-solid fa-user-check me-1"></i> Reactivar usuario
            </button>
 
@@ -129,7 +129,7 @@
                 <div class="w-100 d-flex justify-content-end">
 
             
-                             <button *ngIf="active?.value && hasPermission('USERS_PASSWORD_RESET')"   class="btn btn-sm  btn-primary mr-1 mt-4" data-bs-toggle="modal" data-bs-target="#userPasswordResetModal">
+                             <button *ngIf="active?.value && hasPermission('USER_PASSWORD_RESET')"   class="btn btn-sm  btn-primary mr-1 mt-4" data-bs-toggle="modal" data-bs-target="#userPasswordResetModal">
                                  <i class="fa-solid fa-lock-open"></i>  Resetear contraseña
                                 </button>
 

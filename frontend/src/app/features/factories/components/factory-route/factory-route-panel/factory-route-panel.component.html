@@ -15,9 +15,9 @@
       <div class="d-flex align-items-center">
 
 
-         <div [Tooltip]="'Desactivar ruta'" tooltipPlacement="bottom" tooltipClass="tooltip-danger"  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION') && factory?.active" class="d-flex align-items-center ms-1">
+         <div [Tooltip]="'Desactivar ruta'" tooltipPlacement="bottom" tooltipClass="tooltip-danger"  *ngIf="hasPermission('FACTORY_ROUTE_SUSPENSION') && factory?.active" class="d-flex align-items-center ms-1">
 
-        <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION') && factory?.active"
+        <i  *ngIf="hasPermission('FACTORY_ROUTE_SUSPENSION') && factory?.active"
   
     class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
      (click)="factoryRouteSuspension(route!, true)"
@@ -31,7 +31,7 @@
 
 
   <div [Tooltip]="'Audit trail'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary"  *ngIf="factory?.active" class="d-flex align-items-center ms-1">
-         <i class="fa-solid fa-book cursor-pointer ms-2"></i>
+         <i class="fa-solid fa-book cursor-pointer ms-2" data-bs-toggle="modal" data-bs-target="#auditTrailFactoryRouteModal" (click)="factoryRouteAuditTrail()"></i>
   </div>
 
 
@@ -54,9 +54,9 @@
       <div class="d-flex align-items-center">
 
 
-          <div [Tooltip]="'Reactivar ruta'" tooltipPlacement="bottom" tooltipClass="tooltip-success"  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION') && factory?.active" class="d-flex align-items-center ms-1">
+          <div [Tooltip]="'Reactivar ruta'" tooltipPlacement="bottom" tooltipClass="tooltip-success"  *ngIf="hasPermission('FACTORY_ROUTE_SUSPENSION') && factory?.active" class="d-flex align-items-center ms-1">
 
-  <i  *ngIf="hasPermission('FACTORIES_ROUTE_SUSPENSION') && factory?.active"
+  <i  *ngIf="hasPermission('FACTORY_ROUTE_SUSPENSION') && factory?.active"
   
     class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
      (click)="factoryRouteSuspension(route!, false)"
@@ -137,3 +137,4 @@
 
 
 </ng-template>
+

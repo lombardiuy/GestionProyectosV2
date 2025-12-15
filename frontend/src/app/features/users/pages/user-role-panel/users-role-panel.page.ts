@@ -51,8 +51,8 @@ export class UsersRolePanelPage implements OnInit {
 modules = MODULE_PERMISSIONS;
 
 permissionDependencies: PermissionMap = {
-      USERS_VIEW: ['USERS_CREATE', 'USERS_EDIT', 'USERS_SUSPENSION', 'USERS_SUSPENSION'],
-      USERS_ROLE_VIEW: ['USERS_ROLE_CREATE', 'USERS_ROLE_EDIT']
+      USER_VIEW: ['USER_CREATE', 'USER_EDIT', 'USER_SUSPENSION', 'USER_SUSPENSION'],
+      USER_ROLE_VIEW: ['USER_ROLE_CREATE', 'USER_ROLE_EDIT']
     };
 
   
@@ -120,7 +120,7 @@ permissionDependencies: PermissionMap = {
   createUserRole(){
     
 
-    if (this.hasPermission('USERS_ROLE_CREATE')) {
+    if (this.hasPermission('USER_ROLE_CREATE')) {
 
  
 
@@ -160,7 +160,7 @@ selectUserRole(event: any) {
     control.setValue(assignedPermissions.includes(permission));
 
     // Deshabilitar si el usuario no tiene permiso de edición
-    if (!this.hasPermission('USERS_ROLE_EDIT') || !this.hasPermission(permission)) {
+    if (!this.hasPermission('USER_ROLE_EDIT') || !this.hasPermission(permission)) {
 
 
    

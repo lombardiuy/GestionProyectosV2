@@ -7,7 +7,7 @@ import { FactoriesPanelPage } from './pages/factories-panel/factories-panel.page
 
 
 const routes: Routes = [
-  { path: '', component: FactoriesPanelPage, canActivate:[HasPermissionGuard], data:{permission:'FACTORIES_VIEW'} },
+  { path: '', component: FactoriesPanelPage, canActivate:[HasPermissionGuard], data:{permission:'FACTORY_VIEW'} },
 ];
 
 @NgModule({

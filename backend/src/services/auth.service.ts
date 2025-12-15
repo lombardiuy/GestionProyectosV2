@@ -37,7 +37,7 @@ const permissionsData = JSON.parse(fs.readFileSync(permissionsPath, 'utf8'));
 
 
 
-// Aplana los permisos en una lista simple: USERS_CREATE, USERS_VIEW, etc.
+// Aplana los permisos en una lista simple: USER_CREATE, USER_VIEW, etc.
  const validPermissions = (permissionsData as any[]).flatMap(moduleEntry =>
   moduleEntry.permissions.map((p: any) => ({ permission: p.code }))
 );

@@ -11,7 +11,7 @@
       <div class="w-100 d-flex justify-content-between ">
 
       
-         <h5 class="w-50"><i class="fa-solid fa-industry"></i> Gestión de Fábricas </h5>
+         <h5 class="w-50"><i class="fa-solid fa-industry "></i> Gestión de Fábricas </h5>
   
 
           <div class="d-flex w-50 justify-content-end">
@@ -29,8 +29,8 @@
 
 <div [Tooltip]="'Crear fábrica'" tooltipPlacement="bottom" tooltipClass="tooltip-primary">
           <button 
-  *ngIf="hasPermission('FACTORIES_CREATE')"
-  class="btn btn-primary btn-xs me-1 position-relative btn-menu"
+  *ngIf="hasPermission('FACTORY_CREATE')"
+  class="btn btn-xs btn-link text-primary me-1 position-relative btn-menu"
   (click)="createFactory()" data-bs-toggle="modal" data-bs-target="#createFactoryModal">
 
   <i class="fa-solid fa-industry "></i>
@@ -46,7 +46,7 @@
 
 
          <button *ngIf="(hasInactiveFactories$ | async)" [Tooltip]="'Fábricas inactivas'" tooltipPlacement="bottom" tooltipClass="tooltip-danger"
-      class="btn btn-xs btn-danger me-1 position-relative btn-menu"
+      class="btn btn-xs btn-link text-danger me-1 position-relative btn-menu"
       (click)="toggleFactories(false)">
         <i class="fa-solid fa-arrow-right addon-arrow-right"></i>
       <i class="fa-solid fa-industry"></i>
@@ -95,7 +95,7 @@
     <div [Tooltip]="'Fábricas activas'" tooltipPlacement="bottom" tooltipClass="tooltip-success">
           
       <button 
-  class="btn btn-success btn-xs me-1 position-relative btn-menu"
+  class="btn btn-link text-success btn-xs me-1 position-relative btn-menu"
   (click)="toggleFactories(true)">
   <i class="fa-solid fa-arrow-left addon-arrow-left"></i>
 
@@ -132,7 +132,7 @@
 
             <div class="d-flex w-50 justify-content-end">
               
-               <factory-routes-filter-component class="w-50 me-1" *ngIf="selectedFactory && hasPermission('FACTORIES_ROUTES_VIEW')"
+               <factory-routes-filter-component class="w-50 me-1" *ngIf="selectedFactory && hasPermission('FACTORY_ROUTE_VIEW')"
           [availableRoutesForSelect]="availableFactoryRoutesForSelect$ | async"
           (routeFilterChange)="selectRoute($event)">
         </factory-routes-filter-component>
@@ -141,8 +141,8 @@
 
         <div [Tooltip]="'Crear ruta'" tooltipPlacement="bottom" tooltipClass="tooltip-primary">
           <button 
-   *ngIf="hasPermission('FACTORIES_ROUTE_CREATE') && (selectedFactory$ | async)?.active"
-  class="btn btn-primary btn-xs me-1 position-relative btn-menu"
+   *ngIf="hasPermission('FACTORY_ROUTE_CREATE') && (selectedFactory$ | async)?.active"
+  class="btn btn-link text-primary btn-xs me-1 position-relative btn-menu"
    (click)="createFactoryRoute()" data-bs-toggle="modal" data-bs-target="#createFactoryRouteModal">
 
   <i class="fa-solid fa-route "></i>
@@ -155,9 +155,9 @@
 
       
 
-        <div *ngIf="(hasInactiveFactoryRoutes$ | async) && hasPermission('FACTORIES_ROUTES_VIEW')" [Tooltip]="'Rutas inactivas'" tooltipPlacement="bottom" tooltipClass="tooltip-danger">
+        <div *ngIf="(hasInactiveFactoryRoutes$ | async) && hasPermission('FACTORY_ROUTE_VIEW')" [Tooltip]="'Rutas inactivas'" tooltipPlacement="bottom" tooltipClass="tooltip-danger">
           <button 
-  class="btn btn-xs btn-danger me-1 position-relative btn-menu"
+  class="btn btn-xs btn-link text-danger me-1 position-relative btn-menu"
   (click)="toggleFactoryRoutes(false)">
      <i class="fa-solid fa-arrow-right addon-arrow-right"></i>
   <i class="fa-solid fa-route"></i>
@@ -170,7 +170,7 @@
 
     
 
-    <div [Tooltip]="'Desactivar fábrica'" tooltipPlacement="bottom" tooltipClass="tooltip-danger"  *ngIf="selectedFactory?.active && hasPermission('FACTORIES_SUSPENSION')" class="d-flex align-items-center ms-1">
+    <div [Tooltip]="'Desactivar fábrica'" tooltipPlacement="bottom" tooltipClass="tooltip-danger"  *ngIf="selectedFactory?.active && hasPermission('FACTORY_SUSPENSION')" class="d-flex align-items-center ms-1">
            <i class="fa-solid fa-toggle-on color-success cursor-pointer"
      (click)="marckFactoryToSuspend(selectedFactory!,true)"
      data-bs-toggle="modal"
@@ -181,7 +181,7 @@
     </div>
 
     
-    <div [Tooltip]="'Reactivar fábrica'" tooltipPlacement="bottom" tooltipClass="tooltip-success"  *ngIf="!selectedFactory?.active && hasPermission('FACTORIES_SUSPENSION')" class="d-flex align-items-center ms-1">
+    <div [Tooltip]="'Reactivar fábrica'" tooltipPlacement="bottom" tooltipClass="tooltip-success"  *ngIf="!selectedFactory?.active && hasPermission('FACTORY_SUSPENSION')" class="d-flex align-items-center ms-1">
            <i class="fa-solid fa-toggle-off color-success cursor-pointer"
      (click)="marckFactoryToSuspend(selectedFactory!,false)"
      data-bs-toggle="modal"
@@ -192,8 +192,8 @@
     </div>
 
 
-            <div  [Tooltip]="'Audit trail'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary" class="d-flex align-items-center justify-content-center ms-2">
-        <i class="fa-solid fa-book cursor-pointer "></i>
+            <div  [Tooltip]="'Audit trail'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary"  class="d-flex align-items-center justify-content-center ms-2">
+        <i class="fa-solid fa-book cursor-pointer" data-bs-toggle="modal" data-bs-target="#auditTrailFactoryModal"></i>
 
 </div>
 
@@ -223,14 +223,14 @@
 
             <div class="d-flex w-50 justify-content-end">
 
-       <factory-routes-filter-component class="w-50 me-1" *ngIf="selectedFactory && hasPermission('FACTORIES_ROUTES_VIEW')"
+       <factory-routes-filter-component class="w-50 me-1" *ngIf="selectedFactory && hasPermission('FACTORY_ROUTE_VIEW')"
           [availableRoutesForSelect]="availableFactoryRoutesForSelect$ | async"
           (routeFilterChange)="selectRoute($event)">
         </factory-routes-filter-component>
     
     <div [Tooltip]="'Rutas activas'" tooltipPlacement="bottom" tooltipClass="tooltip-success">
           <button 
-  class="btn btn-success btn-xs   btn-xs me-1 position-relative btn-menu"
+  class="btn btn-link text-success btn-xs   btn-xs me-1 position-relative btn-menu"
   (click)="toggleFactoryRoutes(true)">
   <i class="fa-solid fa-arrow-left addon-arrow-left"></i>
   <i class="fa-solid fa-route"></i>
@@ -253,7 +253,7 @@
 
     
     <div [Tooltip]="'Reactivar fábrica'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary"  *ngIf="!selectedFactory?.active" class="d-flex align-items-center ms-1">
-           <i  *ngIf="hasPermission('FACTORIES_SUSPENSION')"
+           <i  *ngIf="hasPermission('FACTORY_SUSPENSION')"
   
     class="fa-solid fa-toggle-off color-success cursor-pointer"
      (click)="marckFactoryToSuspend(selectedFactory!,false)"
@@ -266,8 +266,8 @@
               
     
 
-              <div  [Tooltip]="'Audit trail'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary" class="d-flex align-items-center justify-content-center ms-2">
-        <i class="fa-solid fa-book "></i>
+              <div  [Tooltip]="'Audit trail'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary"  class="d-flex align-items-center justify-content-center ms-2">
+        <i class="fa-solid fa-book " data-bs-toggle="modal" data-bs-target="#auditTrailFactoryModal"> </i>
 
 </div>
 
@@ -311,6 +311,7 @@
       [route]="route"
       [timestamp]="timestamp$ | async"
       (suspendFactoryRouteEvent)="marckFactoryRouteToSuspend($event)"
+      (auditTrailFactoryRouteEvent)="selectFactoryRouteAuditTrail($event)"
       [loading]="loading">
     </factory-route-panel-component>
 
@@ -346,7 +347,7 @@
 <!--FACTORY CREATE MODAL -->
 
   <div class="modal fade" id="createFactoryModal" tabindex="-1" aria-hidden="true">
-   <factory-create-component     *ngIf="factoryCreateForm && hasPermission('FACTORIES_CREATE')" class="w-100 h-100"
+   <factory-create-component     *ngIf="factoryCreateForm && hasPermission('FACTORY_CREATE')" class="w-100 h-100"
    
     [hasPermission]="hasPermission.bind(this)"
     [factoryCreateForm]="factoryCreateForm"
@@ -371,7 +372,7 @@
   <!--FACTORY ROUTE CREATE MODAL -->
 
   <div class="modal fade" id="createFactoryRouteModal" tabindex="-1" aria-hidden="true">
-   <factory-route-create-component     *ngIf="factoryCreateForm && hasPermission('FACTORIES_CREATE')" class="w-100 h-100"
+   <factory-route-create-component     *ngIf="factoryCreateForm && hasPermission('FACTORY_CREATE')" class="w-100 h-100"
    
     [hasPermission]="hasPermission.bind(this)"
     [factoryRouteCreateForm]="factoryRouteCreateForm"
@@ -397,7 +398,7 @@
 
 <factory-suspension-component  
     #factorySuspensionComponent
-    *ngIf="factoryCreateForm && hasPermission('FACTORIES_SUSPENSION')"
+    *ngIf="factoryCreateForm && hasPermission('FACTORY_SUSPENSION')"
     class="w-100 h-100"
     
     [hasPermission]="hasPermission.bind(this)"
@@ -420,7 +421,7 @@
 
 <factory-route-suspension-component  
     #factoryRouteSuspensionComponent
-    *ngIf="factoryRouteCreateForm && hasPermission('FACTORIES_ROUTE_SUSPENSION')"
+    *ngIf="factoryRouteCreateForm && hasPermission('FACTORY_ROUTE_SUSPENSION')"
     class="w-100 h-100"
     
     [hasPermission]="hasPermission.bind(this)"
@@ -432,6 +433,25 @@
     (suspensionFactoryRouteEvent)="suspensionFactoryRoute()"
 >
 </factory-route-suspension-component>
+
+
+</div>
+
+  <!--FACTORY VERSION CONTROL MODAL -->
+
+<div class="modal fade" id="auditTrailFactoryModal" tabindex="-1" aria-hidden="true">
+
+ <version-control [asModal]="true"  [description]="'Fábrica - ' + selectedFactory?.name!" [hasPermission]="hasPermission.bind(this)" [entity]="'Factory'" [entityId]="selectedFactory?.id!"  class="w-90 m-2"></version-control>
+
+
+</div>
+
+
+  <!--FACTORYROUTE VERSION CONTROL MODAL -->
+
+<div class="modal fade" id="auditTrailFactoryRouteModal" tabindex="-1" aria-hidden="true">
+
+ <version-control [asModal]="true"  [description]="'Ruta - ' + selectedFactoryRouteAuditTrail?.name" [hasPermission]="hasPermission.bind(this)" [entity]="'FactoryRoute'" [entityId]="selectedFactoryRouteAuditTrail?.id!"  class="w-90 m-2"></version-control>
 
 
 </div>

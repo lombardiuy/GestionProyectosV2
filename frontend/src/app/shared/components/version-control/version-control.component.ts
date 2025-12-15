@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { AuditTrailService } from '../../../core/services/audit-trail.service';
 import { Router } from '@angular/router';
 
@@ -13,6 +13,10 @@ export class VersionControlComponent implements OnChanges {
   @Input() entity!: string;
   @Input() entityId!: number;
   @Input() hasPermission!: (code: string) => boolean;
+  @Input() description?: string;
+  @Input() asModal?: boolean = false;
+
+    @ViewChild('btnClose') btnClose!: ElementRef;
 
   versions: any[] = [];
   latestVersion: any = null;   // ⭐ NUEVO
@@ -24,6 +28,7 @@ export class VersionControlComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['entity'] || changes['entityId']) && this.entity && this.entityId) {
+      console.log("cambio")
       this.loadVersions();
     }
   }
@@ -51,5 +56,9 @@ export class VersionControlComponent implements OnChanges {
   
  
 }
+
+  closeModal() {
+    this.btnClose.nativeElement.click();
+  }
 
 }

@@ -74,8 +74,8 @@
             <button *ngIf="!saving &&
              
     (
-      (hasPermission('USERS_ROLE_CREATE') && formMode === 'create') ||
-      (hasPermission('USERS_ROLE_EDIT') && formMode === 'edit')
+      (hasPermission('USER_ROLE_CREATE') && formMode === 'create') ||
+      (hasPermission('USER_ROLE_EDIT') && formMode === 'edit')
     )
     
     " (click)="saveUserRole()" class="btn btn-primary btn-sm" type="submit"  [disabled] = "userRoleCreateForm!.invalid || saving || selectedUserRole?.name === '' || !userRoleCreateForm!.dirty">

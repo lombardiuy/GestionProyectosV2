@@ -8,7 +8,7 @@
 
         <h5><i class="bi bi-person-fill-gear"></i> Roles y permisos</h5>
 
-              <button  *ngIf=" hasPermission('USERS_ROLE_CREATE') && (formMode === 'select' || formMode === 'edit')" class="btn btn-success btn-sm"  (click)="createUserRole()">
+              <button  *ngIf=" hasPermission('USER_ROLE_CREATE') && (formMode === 'select' || formMode === 'edit')" class="btn btn-success btn-sm"  (click)="createUserRole()">
           <i class="bi bi-plus"></i><i class="bi bi-person-fill-gear"></i> Crear Rol
         </button>
 
@@ -63,7 +63,7 @@
 
 
     </div>
-     <div *ngIf="hasPermission('USERS_VIEW')" class="card-footer text-primary d-flex justify-content-end align-items-center">
+     <div *ngIf="hasPermission('USER_VIEW')" class="card-footer text-primary d-flex justify-content-end align-items-center">
     
        <div [routerLink]="['/users']" class="cursor-pointer"><i class="fa-solid fa-users me-1"></i> Gestión de Usuarios </div> 
       

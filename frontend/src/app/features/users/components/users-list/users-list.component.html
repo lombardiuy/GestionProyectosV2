@@ -41,7 +41,7 @@
      (selectedChange)="filterTable()"
   ></table-header-filter-checkboxes-multiple>
                   </th>
-                  <th *ngIf="hasPermission('USERS_EDIT') || hasPermission('USERS_SUSPENSION') || hasPermission('USERS_SUSPENSION')" >Acciones</th>
+                  <th *ngIf="hasPermission('USER_EDIT') || hasPermission('USER_SUSPENSION') || hasPermission('USER_SUSPENSION')" >Acciones</th>
                 </tr>
               </thead>
             </table>
@@ -59,10 +59,10 @@
                   <td class="align-middle">{{ user.name }} </td>
                   <td class="align-middle">{{ user.username }}</td>
                  <td class="align-middle"  
-                 [class.link-primary]="hasPermission('USERS_ROLE_VIEW')"
-                [class.text-decoration-underline]="hasPermission('USERS_ROLE_VIEW')"
-                 [class.cursor-pointer]="hasPermission('USERS_ROLE_VIEW')"
-                [routerLink]="hasPermission('USERS_ROLE_VIEW') ? ['/users/roles/'+user.userRole.name] : null">
+                 [class.link-primary]="hasPermission('USER_ROLE_VIEW')"
+                [class.text-decoration-underline]="hasPermission('USER_ROLE_VIEW')"
+                 [class.cursor-pointer]="hasPermission('USER_ROLE_VIEW')"
+                [routerLink]="hasPermission('USER_ROLE_VIEW') ? ['/users/roles/'+user.userRole.name] : null">
                 {{ user.userRole.name }}
                 
                 </td>
@@ -71,10 +71,10 @@
                     <span *ngIf="!user.suspended && user.active" class="color-success">Operativo</span>
                     <span *ngIf="!user.suspended && !user.active" class="color-primary">No operativo</span>
                   </td>
-                  <td *ngIf="hasPermission('USERS_EDIT') || hasPermission('USERS_SUSPENSION') || hasPermission('USERS_SUSPENSION')" class="align-middle ">
+                  <td *ngIf="hasPermission('USER_EDIT') || hasPermission('USER_SUSPENSION') || hasPermission('USER_SUSPENSION')" class="align-middle ">
                     <div class="d-flex w-100 justify-content-center">
 <!-- EDITAR -->
-<span *ngIf="hasPermission('USERS_EDIT')">
+<span *ngIf="hasPermission('USER_EDIT')">
 
   <i class="fa-solid fa-pen-to-square color-secondary cursor-pointer me-2"
      (click)="editUser(user)"
@@ -85,7 +85,7 @@
 </span>
 
 <!-- SUSPENDER -->
-<span *ngIf="!user.suspended && hasPermission('USERS_SUSPENSION')">
+<span *ngIf="!user.suspended && hasPermission('USER_SUSPENSION')">
 
   <i class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
      (click)="userSuspensionFromList(user, true)"
@@ -96,7 +96,7 @@
 </span>
 
 <!-- REACTIVAR -->
-<span *ngIf="user.suspended && hasPermission('USERS_SUSPENSION')">
+<span *ngIf="user.suspended && hasPermission('USER_SUSPENSION')">
 
   <i class="fa-solid fa-toggle-off color-danger  cursor-pointer ms-3"
      (click)="userSuspensionFromList(user, false)"

@@ -5,7 +5,7 @@
     <div class="list-group w-100 h-100">
 
             <!--Admin Menu-->
-                    <a href="#adminMenu" *ngIf="hasPermission('USERS_VIEW') || hasPermission('USERS_ROLE_VIEW')" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
+                    <a href="#adminMenu" *ngIf="hasPermission('USER_VIEW') || hasPermission('USER_ROLE_VIEW')" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
           
                       <span><i class="fa-solid fa-toolbox"></i> Administración</span>
                       <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
@@ -24,8 +24,8 @@
                       </a>
                       <div class="collapse" id="adminMenuUsers">
       
-                        <a *ngIf="hasPermission('USERS_VIEW')" [routerLink]="['/users']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#adminMenuUsers"><i class="bi bi-person-lines-fill"></i> Gestión de Usuarios </a>
-                        <a *ngIf="hasPermission('USERS_ROLE_VIEW')" [routerLink]="['/users/roles']"class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#adminMenuUsers"><i class="bi bi-person-fill-gear"></i> Roles y permisos</a>
+                        <a *ngIf="hasPermission('USER_VIEW')" [routerLink]="['/users']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#adminMenuUsers"><i class="bi bi-person-lines-fill"></i> Gestión de Usuarios </a>
+                        <a *ngIf="hasPermission('USER_ROLE_VIEW')" [routerLink]="['/users/roles']"class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#adminMenuUsers"><i class="bi bi-person-fill-gear"></i> Roles y permisos</a>
                      
                       
                         
@@ -80,7 +80,7 @@
               </a>
               <div class="collapse" id="processMenu">
 
-                  <a *ngIf="hasPermission('FACTORIES_VIEW')" [routerLink]="['/factories']" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#adminMenu" aria-expanded="false">
+                  <a *ngIf="hasPermission('FACTORY_VIEW')" [routerLink]="['/factories']" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#adminMenu" aria-expanded="false">
           
                         <span><i class="fa-solid fa-industry"></i> Fábricas</span>
                         

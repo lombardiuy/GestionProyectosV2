@@ -20,6 +20,7 @@ export class FactoryRoutePanelComponent implements OnInit {
   @Input() timestamp!: number | null;
 
   @Output() suspendFactoryRouteEvent = new EventEmitter<any>();
+   @Output() auditTrailFactoryRouteEvent = new EventEmitter<any>();
 
   // Variables usadas en la vista
   createAreaBtnLegend: number | undefined | null = null;
@@ -45,6 +46,13 @@ export class FactoryRoutePanelComponent implements OnInit {
     factoryRouteSuspension(factoryRoute: FactoryRoute | null, suspend: boolean) {
       if (factoryRoute && factoryRoute.id) {
         this.suspendFactoryRouteEvent.emit({ id: factoryRoute.id, name:factoryRoute.name, suspend });
+      }
+    }
+
+
+      factoryRouteAuditTrail() {
+      if (this.route) {
+        this.auditTrailFactoryRouteEvent.emit(this.route);
       }
     }
   

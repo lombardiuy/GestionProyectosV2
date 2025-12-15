@@ -47,6 +47,7 @@ export class FactoriesPanelPage implements OnInit {
     public filteredFactory$!: Observable<Factory | null>;
 
     public selectedFactoryRouteId$ = new BehaviorSubject<number | null>(null);
+    public selectedFactoryRouteAuditTrail:FactoryRoute | undefined;
 
     public factoryCreateForm!:FormGroup;
     public factoryRouteCreateForm!:FormGroup;
@@ -649,6 +650,11 @@ async suspensionFactory() {
 
 
     
+   }
+
+   async selectFactoryRouteAuditTrail(event:any) {
+    console.log(event)
+    this.selectedFactoryRouteAuditTrail = event;
    }
 
      async selectRoute(event:any) {

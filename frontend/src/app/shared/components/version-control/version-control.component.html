@@ -1,5 +1,46 @@
-<div class="card">
+<div *ngIf="!asModal" >
 
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</div>
+
+<ng-template #loadingSpinner>
+  <loading-spinner></loading-spinner>
+</ng-template>
+
+
+
+<div *ngIf="asModal"class="modal-dialog modal-dialog-centered modal-lg">
+ <div class="modal-content">
+
+     <div class="modal-header">  
+      <h6>{{description}}</h6> 
+   
+        <button  #btnClose type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        
+</div>
+
+ <div class="modal-body">
+
+   <ng-container *ngTemplateOutlet="content"></ng-container>
+
+
+ </div>
+ </div>
+</div>
+
+
+
+
+
+
+
+
+
+<ng-template #content>
+
+
+<div class="card">
+    
   <div class="card-header d-flex justify-content-between align-items-center">
     <div class="fw-bold">
       <i class="fa-solid fa-clock-rotate-left"></i>
@@ -16,9 +57,11 @@
        class="bi bi-arrows-angle-expand cursor-pointer"></i>
   </div>
 
-  <div class="card-body" *ngIf="!loading; else loadingSpinner">
 
-    <!-- ⭐ Modo expandido → todas las versiones -->
+    <div class="card-body" *ngIf="!loading; else loadingSpinner">
+
+
+      <!-- ⭐ Modo expandido → todas las versiones -->
     <table *ngIf="displayVersionControl" class="table table-sm ">
       <thead>
         <tr>
@@ -67,6 +110,12 @@
   </div>
 </div>
 
-<ng-template #loadingSpinner>
-  <loading-spinner></loading-spinner>
+
+
+
+
+
+
+
+
 </ng-template>

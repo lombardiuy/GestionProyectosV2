@@ -8,27 +8,27 @@
   {
     "module": { "code": "Users", "description": "Usuarios", "icon": "<i class='fa-solid fa-users'></i>" },
     "permissions": [
-      { "code": "USERS_VIEW", "description": "Visualizar" },
-      { "code": "USERS_CREATE", "description": "Crear" },
-      { "code": "USERS_EDIT", "description": "Editar" },
-      { "code": "USERS_SUSPENSION", "description": "Suspender/Reactivar" },
-      { "code": "USERS_PASSWORD_RESET", "description": "Resetear contraseña" },
-      { "code": "USERS_ROLE_VIEW", "description": "Visualizar roles" },
-      { "code": "USERS_ROLE_CREATE", "description": "Crear roles" },
-      { "code": "USERS_ROLE_EDIT", "description": "Editar roles" }
+      { "code": "USER_VIEW", "description": "Visualizar" },
+      { "code": "USER_CREATE", "description": "Crear" },
+      { "code": "USER_EDIT", "description": "Editar" },
+      { "code": "USER_SUSPENSION", "description": "Suspender/Reactivar" },
+      { "code": "USER_PASSWORD_RESET", "description": "Resetear contraseña" },
+      { "code": "USER_ROLE_VIEW", "description": "Visualizar roles" },
+      { "code": "USER_ROLE_CREATE", "description": "Crear roles" },
+      { "code": "USER_ROLE_EDIT", "description": "Editar roles" }
     ]
   }, 
   {
     "module": { "code": "Factories", "description": "Fábricas", "icon": "<i class='fa-solid fa-industry'></i>" },
     "permissions": [
-      { "code": "FACTORIES_VIEW", "description": "Visualizar" },
-      { "code": "FACTORIES_CREATE", "description": "Crear" },
-      { "code": "FACTORIES_EDIT", "description": "Editar" },
-      { "code": "FACTORIES_SUSPENSION", "description": "Suspender/Reactivar" },
-      { "code": "FACTORIES_ROUTES_VIEW", "description": "Visualizar rutas" },
-      { "code": "FACTORIES_ROUTE_CREATE", "description": "Crear rutas" },
-      { "code": "FACTORIES_ROUTE_EDIT", "description": "Editar rutas" },
-      { "code": "FACTORIES_ROUTE_SUSPENSION", "description": "Suspender/Reactivar rutas" }
+      { "code": "FACTORY_VIEW", "description": "Visualizar" },
+      { "code": "FACTORY_CREATE", "description": "Crear" },
+      { "code": "FACTORY_EDIT", "description": "Editar" },
+      { "code": "FACTORY_SUSPENSION", "description": "Suspender/Reactivar" },
+      { "code": "FACTORY_ROUTE_VIEW", "description": "Visualizar rutas" },
+      { "code": "FACTORY_ROUTE_CREATE", "description": "Crear rutas" },
+      { "code": "FACTORY_ROUTE_EDIT", "description": "Editar rutas" },
+      { "code": "FACTORY_ROUTE_SUSPENSION", "description": "Suspender/Reactivar rutas" }
     ]
   },
    {
@@ -36,15 +36,15 @@
     "permissions": [
 
 
-      { "code": "AREAS_VIEW", "description": "Visualizar" },
-      { "code": "AREAS_CREATE", "description": "Crear" },
-      { "code": "AREAS_EDIT", "description": "Editar " },
-      { "code": "AREAS_SUSPENSION", "description": "Suspender/Reactivar" },
+      { "code": "AREA_VIEW", "description": "Visualizar" },
+      { "code": "AREA_CREATE", "description": "Crear" },
+      { "code": "AREA_EDIT", "description": "Editar " },
+      { "code": "AREA_SUSPENSION", "description": "Suspender/Reactivar" },
 
-      { "code": "AREAS_CLASS_VIEW", "description": "Visualizar definiciones" },
-      { "code": "AREAS_CLASS_CREATE", "description": "Crear definiciones" },
-      { "code": "AREAS_CLASS_EDIT", "description": "Editar definiciones" },
-      { "code": "AREAS_CLASS_SUSPENSION", "description": "Suspender/Reactivar definiciones" }
+      { "code": "AREA_CLASS_VIEW", "description": "Visualizar definiciones" },
+      { "code": "AREA_CLASS_CREATE", "description": "Crear definiciones" },
+      { "code": "AREA_CLASS_EDIT", "description": "Editar definiciones" },
+      { "code": "AREA_CLASS_SUSPENSION", "description": "Suspender/Reactivar definiciones" }
 
 
     ]
@@ -54,15 +54,15 @@
     "permissions": [
 
 
-      { "code": "MATERIALS_VIEW", "description": "Visualizar" },
+      { "code": "MATERIAL_VIEW", "description": "Visualizar" },
       { "code": "MATERIAL_CREATE", "description": "Crear" },
-      { "code": "MATERIALS_EDIT", "description": "Editar " },
-      { "code": "MATERIALS_SUSPENSION", "description": "Suspender/Reactivar" },
+      { "code": "MATERIAL_EDIT", "description": "Editar " },
+      { "code": "MATERIAL_SUSPENSION", "description": "Suspender/Reactivar" },
 
-      { "code": "MATERIALS_CLASS_VIEW", "description": "Visualizar definiciones" },
-      { "code": "MATERIALS_CLASS_CREATE", "description": "Crear definiciones" },
-      { "code": "MATERIALS_CLASS_EDIT", "description": "Editar definiciones" },
-      { "code": "MATERIALS_CLASS_SUSPENSION", "description": "Suspender/Reactivar definiciones" }
+      { "code": "MATERIAL_CLASS_VIEW", "description": "Visualizar definiciones" },
+      { "code": "MATERIAL_CLASS_CREATE", "description": "Crear definiciones" },
+      { "code": "MATERIAL_CLASS_EDIT", "description": "Editar definiciones" },
+      { "code": "MATERIAL_CLASS_SUSPENSION", "description": "Suspender/Reactivar definiciones" }
 
 
     ]
@@ -72,15 +72,15 @@
     "permissions": [
 
 
-      { "code": "EQUIPMENTS_VIEW", "description": "Visualizar" },
-      { "code": "EQUIPMENTS_CREATE", "description": "Crear" },
-      { "code": "EQUIPMENTS_EDIT", "description": "Editar " },
-      { "code": "EQUIPMENTS_SUSPENSION", "description": "Suspender/Reactivar" },
+      { "code": "EQUIPMENT_VIEW", "description": "Visualizar" },
+      { "code": "EQUIPMENT_CREATE", "description": "Crear" },
+      { "code": "EQUIPMENT_EDIT", "description": "Editar " },
+      { "code": "EQUIPMENT_SUSPENSION", "description": "Suspender/Reactivar" },
 
-      { "code": "EQUIPMENTS_CLASS_VIEW", "description": "Visualizar definiciones" },
-      { "code": "EQUIPMENTS_CLASS_CREATE", "description": "Crear definiciones" },
-      { "code": "EQUIPMENTS_CLASS_EDIT", "description": "Editar definiciones" },
-      { "code": "EQUIPMENTS_CLASS_SUSPENSION", "description": "Suspender/Reactivar definiciones" }
+      { "code": "EQUIPMENT_CLASS_VIEW", "description": "Visualizar definiciones" },
+      { "code": "EQUIPMENT_CLASS_CREATE", "description": "Crear definiciones" },
+      { "code": "EQUIPMENT_CLASS_EDIT", "description": "Editar definiciones" },
+      { "code": "EQUIPMENT_CLASS_SUSPENSION", "description": "Suspender/Reactivar definiciones" }
 
 
     ]

@@ -11,7 +11,7 @@ interface PermissionEntry {
   permissions: { code: string; description: string }[];
 }
 
-// Aplana los permisos en una lista simple: USERS_CREATE, USERS_VIEW, etc.
+// Aplana los permisos en una lista simple: USER_CREATE, USER_VIEW, etc.
 const validPermissions = (permissionsData as PermissionEntry[]).flatMap(
   (m) => m.permissions.map((p) => p.code)
 );
