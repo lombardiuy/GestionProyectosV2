@@ -1,0 +1,65 @@
+.addon-plus {
+  position: absolute;
+  bottom: 20%;
+  right:10%;
+  font-size: 0.5rem;
+  font-weight: bold;
+  line-height: 1;
+  pointer-events: none; /* <--- ESTA ES LA CLAVE */
+}
+
+.addon-route {
+  position: absolute;
+  bottom: 30%;
+  right:30%;
+  pointer-events: none; /* <--- ESTA ES LA CLAVE */
+}
+
+
+
+.addon-check {
+  position: absolute;
+   bottom: 15%;
+  font-size: 0.5rem;
+
+  font-weight: bold;
+
+  pointer-events: none; /* <--- ESTA ES LA CLAVE */
+}
+
+.addon-trash {
+  position: absolute;
+   bottom: 15%;
+  font-size: 0.5rem;
+
+  font-weight: bold;
+
+  pointer-events: none; /* <--- ESTA ES LA CLAVE */
+}
+
+
+.addon-arrow-left {
+  position: absolute;
+   top:0;
+   left:10%;
+  font-size: 0.5rem;
+
+  font-weight: bold;
+
+  pointer-events: none; /* <--- ESTA ES LA CLAVE */
+}
+
+
+
+.addon-arrow-right {
+  position: absolute;
+   top:0;
+   right:10%;
+  font-size: 0.5rem;
+
+  font-weight: bold;
+
+  pointer-events: none; /* <--- ESTA ES LA CLAVE */
+}
+
+

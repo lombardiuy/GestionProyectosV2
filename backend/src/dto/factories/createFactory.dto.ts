@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from "class-validator";
+import { IsString, IsNotEmpty, IsBoolean } from "class-validator";
 
 export class CreateFactoryDto {
 
@@ -10,9 +10,9 @@ export class CreateFactoryDto {
   @IsNotEmpty()
   location!: string;
 
-  @IsString()
-  @IsNotEmpty()
-  owner!: string;
+
+  @IsBoolean()
+  hasProfilePicture!: boolean;
 
   @IsString()
   @IsNotEmpty()

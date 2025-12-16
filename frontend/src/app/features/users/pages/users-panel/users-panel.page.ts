@@ -46,7 +46,7 @@ export class UsersPanelPage implements OnInit {
   //General
 
 
-  public profilePicturePath =  environment.publicURL+'users/profilePic/';
+  public profilePicturePath =  environment.publicURL+'users/';
 
   
 
@@ -158,7 +158,7 @@ async initForm(selectedUser?: User | null) {
     const timestamp = await firstValueFrom(this.timestamp$)
 
     if (selectedUser.hasProfilePicture) {
-       this.imagePreview = this.profilePicturePath+"ProfilePic_"+selectedUser.id+".jpeg" + '?t='+ timestamp;
+       this.imagePreview = this.profilePicturePath+'/user_'+ selectedUser.id +"/ProfilePic_"+selectedUser.id+".jpeg" + '?t='+ timestamp;
     }
 
     if (this.form['active'].value === false) {
@@ -386,11 +386,6 @@ async initForm(selectedUser?: User | null) {
 
   saveUser() {
 
-    console.log(this.userCreateForm.value)
-
-
- 
-
       if (this.userCreateForm.invalid) {
 
 
@@ -410,7 +405,7 @@ async initForm(selectedUser?: User | null) {
         if(this.profilePicture) {
      
     
-          await this.fileService.save(this.profilePicture, 'ProfilePic_'+res.user.id, 'profilePic')
+         await this.fileService.save(this.profilePicture, 'user_'+res.user.id+'/ProfilePic_'+ res.user.id, 'userProfilePic')
         }
    
 
@@ -445,11 +440,12 @@ async initForm(selectedUser?: User | null) {
      
     ).subscribe({
       next: async(res) => {
+     
 
         if(this.profilePicture) {
      
     
-          await this.fileService.save(this.profilePicture, 'ProfilePic_'+res.user.id, 'profilePic')
+         await this.fileService.save(this.profilePicture, 'user_'+res.user.id+'/ProfilePic_'+ res.user.id, 'userProfilePic')
         }
    
 

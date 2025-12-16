@@ -3,8 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FactoriesRoutingModule } from './factories-routing-module';
 import { SharedModule } from '../../shared/shared-module';
+import { NgSelectModule } from '@ng-select/ng-select';
 
-import {FactoriesPanelPage} from './pages/factories-panel/factories-panel.page'
+import {FactoriesManagerPage} from './pages/factories-manager/factories-manager.page';
+import { FactoryPanelPage } from './pages/factory-panel/factory-panel.page';
+
+
+
 import { FactoriesListComponent } from './components/factory/factories-list/factories-list.component';
 import { FactoryRoutePanelComponent } from './components/factory-route/factory-route-panel/factory-route-panel.component';
 import { FactoryAreaSummaryComponent } from './components/factory-area/factory-area-summary/factory-area-summary.component';
@@ -14,14 +19,16 @@ import { FactoryRoutesFilterComponent } from './components/factory-route/factory
 import { FactoryRouteCreateComponent } from './components/factory-route/factory-route-create/factory-route-create.component';
 import { FactoryRouteSuspensionComponent } from './components/factory-route/factory-route-suspension/factory-route-suspension.component';
 import { FactorySuspensionComponent } from './components/factory/factory-suspension/factory-suspension.component';
+import { FactorySummaryComponent } from './components/factory/factory-summary/factory-summary.component';
+
 
 
 
 @NgModule({
   declarations: [
-    FactoriesPanelPage, 
-    FactoriesListComponent, FactoryRoutePanelComponent, FactoryAreaSummaryComponent, FactoryAreaCreateComponent,
-    FactoryCreateComponent, FactoryRoutesFilterComponent, FactoryRouteCreateComponent, FactorySuspensionComponent, FactoryRouteSuspensionComponent
+    FactoriesManagerPage, FactoryPanelPage,
+    FactorySummaryComponent, FactoriesListComponent, FactoryRoutePanelComponent, FactoryAreaSummaryComponent, FactoryAreaCreateComponent,
+    FactoryCreateComponent, FactoryRoutesFilterComponent, FactoryRouteCreateComponent, FactorySuspensionComponent, FactoryRouteSuspensionComponent,
 
   ],
   imports: [
@@ -29,7 +36,8 @@ import { FactorySuspensionComponent } from './components/factory/factory-suspens
     FactoriesRoutingModule, 
     FormsModule,
     ReactiveFormsModule, 
-    SharedModule
+    SharedModule,
+    NgSelectModule
   ], 
 
 })

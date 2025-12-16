@@ -29,7 +29,7 @@
     
             <div class="dropdown rtl cursor-pointer">
        
-                 <img [src]="profile?.hasProfilePicture? profilePicturePath+'ProfilePic_'+profile.id+'.jpeg'   + '?t=' + timestamp: profilePicturePath+'avatar.jpeg'" alt="..." class="rounded-circle avatar" (click)="showDropdown()">
+                 <img [src]="profile?.hasProfilePicture? profilePicturePath+'/user_'+ profile.id +'/ProfilePic_'+profile.id+'.jpeg'   + '?t=' + timestamp: profilePicturePath+'avatar.jpeg'" alt="..." class="rounded-circle avatar" (click)="showDropdown()">
                  
     
                  <div class="dropdown-menu dropdown-menu-right mt-1" aria-labelledby="dropdownMenu1" [ngClass]="{'show': toggleFlag}">

@@ -14,13 +14,14 @@ export class Factory {
   location!: string;
 
   @Column({ type: "nvarchar", length: 255, nullable: true })
-  owner!: string;
-
-  @Column({ type: "nvarchar", length: 255, nullable: true })
   contact!: string;
 
   @Column()
   active!: boolean;
+
+  @Column()
+  hasProfilePicture!: boolean; 
+
 
   @OneToMany(() => FactoryRoute, route => route.factory)
   routes!: FactoryRoute[];

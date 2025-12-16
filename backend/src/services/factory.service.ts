@@ -9,6 +9,7 @@ import { Factory } from '../entities/factories/factory.entity';
 import { Area } from '../entities/areas/area.entity';
 import { Equipment } from '../entities/equipments/equipment.entity';
 import { FactoryRoute } from '../entities/factories/factory-route.entity';
+import { createEmptyDir} from './file.service';
 
 const factoryRepository = AppDataSource.getRepository(Factory);
 const areaRepository = AppDataSource.getRepository(Area);
@@ -34,7 +35,7 @@ export const selectFactoryById = async (factoryId: number): Promise<any | null> 
   const factory = await factoryRepository.findOne({
     where: { id: factoryId },
     relations: ["routes"],
-    select: ["id", "name", "location", "owner", "contact", "active", "version"]
+    select: ["id", "name", "location", "contact", "active", "version"]
   });
 
   if (!factory) return null;
@@ -102,16 +103,16 @@ export const selectFactoryById = async (factoryId: number): Promise<any | null> 
 
 /**
  * Crea una fábrica nueva
- * Recibe un objeto con shape validado por DTO: { name, location, owner, contact}
+ * Recibe un objeto con shape validado por DTO: { name, location, contact}
  */
 export const createFactory = async (payload: {
   name: string;
   location: string;
-  owner: string;
   contact: string;
+  hasProfilePicture:boolean;
 },  currentUsername: string // <-- el usuario logueado 
 ): Promise<Partial<Factory>> => {
-  const { name, location, owner, contact } = payload;
+  const { name, location, contact, hasProfilePicture } = payload;
 
  
 
@@ -129,14 +130,16 @@ export const createFactory = async (payload: {
     const newFactory = factoryRepo.create({
       name,
       location,
-      owner, 
       contact,
       active:true,
+      hasProfilePicture,
       routes:[]
 
     });
 
     const saved = await factoryRepo.save(newFactory);
+    
+     await createFactoryDirectories(saved.id);
 
     // ✅ CORRECCIÓN: Normalizar "changes" para crear usuario (usar key 'username' en lugar de 'user')
     await registerInAuditTrail(
@@ -494,6 +497,11 @@ export const suspensionFactory = async (
 
     return savedFactory;
   });
+};
+
+export const createFactoryDirectories = async (factoryID:number) => {
+    await createEmptyDir('factories/factory_'+factoryID);
+
 };
 
 

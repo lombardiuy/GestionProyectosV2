@@ -1,0 +1,53 @@
+<div  class="border rounded p-2 m-2 factory-card d-flex flex-column  position-relative">
+
+               
+
+ <i     [routerLink]="hasPermission('FACTORY_VIEW') ? ['/factories/'+factory.name] : null"  class="bi bi-arrows-angle-expand top-0 position-absolute top-0 end-0 m-1 text-secondary cursor-pointer" style="font-size:12px" ></i>
+
+
+ <div class="w-100 h-45 d-flex flex-column text-secondary border-bottom">
+
+    <div style="font-size:14px" class="bold text-center mb-2"> {{factory.name}}</div>
+
+   <!-- Con imagen -->
+<img
+  *ngIf="factory.hasProfilePicture; else noImage"
+  [src]="factoryPicturePath + '/factory_' + factory.id + '/FactoryProfilePic_' + factory.id + '.jpeg' + '?t=' + timestamp"
+  alt="Factory"
+  class="img-fluid rounded m-1 card-img"
+/>
+
+<!-- Sin imagen -->
+<ng-template #noImage>
+
+  <div class=" d-flex justify-content-center align-items-center card-img" style="font-size: 80px;margin:4px" >
+      <i class="fa-solid fa-industry text-secondary "></i>
+  </div>
+
+</ng-template>
+
+
+
+                     
+
+ </div>
+
+ <div class="d-flex h-15 flex-column  border-bottom color-secondary">
+   
+   <div style="font-size:10px"><span class="fw-bold">Dirección: </span> {{factory.location}}</div>
+   <div style="font-size:10px"><span class="fw-bold">Contacto: </span> {{factory.contact}}</div>
+
+ </div>
+
+ <div class="h-30">
+
+
+ </div>
+
+
+        
+
+     
+            
+ </div>
+

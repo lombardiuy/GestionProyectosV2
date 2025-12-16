@@ -1,7 +1,7 @@
 .addon-plus {
   position: absolute;
-  bottom: 20%;
-  right:5%0;
+  bottom: 5%;
+  left:20%;
   font-size: 0.5rem;
   font-weight: bold;
   line-height: 1;
@@ -9,9 +9,12 @@
 }
 
 
+
+
+
 .addon-check {
   position: absolute;
-   bottom: 15%;
+   bottom: 5%;
   font-size: 0.5rem;
 
   font-weight: bold;
@@ -21,7 +24,7 @@
 
 .addon-trash {
   position: absolute;
-   bottom: 15%;
+   bottom: 5%;
   font-size: 0.5rem;
 
   font-weight: bold;
@@ -33,7 +36,7 @@
 .addon-arrow-left {
   position: absolute;
    top:0;
-   left:10%;
+   left:3%;
   font-size: 0.5rem;
 
   font-weight: bold;
@@ -46,12 +49,14 @@
 .addon-arrow-right {
   position: absolute;
    top:0;
-   right:10%;
+  left:15%;
   font-size: 0.5rem;
 
   font-weight: bold;
 
   pointer-events: none; /* <--- ESTA ES LA CLAVE */
 }
+
+
 
 

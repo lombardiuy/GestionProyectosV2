@@ -32,6 +32,7 @@ export class UserService {
       username: user.username,
       password: user.password,
       userRole: user.userRole?.id ?? null, // SOLO el ID
+      hasProfilePicture: user.hasProfilePicture
     };
 
     return this.http.post<any>(`${this.apiUrl}/create`, dto);

@@ -15,7 +15,7 @@ import { TimeService } from '../../services/time.service';
 })
 export class TopNavbarComponent implements OnInit {
 
-  profilePicturePath =  environment.publicURL+'users/profilePic/';
+  profilePicturePath =  environment.publicURL+'users/';
   
   productionMode =environment.production;
 

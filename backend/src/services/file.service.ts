@@ -9,9 +9,12 @@ export async function save(
 ): Promise<string> {
   console.log("⚠️ - POST - file/save");
 
+
+  //Esta matriz protege los direcotorios de guardado
   const folderMap: Record<string, string> = {
-    profilePic: path.join(process.env.ASSETS_ROUTE || '', 'users', 'profilePic'),
-    // agrega otros tipos si necesitas
+    userProfilePic: path.join(process.env.ASSETS_ROUTE || '', 'users'),
+    factoryProfilePic: path.join(process.env.ASSETS_ROUTE || '', 'factories'),
+    
   };
 
   const folderPath = folderMap[type];
@@ -19,7 +22,11 @@ export async function save(
 
   await fs.mkdir(folderPath, { recursive: true });
 
-  const ext = path.extname(file.name) || '.jpg';
+  let ext = path.extname(file.name) || '.jpeg';
+
+  if (type === 'userProfilePic' || type === 'factoryProfilePic') {
+    ext = '.jpeg'
+  }
   const saveName = fileName + ext;
   const savePath = path.join(folderPath, saveName);
 
@@ -56,4 +63,15 @@ export async function remove(type: string, fileName: string): Promise<void> {
   }
 
   throw new Error('Archivo no encontrado para eliminar');
+}
+
+
+export async function createEmptyDir(dirPath: string): Promise<void> {
+  try {
+    await fs.mkdir(process.env.ASSETS_ROUTE + dirPath, { recursive: true });
+    console.log(`Directorio creado: ${dirPath}`);
+  } catch (err) {
+    console.error(`Error al crear directorio: ${dirPath}`, err);
+    throw err;
+  }
 }

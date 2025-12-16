@@ -6,15 +6,15 @@
   <div class="card w-95 h-95 d-flex flex-column">
 
     <!-- HEADER -->
-    <div *ngIf="(showActiveFactories$ | async)" class="card-header w-100">
+    <div *ngIf="(showActiveFactories$ | async)" class="card-header pt-1 pb-1 w-100">
 
-      <div class="w-100 d-flex justify-content-between ">
+      <div class="w-100 d-flex justify-content-between align-items-center">
 
       
-         <h5 class="w-50"><i class="fa-solid fa-industry "></i> Gestión de Fábricas </h5>
+         <h5 class="w-30 d-flex align-items-center m-0 p-0   "><i class="fa-solid fa-industry "></i> Gestión de Fábricas </h5>
   
 
-          <div class="d-flex w-50 justify-content-end">
+          <div class="d-flex w-70 justify-content-end align-items-center ">
                <factories-list-component 
           class="w-50 me-1"
           [selectedFactory]="selectedFactory"
@@ -67,58 +67,45 @@
      
     </div>
 
-     <div *ngIf="!(showActiveFactories$ | async)" class="card-header w-100">
+    <div *ngIf="!(showActiveFactories$ | async)" class="card-header pt-1 pb-1 w-100 alert alert-danger">
 
+  <div class="w-100 d-flex justify-content-between align-items-center">
 
-        <div class="w-100 d-flex justify-content-between ">
+    <!-- TÍTULO -->
+    <h5 class="w-30 d-flex align-items-center m-0 p-0 c">
+      <i class="fa-solid fa-industry me-1"></i>
+      Fábricas inactivas
+    </h5>
 
-      
-         <h5 class="w-50 color-danger"><i class="fa-solid fa-industry"></i> Fábricas inactivas </h5>
-  
+    <!-- ACCIONES -->
+    <div class="d-flex w-70 justify-content-end align-items-center">
 
-          <div class="d-flex w-50 justify-content-end">
-               <factories-list-component 
-          class="w-50 me-1 "
-          [selectedFactory]="selectedFactory"
-          [factoriesList]="availableFactoriesForSelect$ | async"
-          (selectFactoryEvent)="selectFactory($event)">
+      <factories-list-component 
+        class="w-50 me-1"
+        [selectedFactory]="selectedFactory"
+        [factoriesList]="availableFactoriesForSelect$ | async"
+        (selectFactoryEvent)="selectFactory($event)">
+      </factories-list-component>
 
-
-        </factories-list-component>
-
-
-      
-
-
-   
-
-    <div [Tooltip]="'Fábricas activas'" tooltipPlacement="bottom" tooltipClass="tooltip-success">
+      <!-- Volver a activas -->
+      <div [Tooltip]="'Fábricas activas'" tooltipPlacement="bottom" tooltipClass="tooltip-success">
+        <button
+          class="btn btn-link text-success btn-xs me-1 position-relative btn-menu"
+          (click)="toggleFactories(true)">
           
-      <button 
-  class="btn btn-link text-success btn-xs me-1 position-relative btn-menu"
-  (click)="toggleFactories(true)">
-  <i class="fa-solid fa-arrow-left addon-arrow-left"></i>
+          <i class="fa-solid fa-arrow-left addon-arrow-left"></i>
+          <i class="fa-solid fa-industry"></i>
+          <i class="fa-solid fa-check addon-check"></i>
 
-  <i class="fa-solid fa-industry"></i>
-  <i class="fa-solid fa-check addon-check"></i>
+        </button>
+      </div>
 
+    </div>
 
-</button>
+  </div>
 
 </div>
 
-    
-          </div>
-
-          
-     
-              
-     
-      
-
-      </div>
-     
-    </div>
 
     <!-- BODY (scroll interno, no mueve el footer) -->
     <div class="card-body d-flex flex-column overflow-hidden w-100">
@@ -126,32 +113,44 @@
 
 
          <div *ngIf="(filteredFactory$ | async) as filteredFactory; else noFactorySelected" class="card h-100 w-100">
-          <div *ngIf="(showActiveFactoryRoutes$ | async)" class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
+          <div *ngIf="(showActiveFactoryRoutes$ | async)" class="card-header pb-1  pt-1 w-100 d-flex justify-content-between cursor-pointer"> 
 
-            <div class="d-flex "><i class="fa-solid fa-industry me-1"></i><h6> {{filteredFactory.name}} (V{{filteredFactory?.version}})</h6></div>
+            <div class="d-flex w-30  align-items-center"><i class="fa-solid fa-industry me-1"></i><h6 class="m-0 p-0"> {{filteredFactory.name}} (V{{filteredFactory?.version}})</h6></div>
 
-            <div class="d-flex w-50 justify-content-end">
+
+       
+            <div class="d-flex w-70  justify-content-end align-items-center">
               
                <factory-routes-filter-component class="w-50 me-1" *ngIf="selectedFactory && hasPermission('FACTORY_ROUTE_VIEW')"
           [availableRoutesForSelect]="availableFactoryRoutesForSelect$ | async"
           (routeFilterChange)="selectRoute($event)">
         </factory-routes-filter-component>
 
-  
-
-        <div [Tooltip]="'Crear ruta'" tooltipPlacement="bottom" tooltipClass="tooltip-primary">
-          <button 
-   *ngIf="hasPermission('FACTORY_ROUTE_CREATE') && (selectedFactory$ | async)?.active"
-  class="btn btn-link text-primary btn-xs me-1 position-relative btn-menu"
+                <div [Tooltip]="'Crear ruta'" tooltipPlacement="bottom" tooltipClass="tooltip-primary" class="d-flex align-items-center">
+<button *ngIf="hasPermission('FACTORY_ROUTE_CREATE') && (selectedFactory$ | async)?.active"
+  class="btn btn-link text-primary btn-xs  position-relative btn-menu m-0 p-0"
    (click)="createFactoryRoute()" data-bs-toggle="modal" data-bs-target="#createFactoryRouteModal">
 
-  <i class="fa-solid fa-route "></i>
+  <i class="fa-solid fa-route addon-route"></i>
 
   <!-- signo + superpuesto -->
   <span class="addon-plus">+</span>
 </button>
 
 </div>
+
+  <div *ngIf="hasPermission('FACTORY_EDIT')" [Tooltip]="'Editar fábrica'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary" class="d-flex align-items-center">
+
+
+  <i class="fa-solid fa-pen-to-square color-secondary cursor-pointer "
+     (click)="editFactory()"
+     data-bs-toggle="modal"
+     data-bs-target="#createFactoryModal">
+  </i>
+
+</div>
+
+
 
       
 
@@ -216,78 +215,83 @@
              
             </div>
             
+<div *ngIf="!(showActiveFactoryRoutes$ | async)"
+     class="card-header pt-1 pb-1 w-100 d-flex justify-content-between cursor-pointer alert alert-danger">
 
-              <div *ngIf="!(showActiveFactoryRoutes$ | async)" class="card-header w-100 d-flex justify-content-between cursor-pointer"> 
+  <!-- IZQUIERDA -->
+  <div class="d-flex w-30 align-items-center">
+    <i class="fa-solid fa-industry me-1"></i>
+    <h6 class="m-0 p-0">
+      {{ filteredFactory.name }} (V{{ filteredFactory?.version }}) (rutas inactivas)
+    </h6>
+  </div>
 
-            <div class="d-flex color-danger"><i class="fa-solid fa-industry me-1"></i><h6> {{filteredFactory.name}}  (V{{filteredFactory?.version}}) (rutas inactivas) </h6></div>
+  <!-- DERECHA -->
+  <div class="d-flex w-70 justify-content-end align-items-center">
 
-            <div class="d-flex w-50 justify-content-end">
+    <factory-routes-filter-component
+      class="w-50 me-1"
+      *ngIf="selectedFactory && hasPermission('FACTORY_ROUTE_VIEW')"
+      [availableRoutesForSelect]="availableFactoryRoutesForSelect$ | async"
+      (routeFilterChange)="selectRoute($event)">
+    </factory-routes-filter-component>
 
-       <factory-routes-filter-component class="w-50 me-1" *ngIf="selectedFactory && hasPermission('FACTORY_ROUTE_VIEW')"
-          [availableRoutesForSelect]="availableFactoryRoutesForSelect$ | async"
-          (routeFilterChange)="selectRoute($event)">
-        </factory-routes-filter-component>
-    
+    <!-- Volver a rutas activas -->
     <div [Tooltip]="'Rutas activas'" tooltipPlacement="bottom" tooltipClass="tooltip-success">
-          <button 
-  class="btn btn-link text-success btn-xs   btn-xs me-1 position-relative btn-menu"
-  (click)="toggleFactoryRoutes(true)">
-  <i class="fa-solid fa-arrow-left addon-arrow-left"></i>
-  <i class="fa-solid fa-route"></i>
-   <i class="fa-solid fa-check addon-check"></i>
+      <button
+        class="btn btn-link text-success btn-xs me-1 position-relative btn-menu"
+        (click)="toggleFactoryRoutes(true)">
 
+        <i class="fa-solid fa-arrow-left addon-arrow-left"></i>
+        <i class="fa-solid fa-route"></i>
+        <i class="fa-solid fa-check addon-check"></i>
 
-</button>
-
-</div>
-    
-    <div [Tooltip]="'Desactivar fábrica'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary" *ngIf="selectedFactory?.active" class="d-flex align-items-center ms-1">
-           <i class="fa-solid fa-toggle-on color-success cursor-pointer"
-     (click)="marckFactoryToSuspend(selectedFactory!,true)"
-     data-bs-toggle="modal"
-     data-bs-target="#factorySuspensionModal"class="fa-solid fa-solid fa-toggle-on color-success cursor-pointer " ></i>
-
-
-
+      </button>
     </div>
 
-    
-    <div [Tooltip]="'Reactivar fábrica'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary"  *ngIf="!selectedFactory?.active" class="d-flex align-items-center ms-1">
-           <i  *ngIf="hasPermission('FACTORY_SUSPENSION')"
-  
-    class="fa-solid fa-toggle-off color-success cursor-pointer"
-     (click)="marckFactoryToSuspend(selectedFactory!,false)"
-     data-bs-toggle="modal"
-     data-bs-target="#factorySuspensionModal"class="fa-solid fa-solid fa-toggle-off color-danger cursor-pointer " ></i>
+    <!-- Toggle fábrica -->
+    <div [Tooltip]="'Desactivar fábrica'"
+         tooltipPlacement="bottom"
+         tooltipClass="tooltip-secondary"
+         *ngIf="selectedFactory?.active && hasPermission('FACTORY_SUSPENSION')"
+         class="d-flex align-items-center ms-1">
 
-
-
+      <i class="fa-solid fa-toggle-on color-success cursor-pointer"
+         (click)="marckFactoryToSuspend(selectedFactory!, true)"
+         data-bs-toggle="modal"
+         data-bs-target="#factorySuspensionModal">
+      </i>
     </div>
-              
-    
 
-              <div  [Tooltip]="'Audit trail'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary"  class="d-flex align-items-center justify-content-center ms-2">
-        <i class="fa-solid fa-book " data-bs-toggle="modal" data-bs-target="#auditTrailFactoryModal"> </i>
+    <div [Tooltip]="'Reactivar fábrica'"
+         tooltipPlacement="bottom"
+         tooltipClass="tooltip-secondary"
+         *ngIf="!selectedFactory?.active && hasPermission('FACTORY_SUSPENSION')"
+         class="d-flex align-items-center ms-1">
+
+      <i class="fa-solid fa-toggle-off color-danger cursor-pointer"
+         (click)="marckFactoryToSuspend(selectedFactory!, false)"
+         data-bs-toggle="modal"
+         data-bs-target="#factorySuspensionModal">
+      </i>
+    </div>
+
+    <!-- Audit trail -->
+    <div [Tooltip]="'Audit trail'"
+         tooltipPlacement="bottom"
+         tooltipClass="tooltip-secondary"
+         class="d-flex align-items-center justify-content-center ms-2">
+
+      <i class="fa-solid fa-book cursor-pointer"
+         data-bs-toggle="modal"
+         data-bs-target="#auditTrailFactoryModal">
+      </i>
+    </div>
+
+  </div>
 
 </div>
 
-
-
-
-
-
-
-
-            </div>
-
-         
- 
-          
-   
-            
-                   
-            </div>
-            
             
             
           <div class="card-body flew-grow-1 overflow-auto">
@@ -320,6 +324,7 @@
 </div>
         
           </div>
+          
        
         
         </div>
@@ -459,7 +464,7 @@
 
 
   <ng-template  #noFactorySelected>
-   <div class="cursor-pointer area rounded h-100 border-success color-success 
+   <div class="cursor-pointer area rounded h-100 border-secondary color-secondary 
                   d-flex flex-column justify-content-around align-items-center add-btn"
            style="border:dashed; border-width:1px">
           Una vez seleccione una fábrica podrá visualizar sus rutas en este menú.</div>

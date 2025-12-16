@@ -69,6 +69,7 @@ export const createUser = async (req: UserRequest, res: Response) => {
       username: string;
       password: string;
       userRole: number;
+      hasProfilePicture:boolean;
     };
 
 

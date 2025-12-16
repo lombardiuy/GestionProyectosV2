@@ -15,12 +15,21 @@ import { FormMessage } from '../../../../../shared/interfaces/form-message.inter
 
 export class FactoryCreateComponent  {
 
+  isHover = false;
+
+
   @Input() hasPermission!: (code:string) => boolean;
   @Input() savingFactory:boolean | undefined;
   @Input() loadingFactoryCreateForm:boolean | undefined;
   @Input() factoriesList!: Factory[] | null;
   @Input() factoryCreateForm!:FormGroup;
   @Input() factoryCreateFormMessage:FormMessage | null | undefined;
+  @Input() factoryPicturePath!: string | null;
+@Input() imagePreview!: string | null | undefined;
+@Input() factoryPictureStatus!: string | null | undefined;
+
+@Output() setFactoryPictureEvent = new EventEmitter<File>();
+
 
   @Output() saveFactoryEvent = new EventEmitter<void>();
 
@@ -56,9 +65,6 @@ export class FactoryCreateComponent  {
     return this.factoryCreateForm?.get('location');
   }
 
-  get owner() {
-    return this.factoryCreateForm?.get('owner');
-  }
 
   get contact() {
     return this.factoryCreateForm?.get('contact');
@@ -71,6 +77,26 @@ export class FactoryCreateComponent  {
   get routes() {
     return this.factoryCreateForm?.get('routes');
   }
+
+  setFactoryPicture(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (!file) return;
+
+  if (
+    file.type === 'image/jpeg' ||
+    file.type === 'image/jpg' ||
+    file.type === 'image/png'
+  ) {
+    this.setFactoryPictureEvent.emit(file);
+  } else {
+    this.factoryPictureStatus = 'El archivo proporcionado no tiene el formato correcto';
+    this.imagePreview = '';
+    this.factoryCreateForm.get('hasPicture')?.setValue(false);
+  }
+}
+
 
   closeModal() {
     this.btnClose.nativeElement.click();

@@ -5,11 +5,11 @@ import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 import { UserRolePermission } from '../entities/users/UserRolePermission.entity';
 import { registerInAuditTrail, detectModuleChanges } from './auditTrail.service';
-import { In } from "typeorm";
+import { createEmptyDir} from './file.service';
 
 const userRepository = AppDataSource.getRepository(User);
 const userRolesRepository = AppDataSource.getRepository(UserRole);
-const userRolePermissionRepository = AppDataSource.getRepository(UserRolePermission);
+
 
 /**
  * Obtiene todos los usuarios (sin password) con su rol.
@@ -60,9 +60,10 @@ export const createUser = async (payload: {
   username: string;
   password: string;
   userRole: number;
+  hasProfilePicture:boolean;
 },  currentUsername: string // <-- el usuario logueado 
 ): Promise<Partial<User>> => {
-  const { name, username, password, userRole } = payload;
+  const { name, username, password, userRole, hasProfilePicture } = payload;
 
  
 
@@ -76,7 +77,7 @@ export const createUser = async (payload: {
       throw new Error('El usuario ya existe');
     }
 
-    console.log
+    
     const role = await roleRepo.findOneBy({ id: userRole });
     if (!role) {
       throw new Error('Rol no encontrado');
@@ -89,13 +90,18 @@ export const createUser = async (payload: {
       name,
       username,
       password: hashed,
-      hasProfilePicture: false,
+      hasProfilePicture,
       active: false,
       suspended: false,
       userRole: role,
     });
 
+   
+
     const saved = await userRepo.save(newUser);
+
+    await createUserDirectories(saved.id);
+   
 
     // ✅ CORRECCIÓN: Normalizar "changes" para crear usuario (usar key 'username' en lugar de 'user')
     await registerInAuditTrail(
@@ -725,4 +731,15 @@ export const updateUserRole = async (
       relations: ["userRolePermissions"],
     }) as UserRole;
   });
+
+
+
+
 };
+
+export const createUserDirectories = async (userID:number) => {
+    await createEmptyDir('users/user_'+userID);
+
+};
+
+

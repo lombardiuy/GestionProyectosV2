@@ -49,7 +49,7 @@ export const selectFactoryById = async (req: Request, res: Response) => {
 
 /**
  * POST /factory/create
- * req.body validado por CreateFactoryDto -> { name, location, owner, contact }
+ * req.body validado por CreateFactoryDto -> { name, location,contact }
  */
 export const createFactory = async (req: UserRequest, res: Response) => {
 
@@ -57,12 +57,13 @@ export const createFactory = async (req: UserRequest, res: Response) => {
     const dto = req.body as {
       name: string;
       location: string;
-      owner: string;
       contact: string;
+      hasProfilePicture:boolean
     };
 
 
 if (!req.user) throw new Error("Usuario no autenticado");
+
 
 
     const factory = await factoryService.createFactory(dto, req.user.username);
@@ -74,7 +75,7 @@ if (!req.user) throw new Error("Usuario no autenticado");
 
 /**
  * POST /factory/route/create
- * req.body validado por CreateFactoryDto -> { name, location, owner, contact }
+ * req.body validado por CreateFactoryDto -> { name, location, contact }
  */
 export const createFactoryRoute = async (req: UserRequest, res: Response) => {
 

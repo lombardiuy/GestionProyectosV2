@@ -4,9 +4,9 @@ export interface Factory {
   id?: number;
   name: string;
   location: string;
-  owner: string;
   contact: string;
   active: boolean;
+  hasProfilePicture:boolean;
   version:number;
   routes: FactoryRoute[];
 

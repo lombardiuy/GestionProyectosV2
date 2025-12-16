@@ -13,17 +13,18 @@ import { delay } from '../../../../shared/helpers/delay.helper';
 import { FactoryRouteCreateComponent } from '../../components/factory-route/factory-route-create/factory-route-create.component';
 import { FactoryRouteSuspensionComponent } from '../../components/factory-route/factory-route-suspension/factory-route-suspension.component';
 import { FactorySuspensionComponent } from '../../components/factory/factory-suspension/factory-suspension.component';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
-  selector: 'factories-panel-page',
-  templateUrl: './factories-panel.page.html',
-  styleUrls: ['./factories-panel.page.scss'],
+  selector: 'factory-panel-page',
+  templateUrl: './factory-panel.page.html',
+  styleUrls: ['./factory-panel.page.scss'],
   standalone:false
 })
 
 
-export class FactoriesPanelPage implements OnInit {
+export class FactoryPanelPage implements OnInit {
 
     public selectedFactory:Factory | null | undefined = null;
     public selectedFactoryRouteId: number | null = null;
@@ -89,7 +90,7 @@ export class FactoriesPanelPage implements OnInit {
   
   
 
-  constructor(private authService:AuthService, private messageService:MessageService,  private factoryService:FactoryService, private timeService:TimeService, private formBuilder:FormBuilder) {
+  constructor(private authService:AuthService,       private route: ActivatedRoute, , private messageService:MessageService,  private factoryService:FactoryService, private timeService:TimeService, private formBuilder:FormBuilder) {
 
     this.factoriesList$ = this.factoryService.factoryList$;
     this.selectedFactory$ = this.factoryService.selectedFactory$;
@@ -313,10 +314,9 @@ getAvailableFactoriesForSelect() {
   createEmptyFactoryForm() {
     this.factoryCreateForm = this.formBuilder.group({
       id:[null],
-      name:['', Validators.required],
-      location:['', Validators.required],
-      owner:['', Validators.required],
-      contact:['', Validators.required],
+      name:['', Validators.required, Validators.maxLength(100)],
+      location:['', Validators.required, Validators.maxLength(100)],
+      contact:['', Validators.required, Validators.maxLength(100)],
       active:[null],
       routes: this.formBuilder.array([])
 
@@ -342,7 +342,6 @@ resetFactoryForm() {
     id: null,
     name: '',
     location: '',
-    owner: '',
     contact: '',
     active: null
   });
@@ -384,7 +383,6 @@ resetFactoryRouteForm() {
       this.factoryForm['id'].setValue(selectedFactory.id);
       this.factoryForm['name'].setValue(selectedFactory.name);
       this.factoryForm['location'].setValue(selectedFactory.location);
-      this.factoryForm['owner'].setValue(selectedFactory.owner);
       this.factoryForm['contact'].setValue(selectedFactory.contact);
       this.factoryForm['active'].setValue(selectedFactory.active);
       this.factoryForm['routes'].setValue(selectedFactory.routes);
@@ -421,6 +419,10 @@ resetFactoryRouteForm() {
 
   
   } 
+
+  async editFactory() {
+    
+  }
 
    
   async createFactoryRoute() { 

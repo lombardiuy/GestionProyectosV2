@@ -76,9 +76,11 @@ export class FactoryService {
       const dto = {
         name: factory.name,
         location: factory.location,
-        owner: factory.owner,
         contact: factory.contact, // SOLO el ID
+        hasProfilePicture:factory.hasProfilePicture
       };
+
+
   
       return this.http.post<any>(`${this.apiUrl}/create`, dto);
     }

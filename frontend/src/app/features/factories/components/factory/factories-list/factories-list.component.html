@@ -6,7 +6,7 @@
           <select [(ngModel)]="selectedFactory"
         (ngModelChange)="selectFactory($event)"
         class="form-control form-select form-select-sm w-100"> 
-  <option * [ngValue]="null" disabled>
+  <option *ngIf="!selectedFactory" [ngValue]="null" disabled>
     Seleccione una fábrica para visualizarla
   </option>
 

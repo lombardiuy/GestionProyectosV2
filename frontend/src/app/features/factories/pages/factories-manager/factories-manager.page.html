@@ -1,0 +1,188 @@
+<!-- FACTORIES PANEL -->
+
+<div *ngIf="!loading else loadingSpinner"
+     class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+
+  <div class="card w-95 h-95 d-flex flex-column">
+
+    <!-- HEADER -->
+    <div  class="card-header pt-1 pb-1 w-100" [ngClass]="{'alert alert-danger ': !(showActiveFactories$ | async)}">
+
+      <div class="w-100 d-flex justify-content-between align-items-center">
+
+      
+         <h5 class="w-30 d-flex align-items-center m-0 p-0   "><i class="fa-solid fa-industry "></i> Gestión de Fábricas </h5>
+  
+
+          <div class="d-flex w-70 justify-content-end align-items-center ">
+      
+<ng-select
+  class="w-30 me-2 "
+  [items]="(availableFactoriesForSelect$ | async)!"
+  bindLabel="name"
+  bindValue="id"
+  placeholder="Filtre por nombre de fábrica"
+  [(ngModel)]="selectedFactory"
+  [searchable]="true"
+  [clearable]="true"
+  [loading]="loading"
+  [notFoundText]="'No hay fábricas en el sistema'"
+   (change)="onFactorySelected($event)">
+</ng-select>
+
+
+          <button 
+  *ngIf="hasPermission('FACTORY_CREATE') && (showActiveFactories$ | async)"
+  class="btn btn-primary btn-sm me-1 position-relative "
+  (click)="createFactory()" data-bs-toggle="modal" data-bs-target="#createFactoryModal">
+
+  <i class="fa-solid fa-industry "></i>
+
+  <!-- signo + superpuesto -->
+
+  <i class="fa-solid fa-plus addon-plus"></i>
+
+  <span class="ms-1">  Crear fábrica</span>
+
+
+  
+</button>
+
+
+
+
+
+  
+
+    
+          </div>
+
+          
+     
+              
+     
+      
+
+      </div>
+     
+    </div>
+
+
+
+
+    <!--2 -  BODY (scroll interno, no mueve el footer) -->
+    <div class="card-body d-flex flex-wrap overflow-auto justify-content-around w-100 ">
+
+      <ng-container *ngIf="(availableFactoriesForSelect$ | async)!.length > 0; else noFactories">
+
+               <factory-summary-component *ngFor="let factory of (availableFactoriesForSelect$ | async)"
+
+        [factory]="factory"
+        [factoryPicturePath]="factoryPicturePath"
+        [hasPermission]="hasPermission.bind(this)"
+        
+        
+        
+        
+        ></factory-summary-component>
+
+      </ng-container>
+
+
+ 
+
+
+
+
+
+
+
+
+    </div>
+
+
+    <!--3 - FOOTER-->
+ <div *ngIf="(hasInactiveFactories$ | async)" class="card-footer d-flex justify-content-end">
+
+  <!-- Ver fábricas inactivas -->
+  <button
+    *ngIf="(showActiveFactories$ | async) && (hasInactiveFactories$ | async)"
+    class="btn btn-sm btn-danger me-1 position-relative"
+    (click)="toggleFactories(false)">
+
+    <i class="fa-solid fa-arrow-right addon-arrow-right"></i>
+    <i class="fa-solid fa-industry"></i>
+    <i class="fa-solid fa-trash addon-trash"></i>
+
+    <span class="ms-2">Fábricas inactivas</span>
+  </button>
+
+  <!-- Volver a fábricas activas -->
+  <button
+    *ngIf="!(showActiveFactories$ | async) && (hasActiveFactories$ | async)"
+    class="btn btn-success btn-sm me-1 position-relative"
+    (click)="toggleFactories(true)">
+
+    <i class="fa-solid fa-arrow-left addon-arrow-left"></i>
+    <i class="fa-solid fa-industry"></i>
+    <i class="fa-solid fa-check addon-check"></i>
+
+    <span class="ms-2">Fábricas activas</span>
+  </button>
+
+</div>
+
+    
+    
+
+
+  </div>
+</div>
+
+
+       
+
+<ng-template #loadingSpinner>
+  <loading-spinner class="w-100 h-100"></loading-spinner>
+</ng-template>
+
+
+
+<!--FACTORY CREATE MODAL -->
+
+  <div class="modal fade" id="createFactoryModal" tabindex="-1" aria-hidden="true">
+   <factory-create-component     *ngIf="factoryCreateForm && hasPermission('FACTORY_CREATE')" class="w-100 h-100"
+   
+  [hasPermission]="hasPermission.bind(this)"
+  [factoryCreateForm]="factoryCreateForm"
+  [factoriesList]="factoriesList$ | async"
+  [factoryPicturePath]="factoryPicturePath"
+  [imagePreview]="imagePreview"
+  [factoryPictureStatus]="factoryPictureStatus"
+  [factoryCreateFormMessage]="factoryCreateFormMessage"
+  [savingFactory]="savingFactory"
+  [loadingFactoryCreateForm]="loadingFactoryCreateForm"
+  (setFactoryPictureEvent)="setFactoryPicture($event)"
+  (saveFactoryEvent)="saveFactory()"
+
+    
+     
+   
+
+
+   ></factory-create-component>
+
+
+  </div>
+
+
+
+  <ng-template  #noFactories>
+   <div class="cursor-pointer area rounded h-100 w-100 border-secondary color-secondary 
+                  d-flex flex-column justify-content-around align-items-center add-btn"
+           style="border:dashed; border-width:1px">
+          No hay fábricas en el sistema
+        
+        
+  </div>
+

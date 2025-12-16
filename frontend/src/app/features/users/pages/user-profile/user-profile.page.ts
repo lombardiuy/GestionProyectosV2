@@ -34,7 +34,7 @@ export class UserProfilePage implements OnInit{
     //General
   
   
-    public profilePicturePath =  environment.publicURL+'users/profilePic/';
+    public profilePicturePath =  environment.publicURL+'users/';
   
     
 
@@ -169,6 +169,8 @@ createEmptyForm() {
 
  async initForm() {
 
+ 
+
   this.createEmptyForm();
 
     const selectedUser = await firstValueFrom(this.authService.userProfile$);
@@ -182,9 +184,11 @@ createEmptyForm() {
     this.form['userRole'].setValue(selectedUser.userRole.name);
     this.form['hasProfilePicture'].setValue(selectedUser.hasProfilePicture);
 
+     let timestamp = await firstValueFrom(this.timeService.timestamp$)
+
 
     if (selectedUser.hasProfilePicture) {
-       this.imagePreview = this.profilePicturePath+"ProfilePic_"+selectedUser.id+".jpeg";
+       this.imagePreview = this.profilePicturePath+'/user_'+ selectedUser.id +"/ProfilePic_"+selectedUser.id+".jpeg" + '?t=' + timestamp;
         
     }
 
@@ -232,11 +236,12 @@ this.form['newPasswordRepeat'].updateValueAndValidity();
          
         ).subscribe({
           next: async(res) => {
-    
+      
+ 
             if(this.profilePicture) {
          
         
-              await this.fileService.save(this.profilePicture, 'ProfilePic_'+res.userID, 'profilePic')
+             await this.fileService.save(this.profilePicture, 'user_'+res.user.id+'/ProfilePic_'+res.user.id, 'userProfilePic')
             }
        
     
@@ -247,11 +252,11 @@ this.form['newPasswordRepeat'].updateValueAndValidity();
             
             await delay(1000);
             await this.userService.getAllUsers();
-            this.timeService.refreshTimestamp();
+           
            
                this.initForm();
     
-
+ this.timeService.refreshTimestamp();
     
              
         

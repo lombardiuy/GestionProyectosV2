@@ -53,7 +53,7 @@
               <tbody >
                 <tr *ngFor="let user of filteredUserList">
                   <td>
-                    <img [src]="user.hasProfilePicture ? profilePicturePath + 'ProfilePic_' + user.id + '.jpeg' + '?t=' + timestamp : profilePicturePath + 'avatar.jpeg'"
+                    <img [src]="user.hasProfilePicture ? profilePicturePath +'/user_'+ user.id +'/ProfilePic_' + user.id + '.jpeg' + '?t=' + timestamp : profilePicturePath + 'avatar.jpeg'"
                          alt="..." class="img-fluid rounded-circle avatar">
                   </td>
                   <td class="align-middle">{{ user.name }} </td>
@@ -74,7 +74,8 @@
                   <td *ngIf="hasPermission('USER_EDIT') || hasPermission('USER_SUSPENSION') || hasPermission('USER_SUSPENSION')" class="align-middle ">
                     <div class="d-flex w-100 justify-content-center">
 <!-- EDITAR -->
-<span *ngIf="hasPermission('USER_EDIT')">
+
+<span *ngIf="hasPermission('USER_EDIT')" [Tooltip]="'Editar'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary">
 
   <i class="fa-solid fa-pen-to-square color-secondary cursor-pointer me-2"
      (click)="editUser(user)"
@@ -85,7 +86,7 @@
 </span>
 
 <!-- SUSPENDER -->
-<span *ngIf="!user.suspended && hasPermission('USER_SUSPENSION')">
+<span *ngIf="!user.suspended && hasPermission('USER_SUSPENSION')" [Tooltip]="'Suspender'" tooltipPlacement="bottom" tooltipClass="tooltip-danger" >
 
   <i class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
      (click)="userSuspensionFromList(user, true)"
@@ -96,7 +97,7 @@
 </span>
 
 <!-- REACTIVAR -->
-<span *ngIf="user.suspended && hasPermission('USER_SUSPENSION')">
+<span *ngIf="user.suspended && hasPermission('USER_SUSPENSION')" [Tooltip]="'Reactivar'" tooltipPlacement="bottom" tooltipClass="tooltip-success">
 
   <i class="fa-solid fa-toggle-off color-danger  cursor-pointer ms-3"
      (click)="userSuspensionFromList(user, false)"
