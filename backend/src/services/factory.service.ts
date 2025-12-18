@@ -101,6 +101,86 @@ export const selectFactoryById = async (factoryId: number): Promise<any | null> 
   return factory;
 };
 
+
+export const selectFactoryByName = async (factoryName: string): Promise<any | null> => {
+  // Normalizar nombre
+  const name = factoryName.trim();
+  if (!name) return null;
+
+  // 1) Obtener fábrica con datos básicos + rutas
+  const factory = await factoryRepository.findOne({
+    where: { name },
+    relations: ["routes"],
+    select: ["id", "name", "location", "contact", "active", "hasProfilePicture", "version"]
+  });
+
+  if (!factory) return null;
+
+  // Si no tiene rutas, ya no hay áreas asociadas
+  if (!factory.routes || factory.routes.length === 0) {
+    return factory;
+  }
+
+  // 2) Obtener todas las áreas relacionadas a esas rutas
+  const routeIds = factory.routes.map(r => r.id);
+
+  const areas = await areaRepository
+    .createQueryBuilder("area")
+    .leftJoinAndSelect("area.areaClass", "areaClass")
+    .leftJoinAndSelect("area.routes", "routes")
+    .where("routes.id IN (:...routeIds)", { routeIds })
+    .select(["area.id", "area.name", "area.code"])
+    .addSelect(["areaClass.id", "areaClass.name"])
+    .addSelect(["routes.id", "routes.name"])
+    .getMany();
+
+  const areaIds = areas.map(a => a.id);
+
+  // 3) Obtener equipos por área
+  const equipments = await equipmentRepository.find({
+    where: { area: In(areaIds) },
+    relations: ["equipmentClass", "area"],
+    select: ["id", "name", "hasPicture"]
+  });
+
+  // 4) Agrupar equipos por areaId
+  const equipmentByArea = new Map<number, any[]>();
+
+  for (const eq of equipments) {
+    const areaId = eq.area?.id;
+    if (!areaId) continue;
+
+    if (!equipmentByArea.has(areaId)) {
+      equipmentByArea.set(areaId, []);
+    }
+
+    equipmentByArea.get(areaId)!.push({
+      id: eq.id,
+      name: eq.name,
+      hasPicture: eq.hasPicture,
+      equipmentClass: eq.equipmentClass
+        ? { id: eq.equipmentClass.id }
+        : null
+    });
+  }
+
+  // 5) Insertar equipos dentro de cada área
+  for (const area of areas) {
+    (area as any).equipments = equipmentByArea.get(area.id) ?? [];
+  }
+
+  // 6) Insertar áreas dentro de cada ruta
+  for (const route of factory.routes) {
+    (route as any).areas = areas.filter(a =>
+      a.routes.some(r => r.id === route.id)
+    );
+  }
+
+  return factory;
+};
+
+
+
 /**
  * Crea una fábrica nueva
  * Recibe un objeto con shape validado por DTO: { name, location, contact}
@@ -159,6 +239,134 @@ export const createFactory = async (payload: {
     return saved;
   });
 };
+
+export const updateFactory = async (
+  id: number,
+  payload: {
+    name?: string;
+    location?: string;
+    contact?: string;
+    hasProfilePicture?: boolean;
+  },
+  currentUsername: string
+): Promise<Partial<Factory>> => {
+
+  return await AppDataSource.transaction(async (manager) => {
+    const factoryRepo = manager.getRepository(Factory);
+
+    const factory = await factoryRepo.findOne({
+      where: { id }
+    });
+
+    if (!factory) {
+      throw new Error('Fábrica inexistente.');
+    }
+
+    const before = { ...factory };
+
+    // aplicar cambios parciales
+    if (payload.name !== undefined) factory.name = payload.name;
+    if (payload.location !== undefined) factory.location = payload.location;
+    if (payload.contact !== undefined) factory.contact = payload.contact;
+    if (payload.hasProfilePicture !== undefined) {
+      factory.hasProfilePicture = payload.hasProfilePicture;
+    }
+
+    const after = { ...factory };
+
+    const changes = detectModuleChanges(before, after, {
+      ignore: ['createdAt', 'updatedAt', 'routes']
+    });
+
+    // si no hubo cambios, no tocar nada
+    if (Object.keys(changes).length === 0) {
+      return factory;
+    }
+
+    // versionado
+    factory.version = (factory.version ?? 0) + 1;
+
+    const saved = await factoryRepo.save(factory);
+
+    await registerInAuditTrail(
+      {
+        module: 'Factories',
+        entity: 'Factory',
+        entityId: saved.id,
+        action: 'FACTORY_UPDATE',
+        changes,
+        description: 'Actualización de datos de fábrica.',
+        author: currentUsername,
+        version: saved.version
+      },
+      manager
+    );
+
+    return saved;
+  });
+};
+
+export const updateFactoryRoute = async (
+  id: number,
+  payload: {
+      name?: string;
+      description?: string;
+  },
+  currentUsername: string
+): Promise<Partial<Factory>> => {
+
+  return await AppDataSource.transaction(async (manager) => {
+    const factoryRouteRepo = manager.getRepository(FactoryRoute);
+
+    const factoryRoute = await factoryRouteRepo.findOne({
+      where: { id }
+    });
+
+    if (!factoryRoute) {
+      throw new Error('Ruta inexistente.');
+    }
+
+    const before = { ...factoryRoute };
+
+    // aplicar cambios parciales
+    if (payload.name !== undefined) factoryRoute.name = payload.name;
+    if (payload.description !== undefined) factoryRoute.description = payload.description;
+ 
+
+    const after = { ...factoryRoute };
+
+    const changes = detectModuleChanges(before, after, {
+      ignore: ['createdAt', 'updatedAt', 'factory']
+    });
+
+    // si no hubo cambios, no tocar nada
+    if (Object.keys(changes).length === 0) {
+      return factoryRoute;
+    }
+
+    // versionado
+    factoryRoute.version = (factoryRoute.version ?? 0) + 1;
+
+    const saved = await factoryRouteRepo.save(factoryRoute);
+
+    await registerInAuditTrail(
+      {
+        module: 'Factories',
+        entity: 'FactoryRoute',
+        entityId: saved.id,
+        action: 'FACTORY_ROUTE_UPDATE',
+        changes,
+        description: 'Actualización de datos de ruta.',
+        author: currentUsername,
+        version: saved.version
+      },
+      manager
+    );
+
+    return saved;
+  });
+};
+
 
 
 /**

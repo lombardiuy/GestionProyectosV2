@@ -12,6 +12,8 @@ import { MessageService } from '../../../../shared/services/message.service';
 import { delay } from '../../../../shared/helpers/delay.helper';
 import { FileService } from '../../../../core/services/file.service';
 import { environment } from '../../../../../environments/environment';
+import { noLeadingSpaceValidator } from '../../../users/validators/no-leading-space.validator';
+
 
 @Component({
   selector: 'factories-manager-page',
@@ -79,6 +81,7 @@ export class FactoriesManagerPage implements OnInit {
 
     await this.initFactories();
     this.createEmptyFactoryForm();
+     this.timeService.refreshTimestamp();
 
 
   
@@ -216,18 +219,17 @@ getAvailableFactoriesForSelect() {
 }
 
 
-  createEmptyFactoryForm() {
-    this.factoryCreateForm = this.formBuilder.group({
-      id:[null],
-      name:['', Validators.required],
-      location:['', Validators.required],
-      contact:['', Validators.required],
-      active:[null],
-      hasProfilePicture: [false],
-      routes: this.formBuilder.array([])
-
-    })
-  }
+createEmptyFactoryForm() {
+  this.factoryCreateForm = this.formBuilder.group({
+    id: [null],
+    name: ['', [Validators.required, noLeadingSpaceValidator]],
+    location: ['', [Validators.required, Validators.maxLength(100)]],
+    contact: ['', [Validators.required, Validators.maxLength(100)]],
+    active: [null],
+    hasProfilePicture: [false],
+    routes: this.formBuilder.array([])
+  });
+}
 
 
 
@@ -271,8 +273,7 @@ async initFactoryForm(selectedFactory?: Factory | null) {
 
     if (selectedFactory.hasProfilePicture) {
       const timestamp = await firstValueFrom(this.timestamp$);
-      this.imagePreview =
-        this.factoryPicturePath + 'Factory_' + selectedFactory.id + '.jpeg?t=' + timestamp;
+      this.imagePreview = this.factoryPicturePath + 'Factory_' + selectedFactory.id + '.jpeg?t=' + timestamp;
     }
   } else {
     this.factoryForm['hasProfilePicture'].setValue(false);

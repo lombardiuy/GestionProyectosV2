@@ -20,6 +20,7 @@ export class FactoryRoutePanelComponent implements OnInit {
   @Input() timestamp!: number | null;
 
   @Output() suspendFactoryRouteEvent = new EventEmitter<any>();
+   @Output() editFactoryRouteEvent = new EventEmitter<any>();
    @Output() auditTrailFactoryRouteEvent = new EventEmitter<any>();
 
   // Variables usadas en la vista
@@ -54,6 +55,13 @@ export class FactoryRoutePanelComponent implements OnInit {
       if (this.route) {
         this.auditTrailFactoryRouteEvent.emit(this.route);
       }
+    }
+
+    editFactoryRoute(factoryRoute: FactoryRoute | null) {
+      if (factoryRoute && factoryRoute.id) {
+        this.editFactoryRouteEvent.emit(factoryRoute);
+      }
+
     }
   
 }

@@ -28,7 +28,7 @@ export class VersionControlComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['entity'] || changes['entityId']) && this.entity && this.entityId) {
-      console.log("cambio")
+      console.log("cambio de version")
       this.loadVersions();
     }
   }

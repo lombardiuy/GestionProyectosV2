@@ -33,6 +33,7 @@ export class FactoryService {
    * READ
   ****************************************/
 
+
   async getAllFactories(): Promise<Factory[] | null> {
     try {
       const factoryList = await firstValueFrom(
@@ -48,13 +49,24 @@ export class FactoryService {
       return [];
     }
   }
-
   async selectFactory(id: number): Promise<Factory> {
     const selectedFactory = await firstValueFrom(
       this.http.get<Factory>(`${this.apiUrl}/select/${id}`)
     );
    
-    this.selectedFactorySubject.next(selectedFactory);
+    this.selectedFactorySubject.next({...selectedFactory});
+    return selectedFactory;
+  }
+  
+  
+  async selectFactoryByName(factoryName: string): Promise<Factory> {
+const encodedName = encodeURIComponent(factoryName.trim()); 
+
+    const selectedFactory = await firstValueFrom(
+      this.http.get<Factory>(`${this.apiUrl}/selectByName/${encodedName}`)
+    );
+   
+    this.selectedFactorySubject.next({...selectedFactory});
     return selectedFactory;
   }
 
@@ -84,6 +96,38 @@ export class FactoryService {
   
       return this.http.post<any>(`${this.apiUrl}/create`, dto);
     }
+
+    updateFactory(factory: Factory) {
+
+  const dto: any = {};
+
+  if (factory.name !== undefined) dto.name = factory.name;
+  if (factory.location !== undefined) dto.location = factory.location;
+  if (factory.contact !== undefined) dto.contact = factory.contact;
+  if (factory.hasProfilePicture !== undefined) {
+    dto.hasProfilePicture = factory.hasProfilePicture;
+  }
+
+  return this.http.put<any>(
+    `${this.apiUrl}/update/${factory.id}`,
+    dto
+  );
+}
+
+updateFactoryRoute(factoryRoute: FactoryRoute) {
+  const dto: any = {};
+
+  if (factoryRoute.name !== undefined) dto.name = factoryRoute.name;
+  if (factoryRoute.description !== undefined) dto.description = factoryRoute.description;
+  if (factoryRoute.active !== undefined) dto.active= factoryRoute.active; // ejemplo de booleano
+
+
+  return this.http.put<any>(
+    `${this.apiUrl}/route/update/${factoryRoute.id}`,
+    dto
+  );
+}
+
 
   createFactoryRoute(factoryRoute: FactoryRoute, selectedFactory:Factory) {
       // Convertir el objeto Factory al DTO que espera el backend

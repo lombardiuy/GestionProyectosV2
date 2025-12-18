@@ -13,8 +13,9 @@ import { delay } from '../../../../shared/helpers/delay.helper';
 import { FactoryRouteCreateComponent } from '../../components/factory-route/factory-route-create/factory-route-create.component';
 import { FactoryRouteSuspensionComponent } from '../../components/factory-route/factory-route-suspension/factory-route-suspension.component';
 import { FactorySuspensionComponent } from '../../components/factory/factory-suspension/factory-suspension.component';
-import { ActivatedRoute } from '@angular/router';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { noLeadingSpaceValidator } from '../../../users/validators/no-leading-space.validator';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'factory-panel-page',
@@ -40,8 +41,8 @@ export class FactoryPanelPage implements OnInit {
 
     public timestamp$: Observable<number>;
 
-
-
+    public imagePreview: string | null | undefined;
+    public factoryPicturePath = environment.publicURL + 'factories/';
 
     public factoriesList$: Observable<Factory[] | null>;
     public selectedFactory$: Observable<Factory | null>;
@@ -49,6 +50,8 @@ export class FactoryPanelPage implements OnInit {
 
     public selectedFactoryRouteId$ = new BehaviorSubject<number | null>(null);
     public selectedFactoryRouteAuditTrail:FactoryRoute | undefined;
+    public filteredFactoryRoutes$!: Observable<FactoryRoute[]>;
+
 
     public factoryCreateForm!:FormGroup;
     public factoryRouteCreateForm!:FormGroup;
@@ -90,7 +93,7 @@ export class FactoryPanelPage implements OnInit {
   
   
 
-  constructor(private authService:AuthService,       private route: ActivatedRoute, , private messageService:MessageService,  private factoryService:FactoryService, private timeService:TimeService, private formBuilder:FormBuilder) {
+  constructor(private authService:AuthService,   private router:Router,  private route: ActivatedRoute,  private messageService:MessageService,  private factoryService:FactoryService, private timeService:TimeService, private formBuilder:FormBuilder) {
 
     this.factoriesList$ = this.factoryService.factoryList$;
     this.selectedFactory$ = this.factoryService.selectedFactory$;
@@ -100,21 +103,22 @@ export class FactoryPanelPage implements OnInit {
   }
 
   
-  async ngOnInit(): Promise<void> {
+async ngOnInit(): Promise<void> {
 
+  const factoryName = this.route.snapshot.paramMap.get('factoryName');
 
-    await this.initFactories();
-    this.createEmptyFactoryForm();
-    this.createEmptyFactoryRouteForm();
+  await this.initFactory(factoryName!);
+  await this.initFactoryRoutes();
 
-  
-    this.loadingFactoryCreateForm = false;
-    this.loadingFactoryRouteCreateForm = false;
-    this.loading = false;
-  
-  
-  
-  }
+  this.initFilteredFactoryRoutes(); 
+
+  this.createEmptyFactoryForm();
+  this.createEmptyFactoryRouteForm();
+
+  this.loadingFactoryCreateForm = false;
+  this.loadingFactoryRouteCreateForm = false;
+  this.loading = false;
+}
 
   
 get factoryForm() {
@@ -126,45 +130,55 @@ get factoryRouteForm() {
 }
 
 
-async initFactories() {
+
+async initFactory(factoryName:string) {
+  this.selectedFactory = null;
  
-   await this.factoryService.getAllFactories();
-   this.getFilteredFactories();
-
-
-   this.getAvailableFactoriesForSelect();
-   
+   await this.factoryService.selectFactoryByName(factoryName).catch(err=> {
     
+        this.router.navigate(['/factories'])
 
-    this.getHasActiveFactories();
-    this.getHasInactiveFactories();
+   })
 
+     const factory = await firstValueFrom(this.factoryService.selectedFactory$);
 
- 
+  // ⚡ Forzar nueva referencia para que ngOnChanges se dispare
+  this.selectedFactory = factory ? { ...factory } : null;
 
-      const hasInactiveFactories = await firstValueFrom(this.hasInactiveFactories$);
-      const hasActiveFactories = await firstValueFrom(this.hasActiveFactories$);
-
- 
-
-      if (!hasActiveFactories) {
-        this.toggleFactories(false);
-      }
-
-      if (!hasInactiveFactories) {
-         this.toggleFactories(true);
-      }
-
-      if (hasActiveFactories) {
    
-         this.toggleFactories(true);
-      }
- 
+
+  
 
  
   
 
 }
+
+
+private initFilteredFactoryRoutes() {
+  this.filteredFactoryRoutes$ = combineLatest([
+    this.selectedFactory$,
+    this.showActiveFactoryRoutes$,
+    this.selectedFactoryRouteId$
+  ]).pipe(
+    map(([factory, showActive, selectedRouteId]) => {
+      if (!factory || !factory.routes) return [];
+
+      let routes = factory.routes.filter(route =>
+        showActive ? route.active : !route.active
+      );
+
+      // 👉 solo filtra si hay ruta seleccionada
+      if (selectedRouteId !== null) {
+        routes = routes.filter(route => route.id === selectedRouteId);
+      }
+
+      return routes;
+    })
+  );
+}
+
+
 
 async initFactoryRoutes() {
  
@@ -201,31 +215,6 @@ async initFactoryRoutes() {
 }
 
 
-  getFilteredFactories() {
-    this.filteredFactory$ = combineLatest([
-  this.selectedFactory$,
-  this.selectedFactoryRouteId$,
-  this.showActiveFactoryRoutes$
-]).pipe(
-  map(([factory, routeId, showActive]) => {
-    if (!factory) return null;
-
-    // Filtrar por estado (activo/inactivo)
-    let filteredRoutes = factory.routes.filter(r => r.active === showActive);
-
-    // Si hay filtro por ID de ruta
-    if (routeId) {
-      filteredRoutes = filteredRoutes.filter(r => r.id === routeId);
-    }
-
-    return {
-      ...factory,
-      routes: filteredRoutes
-    };
-  })
-);
-
-  }
 
     getHasActiveFactoryRoutes() {
     this.hasActiveFactoryRoutes$ = this.selectedFactory$.pipe(
@@ -243,65 +232,22 @@ async initFactoryRoutes() {
   })
 );}
 
-  getHasActiveFactories() {
-    this.hasActiveFactories$ = this.factoriesList$.pipe(
-  map(factories => {
-    if (!factories || factories.length === 0) return false;
-    return factories.some(f => f.active === true);
-  })
-);
-
-
-  }
-
-
-  getHasInactiveFactories() {
-    this.hasInactiveFactories$ = this.factoriesList$.pipe(
-  map(factories => {
-    if (!factories || factories.length === 0) return false;
-    return factories.some(f => f.active === false);
-  })
-);
-
-
-  }
-
+ 
 
   
 
 
-  getAvailableFactoryRoutesForSelect() {
-    this.availableFactoryRoutesForSelect$ = combineLatest([
-  this.selectedFactory$,
-  this.showActiveFactoryRoutes$
-]).pipe(
-  map(([factory, showActive]) => {
-    if (!factory || !factory.routes) return [];
-
-    if (showActive === null) return factory.routes;                 // todas
-    if (showActive === false) return factory.routes.filter(r => !r.active);  // activas
-    if (showActive === true) return factory.routes.filter(r => r.active);  // inactivas
-
-    // 🔥 fallback para satisfacer TS
-    return factory.routes;
-  })
-);
-
-  }
-
-getAvailableFactoriesForSelect() {
-  this.availableFactoriesForSelect$ = combineLatest([
-    this.factoriesList$,
-    this.showActiveFactories$
+getAvailableFactoryRoutesForSelect() {
+  this.availableFactoryRoutesForSelect$ = combineLatest([
+    this.selectedFactory$,
+    this.showActiveFactoryRoutes$
   ]).pipe(
-    map(([factories, showActive]) => {
-      if (!factories) return [];
+    map(([factory, showActive]) => {
+      if (!factory || !factory.routes) return [];
 
-      if (showActive === null) return factories;                // todas
-      if (showActive === false) return factories.filter(f => !f.active); // activas
-      if (showActive === true) return factories.filter(f => f.active); // inactivas
-
-      return factories; // fallback TS
+      return factory.routes.filter(route =>
+        showActive ? route.active : !route.active
+      );
     })
   );
 }
@@ -311,17 +257,19 @@ getAvailableFactoriesForSelect() {
 
 
 
-  createEmptyFactoryForm() {
-    this.factoryCreateForm = this.formBuilder.group({
-      id:[null],
-      name:['', Validators.required, Validators.maxLength(100)],
-      location:['', Validators.required, Validators.maxLength(100)],
-      contact:['', Validators.required, Validators.maxLength(100)],
-      active:[null],
-      routes: this.formBuilder.array([])
 
-    })
-  }
+createEmptyFactoryForm() {
+  this.factoryCreateForm = this.formBuilder.group({
+    id: [null],
+    name: ['', [Validators.required, noLeadingSpaceValidator]],
+    location: ['', [Validators.required, Validators.maxLength(100)]],
+    contact: ['', [Validators.required, Validators.maxLength(100)]],
+    active: [null],
+    hasProfilePicture: [false],
+    routes: this.formBuilder.array([])
+  });
+}
+
 
     createEmptyFactoryRouteForm() {
     this.factoryRouteCreateForm = this.formBuilder.group({
@@ -358,6 +306,7 @@ resetFactoryForm() {
 
   this.factoryCreateFormMessage = null;
   this.savingFactory = false;
+    this.imagePreview = null;
 }
 
 
@@ -376,20 +325,47 @@ resetFactoryRouteForm() {
 
 
   
-  async initFactoryForm(selectedFactory?: Factory | null) {
-    this.resetFactoryForm();
-  
-    if (selectedFactory) {
-      this.factoryForm['id'].setValue(selectedFactory.id);
-      this.factoryForm['name'].setValue(selectedFactory.name);
-      this.factoryForm['location'].setValue(selectedFactory.location);
-      this.factoryForm['contact'].setValue(selectedFactory.contact);
-      this.factoryForm['active'].setValue(selectedFactory.active);
-      this.factoryForm['routes'].setValue(selectedFactory.routes);
-  
+async initFactoryForm(selectedFactory?: Factory | null) {
+  this.resetFactoryForm();
 
+  if (selectedFactory) {
+    this.factoryForm['id'].setValue(selectedFactory.id);
+    this.factoryForm['name'].setValue(selectedFactory.name);
+    this.factoryForm['location'].setValue(selectedFactory.location);
+    this.factoryForm['contact'].setValue(selectedFactory.contact);
+    this.factoryForm['active'].setValue(selectedFactory.active);
+    this.factoryForm['hasProfilePicture'].setValue(selectedFactory.hasProfilePicture);
+
+        if (selectedFactory.hasProfilePicture) {
+          
+     
+      const timestamp = await firstValueFrom(this.timestamp$);
+      this.imagePreview = this.factoryPicturePath + '/factory_' + selectedFactory.id +  '/FactoryProfilePic_' + selectedFactory.id +'.jpeg?t=' + timestamp;
+    }
+   else {
+   this.imagePreview  = null;
+  }
+
+  console.log(this.imagePreview)
+
+
+
+    // Manejo del FormArray
+    const routesFA = this.factoryForm['routes'] as FormArray;
+    routesFA.clear(); // limpia los controles existentes
+    if (selectedFactory.routes && selectedFactory.routes.length > 0) {
+      selectedFactory.routes.forEach(route => {
+        routesFA.push(this.formBuilder.group({
+          id: [route.id],
+          name: [route.name],
+          description: [route.description],
+          active: [route.active]
+        }));
+      });
     }
   }
+}
+
 
     async initFactoryRouteForm(selectedFactoryRoute?: FactoryRoute | null) {
     this.resetFactoryRouteForm();
@@ -420,9 +396,25 @@ resetFactoryRouteForm() {
   
   } 
 
-  async editFactory() {
-    
-  }
+ async editFactory() {
+
+  if (!this.selectedFactory) return;
+
+  this.loadingFactoryCreateForm = true;
+
+  // Limpia mensajes previos
+  this.factoryCreateFormMessage = null;
+
+  // Inicializa form con datos
+  await this.initFactoryForm(this.selectedFactory);
+
+
+
+
+
+  this.loadingFactoryCreateForm = false;
+}
+
 
    
   async createFactoryRoute() { 
@@ -437,34 +429,112 @@ resetFactoryRouteForm() {
   
   } 
 
+    async editFactoryRoute(event:any) { 
+     const selectedFactoryRoute = event;
+    this.loadingFactoryCreateForm = true;
+    
+    await this.factoryService.clearSelectedFactoryRoute()
+
+    this.initFactoryRouteForm(selectedFactoryRoute);
+      this.loadingFactoryCreateForm = false;
+
+  
+  } 
 
 
-  saveFactory() {
 
-    if (this.factoryCreateForm.invalid) {
-      this.factoryCreateFormMessage = this.messageService.createFormMessage(MessageType.ERROR, 'Por favor, completa todos los campos correctamente.');
-      return;
-    }
 
-    this.savingFactory = true;
 
-    if (!this.factoryCreateForm.value.id) {
-      this.createFactorySubscription = this.factoryService.createFactory(this.factoryCreateForm.value).subscribe({
-        next: async(res)=> {
 
-          this.factoryCreateFormMessage = this.messageService.createFormMessage(MessageType.SUCCESS, 'Fábricada creada con éxito');
-          this.savingFactory = false;
-          await delay(1000);
-          await this.factoryService.getAllFactories();
-          this.factoryCreateComponent.closeModal();
-        }, 
-        error:((err)=> {
-          this.factoryCreateFormMessage = this.messageService.createFormMessage(MessageType.ERROR, err.error.error);
-          this.savingFactory = false
-        })
-      })
-    }
+saveFactory() {
+
+  if (this.factoryCreateForm.invalid) {
+    this.factoryCreateFormMessage =
+      this.messageService.createFormMessage(
+        MessageType.ERROR,
+        'Por favor, completa todos los campos correctamente.'
+      );
+    return;
   }
+
+  this.savingFactory = true;
+
+  // 🟢 CREATE
+  if (!this.factoryCreateForm.value.id) {
+
+    this.createFactorySubscription =
+      this.factoryService.createFactory(this.factoryCreateForm.value)
+        .subscribe({
+          next: async () => {
+            this.factoryCreateFormMessage =
+              this.messageService.createFormMessage(
+                MessageType.SUCCESS,
+                'Fábrica creada con éxito'
+              );
+
+            await delay(1000);
+              this.timeService.refreshTimestamp();
+            this.factoryCreateComponent.closeModal();
+            this.savingFactory = false;
+          },
+          error: (err) => {
+            this.factoryCreateFormMessage =
+              this.messageService.createFormMessage(
+                MessageType.ERROR,
+                err.error.error
+              );
+            this.savingFactory = false;
+          }
+        });
+
+  } 
+  // 🔵 UPDATE
+  else {
+
+    this.createFactorySubscription =
+      this.factoryService.updateFactory(this.factoryCreateForm.value)
+        .subscribe({
+          next: async () => {
+            this.factoryCreateFormMessage =
+              this.messageService.createFormMessage(
+                MessageType.SUCCESS,
+                'Fábrica actualizada con éxito'
+              );
+
+            await delay(1000);
+
+             // refrescar fábrica
+            await this.initFactory(this.factoryCreateForm.value.name);
+            await this.initFactoryRoutes();
+              this.timeService.refreshTimestamp();
+             this.factoryCreateComponent.closeModal();
+                this.savingFactory = false;
+                 
+            this.router.navigate(['/factories/'+this.factoryCreateForm.value.name])
+          
+
+           
+      
+         
+
+
+           
+            
+           
+          },
+          error: (err) => {
+            this.factoryCreateFormMessage =
+              this.messageService.createFormMessage(
+                MessageType.ERROR,
+                err.error.error
+              );
+            this.savingFactory = false;
+          }
+        });
+
+  }
+}
+
 
 
 
@@ -480,50 +550,57 @@ async saveFactoryRoute() {
 
   this.savingFactoryRoute = true;
 
-  const selectedFactory = await firstValueFrom(this.factoryService.selectedFactory$);
+  const formValue = this.factoryRouteCreateForm.value;
 
-  if (!this.factoryRouteCreateForm.value.id && selectedFactory) {
+  // 🟢 CREATE
+  if (!formValue.id && this.selectedFactory) {
 
     this.createFactoryRouteSubscription = this.factoryService
-      .createFactoryRoute(this.factoryRouteCreateForm.value, selectedFactory)
+      .createFactoryRoute(formValue, this.selectedFactory)
       .subscribe({
-        next: async (res) => {
+        next: async () => {
 
           this.factoryRouteCreateFormMessage = this.messageService.createFormMessage(
             MessageType.SUCCESS,
             'Ruta creada con éxito'
           );
 
-          this.savingFactoryRoute = false;
           await delay(1000);
+          await this.initFactory(this.selectedFactory!.name);
+          await this.initFactoryRoutes();
 
-          
-          // 🔄 Recargar todas las fábricas
-        //  await this.factoryService.getAllFactories();
-
-          // 🆕 Tomar la lista ya actualizada
-          const factories = await firstValueFrom(this.factoryService.factoryList$);
-
-          // 🔍 Encontrar la versión más nueva de la fábrica seleccionada
-          const updatedFactory = factories?.find(f => f.id === selectedFactory.id) || null;
-
-          // 🔄 Re-asignar la referencia correcta
-         // this.selectedFactory = updatedFactory;
-
-          // 🔄 Avisar al servicio cual es la fábrica actual
-          if (updatedFactory) {
-            await this.factoryService.selectFactory(updatedFactory.id!);
-          }
-
-        //  this.initFactories();
-          this.initFactoryRoutes();
-
-           await this.factoryService.selectFactory(updatedFactory!.id!);
-
-          // 👌 Cerrar modal
           this.factoryRouteCreateComponent.closeModal();
+          this.savingFactoryRoute = false;
         },
+        error: (err) => {
+          this.factoryRouteCreateFormMessage = this.messageService.createFormMessage(
+            MessageType.ERROR,
+            err.error.error
+          );
+          this.savingFactoryRoute = false;
+        }
+      });
+  } 
+  // 🔵 UPDATE
+  else if (formValue.id) {
 
+    this.createFactoryRouteSubscription = this.factoryService
+      .updateFactoryRoute(formValue)
+      .subscribe({
+        next: async () => {
+
+          this.factoryRouteCreateFormMessage = this.messageService.createFormMessage(
+            MessageType.SUCCESS,
+            'Ruta actualizada con éxito'
+          );
+
+          await delay(1000);
+          await this.initFactory(this.selectedFactory!.name);
+          await this.initFactoryRoutes();
+
+          this.factoryRouteCreateComponent.closeModal();
+          this.savingFactoryRoute = false;
+        },
         error: (err) => {
           this.factoryRouteCreateFormMessage = this.messageService.createFormMessage(
             MessageType.ERROR,
@@ -534,6 +611,10 @@ async saveFactoryRoute() {
       });
   }
 }
+
+
+
+
 marckFactoryRouteToSuspend(event:any) {
 
 
@@ -570,9 +651,8 @@ async suspensionFactoryRoute() {
 
       await delay(1000);
       
-      await this.selectFactory(this.selectedFactory);
-      
-      this.initFactoryRoutes();
+         await this.initFactory(this.selectedFactory?.name!);
+          await this.initFactoryRoutes();
 
        
   
@@ -604,12 +684,13 @@ async suspensionFactory() {
         this.factorySuspensionFormMessage = this.messageService.createFormMessage(MessageType.ERROR, 'Fábrica desactivada con éxito!')
       }
 
-    this.initFactories();
+      //dalta algo aca
      
   
       this.factorySuspensionComponent.closeModal();
       this.factorySuspensionFormMessage = null;
         this.savingSuspensionFactory = false;
+          this.router.navigate(['/factories'])
 
       
     }, 
@@ -622,37 +703,6 @@ async suspensionFactory() {
 }
 
   
-  async selectFactory(event:any) {
-
-   await  this.initFactoryRoutes();
-
-
-      this.selectedFactory = event;
-      await this.factoryService.selectFactory(event.id);
-       this.getFilteredFactories();
-
-       const selectedFactory = await firstValueFrom(this.selectedFactory$)
-
-
-
-       if (!selectedFactory?.active) {
-  
- 
-        this.toggleFactoryRoutes(false)
-       }else {
-         this.toggleFactoryRoutes(true)
-       }
-
-
-       
-
-
-
-
-
-
-    
-   }
 
    async selectFactoryRouteAuditTrail(event:any) {
     console.log(event)
@@ -660,7 +710,6 @@ async suspensionFactory() {
    }
 
      async selectRoute(event:any) {
-
 
           this.selectedFactoryRouteId$.next(event);
 

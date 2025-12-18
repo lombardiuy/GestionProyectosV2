@@ -1,17 +1,12 @@
- <select *ngIf="availableRoutesForSelect?.length"
-          class="form-control form-select form-select-sm w-100"
-          [ngModel]="selectedFactoryRouteId"
-          (ngModelChange)="onRouteFilterChange($event)">
-
-           <option [ngValue]="null" disabled>
-    Filtrar por ruta
-  </option>
-
-   <option value="">Todas las rutas</option>
-
-    <option *ngFor="let route of availableRoutesForSelect"
-            [ngValue]="route.id">
-      {{ route.name }}
-    </option>
-
-  </select>
+<ng-select
+  class="w-100"
+  [items]="availableRoutesForSelect!"
+  bindLabel="name"
+  bindValue="id"
+  placeholder="Filtre por ruta"
+  [(ngModel)]="selectedFactoryRouteId"
+  [searchable]="true"
+  [clearable]="true"
+  [notFoundText]="'No hay rutas en la fábrica'"
+   (change)="onRouteFilterChange($event)">
+</ng-select>

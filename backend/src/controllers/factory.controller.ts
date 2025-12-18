@@ -48,6 +48,33 @@ export const selectFactoryById = async (req: Request, res: Response) => {
 
 
 /**
+ * GET factories/selectByName/:name
+ */
+/**
+ * GET factories/select/:name
+ */
+export const selectFactoryByName = async (req: Request, res: Response) => {
+  const factoryName = req.params.factoryName;
+
+  if (!factoryName || typeof factoryName !== 'string') {
+    return res.status(400).json({ error: 'Nombre inválido' });
+  }
+
+  try {
+    const factory = await factoryService.selectFactoryByName(factoryName);
+
+    if (!factory) {
+      return res.status(404).json({ error: 'Fábrica no encontrada' });
+    }
+
+    res.json(factory);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+/**
  * POST /factory/create
  * req.body validado por CreateFactoryDto -> { name, location,contact }
  */
@@ -68,6 +95,69 @@ if (!req.user) throw new Error("Usuario no autenticado");
 
     const factory = await factoryService.createFactory(dto, req.user.username);
     res.json({ message: 'Fábrica creada', factory });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const updateFactory = async (req: UserRequest, res: Response) => {
+  try {
+    const factoryId = Number(req.params.id);
+
+    // Asegurarse de que el factoryId sea válido
+    if (isNaN(factoryId)) {
+      return res.status(400).json({ error: 'ID inválido' });
+    }
+
+    const dto = req.body as {
+      name?: string;
+      location?: string;
+      contact?: string;
+      active?: boolean;
+      hasProfilePicture?: boolean;
+    };
+
+    if (!req.user) throw new Error("Usuario no autenticado");
+
+    // Llamar al servicio para actualizar la fábrica
+    const updatedFactory = await factoryService.updateFactory(factoryId, dto, req.user.username);
+
+    res.json({
+      message: "Fábrica actualizada",
+      factory: updatedFactory
+    });
+
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
+export const updateFactoryRoute = async (req: UserRequest, res: Response) => {
+  try {
+    const factoryRouteId = Number(req.params.id);
+
+    // Asegurarse de que el factoryId sea válido
+    if (isNaN(factoryRouteId)) {
+      return res.status(400).json({ error: 'ID inválido' });
+    }
+
+    const dto = req.body as {
+      name?: string;
+      description?: string;
+
+    };
+
+    if (!req.user) throw new Error("Usuario no autenticado");
+
+    // Llamar al servicio para actualizar la fábrica
+    const updatedFactoryRoute = await factoryService.updateFactoryRoute(factoryRouteId, dto, req.user.username);
+
+    res.json({
+      message: "Ruta actualizada",
+      factoryRoute: updatedFactoryRoute
+    });
+
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

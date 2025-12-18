@@ -1,5 +1,6 @@
 <div class="modal-dialog modal-dialog-centered modal-lg">
   <div class="modal-content">
+    
 
     <!-- HEADER -->
     <div class="modal-header">
@@ -48,27 +49,34 @@
       <!-- LOGO (IZQUIERDA) -->
       <div class="w-25 mt-3 d-flex flex-column align-items-center">
 
-        <div class="avatar-xl parent-container-overlay-inside">
-
-<img
-  [src]="imagePreview
-    ? imagePreview
-    : (isHover
-        ? factoryPicturePath + 'avatar_hover.jpeg'
-        : factoryPicturePath + 'avatar.jpeg')"
+     <div
+  class="avatar-xl parent-container-overlay-inside border d-flex align-items-center justify-content-center position-relative"
   (mouseenter)="!imagePreview && (isHover = true)"
   (mouseleave)="!imagePreview && (isHover = false)"
-  class="img-fluid rounded avatar-xl child-element-overlayed-centered"
-/>
+>
 
+  <!-- Icono cámara -->
+  <i
+    *ngIf="!imagePreview"
+    class="fa-solid fa-camera fa-4x"
+    [ngClass]="{ 'color-success': isHover }"
+  ></i>
 
+  <!-- Imagen cargada -->
+  <img
+    *ngIf="imagePreview"
+    [src]="imagePreview"
+    class="img-fluid rounded avatar-xl position-absolute"
+  />
 
+  <!-- Input file invisible -->
+  <input
+    type="file"
+    class="child-element-overlayed-centered"
+    (change)="setFactoryPicture($event)"
+  />
+</div>
 
-          <input
-            type="file"
-            class="child-element-overlayed-centered"
-            (change)="setFactoryPicture($event)" />
-        </div>
 
         <div class="invalid-feedback d-block text-center">
           {{ factoryPictureStatus }}
@@ -95,6 +103,9 @@
              class="invalid-feedback">
           <div *ngIf="nameErrors['required']">
             El campo es obligatorio
+          </div>
+          <div *ngIf="nameErrors['leadingSpace']">
+             No se permiten espacios al inicio
           </div>
         </div>
 
@@ -179,13 +190,7 @@
 </form>
 
 
-          <version-control
-            *ngIf="factoryCreateForm.value.id"
-            [hasPermission]="hasPermission.bind(this)"
-            [entity]="'Factory'"
-            [entityId]="factoryCreateForm.value.id"
-            class="w-90 m-2">
-          </version-control>
+        
 
         </div>
       </div>

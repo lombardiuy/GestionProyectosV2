@@ -32,10 +32,13 @@ export class FactoryRoutesFilterComponent implements OnInit {
 
 onRouteFilterChange(value: any) {
 
-  if (value === "" || value === null) {
+ 
+
+
+  if (value === "" || value === null || value === undefined) {
     this.selectedFactoryRouteId = null;
   } else {
-    const id = Number(value);
+    const id = Number(value.id);
     this.selectedFactoryRouteId = isNaN(id) ? null : id;
   }
 
