@@ -1,119 +1,116 @@
+<div class="w-100 h-100 d-flex align-items-center">
+  <div class="list-group w-100 h-100">
 
+    <!-- ================= ADMIN MENU ================= -->
+    <button
+      *ngIf="hasPermission('USER_VIEW') || hasPermission('USER_ROLE_VIEW')"
+      class="list-group-item d-flex justify-content-between border-0 w-100 text-start"
+      (click)="toggle('admin')"
+      [attr.aria-expanded]="open.admin"
+    >
+      <span><i class="fa-solid fa-toolbox"></i> Administración</span>
+      <i class="bi bi-caret-down-fill" *ngIf="!open.admin"></i>
+      <i class="bi bi-caret-up-fill" *ngIf="open.admin"></i>
+    </button>
 
+    <div class="collapse" [class.show]="open.admin">
 
-  <div  class="w-100 h-100 d-flex align-items-center">
-    <div class="list-group w-100 h-100">
+      <!-- Usuarios -->
+      <button
+        class="list-group-item d-flex justify-content-between border-0 secondary-menu w-100 text-start"
+        (click)="toggle('adminUsers')"
+        [attr.aria-expanded]="open.adminUsers"
+      >
+        <span><i class="fa-solid fa-users"></i> Usuarios</span>
+        <i class="bi bi-caret-down-fill" *ngIf="!open.adminUsers"></i>
+        <i class="bi bi-caret-up-fill" *ngIf="open.adminUsers"></i>
+      </button>
 
-            <!--Admin Menu-->
-                    <a href="#adminMenu" *ngIf="hasPermission('USER_VIEW') || hasPermission('USER_ROLE_VIEW')" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
-          
-                      <span><i class="fa-solid fa-toolbox"></i> Administración</span>
-                      <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
-                
-                    
-                    </a>
-  
-                    <div class="collapse" id="adminMenu">
-  
-                      <a href="#adminMenuUsers" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#adminMenu" aria-expanded="false">
-          
-                        <span><i class="fa-solid fa-users"></i> Usuarios</span>
-                        <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
-                  
-                      
-                      </a>
-                      <div class="collapse" id="adminMenuUsers">
-      
-                        <a *ngIf="hasPermission('USER_VIEW')" [routerLink]="['/users']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#adminMenuUsers"><i class="bi bi-person-lines-fill"></i> Gestión de Usuarios </a>
-                        <a *ngIf="hasPermission('USER_ROLE_VIEW')" [routerLink]="['/users/roles']"class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#adminMenuUsers"><i class="bi bi-person-fill-gear"></i> Roles y permisos</a>
-                     
-                      
-                        
-  
-                    
-                     
-                    </div>
+      <div class="collapse" [class.show]="open.adminUsers">
+        <a
+          *ngIf="hasPermission('USER_VIEW')"
+          [routerLink]="['/users']"
+          class="list-group-item list-group-item-action border-0 submenu-item"
+        >
+          <i class="bi bi-person-lines-fill"></i> Gestión de Usuarios
+        </a>
 
-                        <a *ngIf="hasPermission('AUDIT_TRAIL_VIEW')" [routerLink]="['/auditTrail']" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#adminMenu" aria-expanded="false">
-          
-                        <span><i class="fa-solid fa-book"></i> Audit trail</span>
-                        
-                  
-                      
-                      </a>
-    
-  
-                  
-                     
-                   
-                  </div>
+        <a
+          *ngIf="hasPermission('USER_ROLE_VIEW')"
+          [routerLink]="['/users/roles']"
+          class="list-group-item list-group-item-action border-0 submenu-item"
+        >
+          <i class="bi bi-person-fill-gear"></i> Roles y permisos
+        </a>
+      </div>
 
-                  
+      <!-- Audit trail -->
+      <a
+        *ngIf="hasPermission('AUDIT_TRAIL_VIEW')"
+        [routerLink]="['/auditTrail']"
+        class="list-group-item border-0 secondary-menu"
+      >
+        <i class="fa-solid fa-book"></i> Audit trail
+      </a>
 
-
-
-                  
-            <!--Product Menu-->
-               <a href="#productMenu" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
-          
-                <span><i class="fa-solid fa-prescription-bottle"></i> Producto</span>
-                <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
-          
-              
-              </a>
-              <div class="collapse" id="productMenu">
-                  <a [routerLink]="['']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#productMenu"><i class="fa-solid fa-prescription-bottle-medical"></i> Agregar</a>
-                
-               
-              </div>
-
-
-                                
-            <!--Process Menu-->
-               <a href="#processMenu" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
-          
-                <span><i class="bi bi-diagram-3-fill"></i>  Proceso</span>
-                <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
-                
-          
-              
-              </a>
-              <div class="collapse" id="processMenu">
-
-                  <a *ngIf="hasPermission('FACTORY_VIEW')" [routerLink]="['/factories']" class="list-group-item d-flex justify-content-between border-0 secondary-menu" data-bs-toggle="collapse"  data-parent="#adminMenu" aria-expanded="false">
-          
-                        <span><i class="fa-solid fa-industry"></i> Fábricas</span>
-                        
-                  
-                      
-                      </a>
-
-
-             
-               
-              </div>
-
-
-                                            
-            <!--Risk Analysis Menu-->
-               <a href="#riskAnalysisMenu" class="list-group-item d-flex justify-content-between border-0" data-bs-toggle="collapse" aria-expanded="false">
-          
-                <span><i class="fa-solid fa-biohazard"></i>  Análisis de riesgo</span>
-                <i class="bi bi-caret-down-fill"></i> <i class="bi bi-caret-up-fill"></i>
-          
-              
-              </a>
-              <div class="collapse" id="riskAnalysisMenu">
-                  <a [routerLink]="['']" class="list-group-item list-group-item-action border-0 submenu-item" data-parent="#riskAnalysisMenu"><i class="fa-solid fa-prescription-bottle-medical"></i> Agregar</a>
-                
-               
-              </div>
-  
-  
-
-  
-  
     </div>
-  
+
+    <!-- ================= PRODUCTO ================= -->
+    <button
+      class="list-group-item d-flex justify-content-between border-0 w-100 text-start"
+      (click)="toggle('product')"
+      [attr.aria-expanded]="open.product"
+    >
+      <span><i class="fa-solid fa-prescription-bottle"></i> Producto</span>
+      <i class="bi bi-caret-down-fill" *ngIf="!open.product"></i>
+      <i class="bi bi-caret-up-fill" *ngIf="open.product"></i>
+    </button>
+
+    <div class="collapse" [class.show]="open.product">
+      <a
+        class="list-group-item list-group-item-action border-0 submenu-item"
+      >
+        <i class="fa-solid fa-prescription-bottle-medical"></i> Agregar
+      </a>
+    </div>
+
+    <!-- ================= PROCESO ================= -->
+    <button
+      class="list-group-item d-flex justify-content-between border-0 w-100 text-start"
+      (click)="toggle('process')"
+      [attr.aria-expanded]="open.process"
+    >
+      <span><i class="bi bi-diagram-3-fill"></i> Proceso</span>
+      <i class="bi bi-caret-down-fill" *ngIf="!open.process"></i>
+      <i class="bi bi-caret-up-fill" *ngIf="open.process"></i>
+    </button>
+
+    <div class="collapse" [class.show]="open.process">
+      <a
+        *ngIf="hasPermission('FACTORY_VIEW')"
+        [routerLink]="['/factories']"
+        class="list-group-item border-0 secondary-menu"
+      >
+        <i class="fa-solid fa-industry"></i> Fábricas
+      </a>
+    </div>
+
+    <!-- ================= RISK ANALYSIS ================= -->
+    <button
+      class="list-group-item d-flex justify-content-between border-0 w-100 text-start"
+      (click)="toggle('risk')"
+      [attr.aria-expanded]="open.risk"
+    >
+      <span><i class="fa-solid fa-biohazard"></i> Análisis de riesgo</span>
+      <i class="bi bi-caret-down-fill" *ngIf="!open.risk"></i>
+      <i class="bi bi-caret-up-fill" *ngIf="open.risk"></i>
+    </button>
+
+    <div class="collapse" [class.show]="open.risk">
+      <a class="list-group-item list-group-item-action border-0 submenu-item">
+        Agregar
+      </a>
+    </div>
+
   </div>
-  
+</div>

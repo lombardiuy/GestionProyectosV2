@@ -17,4 +17,15 @@ export class SideNavbarComponent implements OnInit {
 
   }
 
+open = {
+  admin: false,
+  adminUsers: false,
+  product: false,
+  process: false,
+  risk: false
+};
+
+toggle(key: keyof typeof this.open) {
+  this.open[key] = !this.open[key];
+}
 }
