@@ -120,8 +120,11 @@
       <div class="cursor-pointer area rounded p-2 m-2 border-success color-success 
                   d-flex flex-column justify-content-around align-items-center add-btn"
            style="border:dashed; border-width:1px"
+           
            (mouseover)="createAreaBtnLegend = route!.id"
-           (mouseout)="createAreaBtnLegend = null">
+           (mouseout)="createAreaBtnLegend = null"
+                (click)="createFactoryRouteArea(route!)"
+            data-bs-toggle="modal" data-bs-target="#createFactoryRouteAreaModal">
 
         <span *ngIf="createAreaBtnLegend === route!.id">&nbsp;</span>
         <i class="bi bi-plus-lg" style="font-size:30px"></i>

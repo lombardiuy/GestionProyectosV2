@@ -32,7 +32,7 @@
     ]
   },
    {
-    "module": { "code": "Areas", "description": "Áreas", "icon": "<i class='fa-solid fa-square-full'></i>" },
+    "module": { "code": "Areas", "description": "Áreas", "icon": "<i class='fa-solid fa-house'></i>" },
     "permissions": [
 
 

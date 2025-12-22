@@ -65,6 +65,8 @@ const encodedName = encodeURIComponent(factoryName.trim());
     const selectedFactory = await firstValueFrom(
       this.http.get<Factory>(`${this.apiUrl}/selectByName/${encodedName}`)
     );
+
+    console.log(selectedFactory)
    
     this.selectedFactorySubject.next({...selectedFactory});
     return selectedFactory;

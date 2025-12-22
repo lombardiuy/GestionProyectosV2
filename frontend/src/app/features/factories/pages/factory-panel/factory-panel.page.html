@@ -395,6 +395,29 @@
 
   </div>
 
+    <!--FACTORY ROUTE  AREA CREATE MODAL -->
+
+  <div class="modal fade" id="createFactoryRouteAreaModal" tabindex="-1" aria-hidden="true">
+   <factory-route-area-create-component     *ngIf="factoryCreateForm && (hasPermission('FACTORY_ROUTE_CREATE') || hasPermission('FACTORY_ROUTE_EDIT'))" class="w-100 h-100"
+   
+    [hasPermission]="hasPermission.bind(this)"
+    [factoryRouteCreateForm]="factoryRouteCreateForm"
+    [factoryRouteCreateFormMessage] = "factoryRouteCreateFormMessage"
+    [savingFactoryRoute] = "savingFactoryRoute"
+    [loadingFactoryRouteCreateForm] = "loadingFactoryRouteCreateForm"
+ 
+    (saveFactoryRouteEvent)="saveFactoryRoute()"
+
+    
+     
+   
+
+
+   ></factory-route-area-create-component>
+
+
+  </div>
+
   <!--FACTORY SUSPENSION MODAL -->
 
 <div class="modal fade" id="factorySuspensionModal" tabindex="-1" aria-hidden="true">

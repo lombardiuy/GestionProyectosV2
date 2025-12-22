@@ -31,7 +31,8 @@ export const getAllFactories = async (): Promise<Partial<Factory>[]> => {
 };
 
 export const selectFactoryById = async (factoryId: number): Promise<any | null> => {
-  // 1) Obtener fábrica con datos básicos + rutas
+
+  // 1) Fábrica + rutas
   const factory = await factoryRepository.findOne({
     where: { id: factoryId },
     relations: ["routes"],
@@ -40,12 +41,11 @@ export const selectFactoryById = async (factoryId: number): Promise<any | null> 
 
   if (!factory) return null;
 
-  // Si no tiene rutas, ya no hay áreas asociadas
-  if (!factory.routes || factory.routes.length === 0) {
+  if (!factory.routes?.length) {
     return factory;
   }
 
-  // 2) Obtener todas las áreas relacionadas a esas rutas
+  // 2) Áreas asociadas a rutas
   const routeIds = factory.routes.map(r => r.id);
 
   const areas = await areaRepository
@@ -53,61 +53,80 @@ export const selectFactoryById = async (factoryId: number): Promise<any | null> 
     .leftJoinAndSelect("area.areaClass", "areaClass")
     .leftJoinAndSelect("area.routes", "routes")
     .where("routes.id IN (:...routeIds)", { routeIds })
-    .select(["area.id", "area.name", "area.code"])
-    .addSelect(["areaClass.id", "areaClass.name"])
-    .addSelect(["routes.id", "routes.name"])
+    .select([
+      "area.id",
+      "area.name",
+      "area.code",
+      "areaClass.id",
+      "areaClass.name",
+      "routes.id",
+      "routes.name"
+    ])
     .getMany();
+
+  if (!areas.length) {
+    return factory;
+  }
 
   const areaIds = areas.map(a => a.id);
 
-  // 3) Obtener equipos por área
-  const equipments = await equipmentRepository.find({
-    where: { area: In(areaIds) },
-    relations: ["equipmentClass", "area"],
-    select: ["id", "name", "hasPicture"]
-  });
+  // 3) Equipos asociados a áreas (ManyToMany)
+  const equipments = await equipmentRepository
+    .createQueryBuilder("equipment")
+    .leftJoin("equipment.areas", "area")
+    .leftJoinAndSelect("equipment.equipmentClass", "equipmentClass")
+    .where("area.id IN (:...areaIds)", { areaIds })
+    .select([
+      "equipment.id",
+      "equipment.name",
+      "equipment.hasPicture",
+      "equipmentClass.id",
+      "area.id"
+    ])
+    .getMany();
 
-  // 4) Agrupar equipos por areaId
+  // 4) Agrupar equipos por área
   const equipmentByArea = new Map<number, any[]>();
 
   for (const eq of equipments) {
-    const areaId = eq.area?.id;
-    if (!areaId) continue;
+    for (const area of eq.areas ?? []) {
+      if (!equipmentByArea.has(area.id)) {
+        equipmentByArea.set(area.id, []);
+      }
 
-    if (!equipmentByArea.has(areaId)) {
-      equipmentByArea.set(areaId, []);
+      equipmentByArea.get(area.id)!.push({
+        id: eq.id,
+        name: eq.name,
+        hasPicture: eq.hasPicture,
+        equipmentClass: eq.equipmentClass
+          ? { id: eq.equipmentClass.id }
+          : null
+      });
     }
-
-    equipmentByArea.get(areaId)!.push({
-      id: eq.id,
-      name: eq.name,
-      hasPicture: eq.hasPicture,
-      equipmentClass: eq.equipmentClass
-        ? { id: eq.equipmentClass.id }
-        : null
-    });
   }
 
   // 5) Insertar equipos dentro de cada área
   for (const area of areas) {
-    area.equipments = equipmentByArea.get(area.id) ?? [];
+    (area as any).equipments = equipmentByArea.get(area.id) ?? [];
   }
 
   // 6) Insertar áreas dentro de cada ruta
   for (const route of factory.routes) {
-    route.areas = areas.filter(a => a.routes.some(r => r.id === route.id));
+    (route as any).areas = areas.filter(a =>
+      a.routes.some(r => r.id === route.id)
+    );
   }
 
   return factory;
 };
 
 
+
 export const selectFactoryByName = async (factoryName: string): Promise<any | null> => {
-  // Normalizar nombre
   const name = factoryName.trim();
   if (!name) return null;
 
-  // 1) Obtener fábrica con datos básicos + rutas
+  // 1) Fábrica + rutas
   const factory = await factoryRepository.findOne({
     where: { name },
     relations: ["routes"],
@@ -116,12 +135,11 @@ export const selectFactoryByName = async (factoryName: string): Promise<any | nu
 
   if (!factory) return null;
 
-  // Si no tiene rutas, ya no hay áreas asociadas
-  if (!factory.routes || factory.routes.length === 0) {
+  if (!factory.routes?.length) {
     return factory;
   }
 
-  // 2) Obtener todas las áreas relacionadas a esas rutas
+  // 2) Áreas asociadas a rutas
   const routeIds = factory.routes.map(r => r.id);
 
   const areas = await areaRepository
@@ -129,42 +147,59 @@ export const selectFactoryByName = async (factoryName: string): Promise<any | nu
     .leftJoinAndSelect("area.areaClass", "areaClass")
     .leftJoinAndSelect("area.routes", "routes")
     .where("routes.id IN (:...routeIds)", { routeIds })
-    .select(["area.id", "area.name", "area.code"])
-    .addSelect(["areaClass.id", "areaClass.name"])
-    .addSelect(["routes.id", "routes.name"])
+    .select([
+      "area.id",
+      "area.name",
+      "area.code",
+      "areaClass.id",
+      "areaClass.name",
+      "routes.id",
+      "routes.name"
+    ])
     .getMany();
+
+  if (!areas.length) {
+    return factory;
+  }
 
   const areaIds = areas.map(a => a.id);
 
-  // 3) Obtener equipos por área
-  const equipments = await equipmentRepository.find({
-    where: { area: In(areaIds) },
-    relations: ["equipmentClass", "area"],
-    select: ["id", "name", "hasPicture"]
-  });
+  // 3) Equipos por áreas (ManyToMany)
+  const equipments = await equipmentRepository
+    .createQueryBuilder("equipment")
+    .leftJoin("equipment.areas", "area")
+    .leftJoinAndSelect("equipment.equipmentClass", "equipmentClass")
+    .where("area.id IN (:...areaIds)", { areaIds })
+    .select([
+      "equipment.id",
+      "equipment.name",
+      "equipment.hasPicture",
+      "equipmentClass.id",
+      "area.id"
+    ])
+    .getMany();
 
-  // 4) Agrupar equipos por areaId
+  // 4) Agrupar equipos por área
   const equipmentByArea = new Map<number, any[]>();
 
   for (const eq of equipments) {
-    const areaId = eq.area?.id;
-    if (!areaId) continue;
+    for (const area of eq.areas ?? []) {
+      if (!equipmentByArea.has(area.id)) {
+        equipmentByArea.set(area.id, []);
+      }
 
-    if (!equipmentByArea.has(areaId)) {
-      equipmentByArea.set(areaId, []);
+      equipmentByArea.get(area.id)!.push({
+        id: eq.id,
+        name: eq.name,
+        hasPicture: eq.hasPicture,
+        equipmentClass: eq.equipmentClass
+          ? { id: eq.equipmentClass.id }
+          : null
+      });
     }
-
-    equipmentByArea.get(areaId)!.push({
-      id: eq.id,
-      name: eq.name,
-      hasPicture: eq.hasPicture,
-      equipmentClass: eq.equipmentClass
-        ? { id: eq.equipmentClass.id }
-        : null
-    });
   }
 
-  // 5) Insertar equipos dentro de cada área
+  // 5) Insertar equipos en cada área
   for (const area of areas) {
     (area as any).equipments = equipmentByArea.get(area.id) ?? [];
   }

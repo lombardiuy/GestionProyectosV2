@@ -11,17 +11,19 @@ export class Area {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  
+  @Column({ type: "nvarchar", length: 100, unique:true })
+  code!: string;
+
   @Column({ type: "nvarchar", length: 255 })
   name!: string;
 
-  @Column({ type: "nvarchar", length: 255 })
-  code!: string;
 
   @Column()
   active!: boolean;
 
 
-  @ManyToOne(() => AreaClass, (c) => c.areas)
+  @ManyToOne(() => AreaClass, (c) => c.areas, {nullable:false})
   areaClass!: AreaClass;
 
   @ManyToMany(() => FactoryRoute, route => route.areas)
@@ -32,11 +34,18 @@ export class Area {
   })
   routes!: FactoryRoute[];
 
+    @ManyToMany(() => Equipment, equipment=> equipment.areas)
+  @JoinTable({
+    name: "area_equipment",
+    joinColumn: { name: "area_id" },
+    inverseJoinColumn: { name: "requipment_id" }
+  })
+  equipments!: Equipment[];
+
   @OneToMany(() => AreaParameter, p => p.area)
   parameters!: AreaParameter[];
+  
 
-  @OneToMany(() => Equipment, e => e.area)
-  equipments!: Equipment[];
 
     @VersionColumn()
     public version!:number;

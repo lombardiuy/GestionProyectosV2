@@ -13,7 +13,7 @@ import { FactoryPanelPage } from './pages/factory-panel/factory-panel.page';
 import { FactoriesListComponent } from './components/factory/factories-list/factories-list.component';
 import { FactoryRoutePanelComponent } from './components/factory-route/factory-route-panel/factory-route-panel.component';
 import { FactoryAreaSummaryComponent } from './components/factory-area/factory-area-summary/factory-area-summary.component';
-import { FactoryAreaCreateComponent } from './components/factory-area/factory-area-create/factory-area-create.component';
+import { FactoryRouteAreaCreateComponent } from './components/factory-area/factory-route-area-create/factory-route-area-create.component';
 import { FactoryCreateComponent } from './components/factory/factory-create/factory-create.component';
 import { FactoryRoutesFilterComponent } from './components/factory-route/factory-routes-filter/factory-routes-filter.component';
 import { FactoryRouteCreateComponent } from './components/factory-route/factory-route-create/factory-route-create.component';
@@ -27,7 +27,7 @@ import { FactorySummaryComponent } from './components/factory/factory-summary/fa
 @NgModule({
   declarations: [
     FactoriesManagerPage, FactoryPanelPage,
-    FactorySummaryComponent, FactoriesListComponent, FactoryRoutePanelComponent, FactoryAreaSummaryComponent, FactoryAreaCreateComponent,
+    FactorySummaryComponent, FactoriesListComponent, FactoryRoutePanelComponent, FactoryAreaSummaryComponent, FactoryRouteAreaCreateComponent,
     FactoryCreateComponent, FactoryRoutesFilterComponent, FactoryRouteCreateComponent, FactorySuspensionComponent, FactoryRouteSuspensionComponent,
 
   ],

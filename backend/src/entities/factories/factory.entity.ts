@@ -7,13 +7,13 @@ export class Factory {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: "nvarchar", length: 255 })
+  @Column({ type: "nvarchar", unique:true, length: 255 })
   name!: string;
 
-  @Column({ type: "nvarchar", length: 500, nullable: true })
+  @Column({ type: "nvarchar", length: 300})
   location!: string;
 
-  @Column({ type: "nvarchar", length: 255, nullable: true })
+  @Column({ type: "nvarchar", length: 255})
   contact!: string;
 
   @Column()
