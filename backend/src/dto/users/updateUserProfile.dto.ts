@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, IsBoolean, MinLength } from "class-validator";
+import { IsInt, IsOptional, IsString, IsBoolean, MinLength, IsNumber } from "class-validator";
 
 export class UpdateUserProfileDto {
   @IsInt()
@@ -13,6 +13,7 @@ export class UpdateUserProfileDto {
   newPassword?: string;
 
   @IsOptional()
-  @IsBoolean()
-  hasProfilePicture?: boolean;
+  @IsString()
+  profilePicture!: string;
+  
 }

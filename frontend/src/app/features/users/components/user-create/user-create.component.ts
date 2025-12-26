@@ -5,6 +5,7 @@ import { compareRoles } from '../../helpers/compare-roles.helper';
 import { UserRole } from '../../interfaces/userRole.interface';
 import { createUsername } from '../../helpers/create-username.helper';
 import { FormMessage } from '../../../../shared/interfaces/form-message.interface';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'user-create-component',
@@ -20,10 +21,11 @@ export class UserCreateComponent {
   
    public compareRoles = compareRoles;
   
-   @Input() hasPermission!: (code: string) => boolean;
+  @Input() hasPermission!: (code: string) => boolean;
 
-  @Input() saving:boolean |undefined;
-  @Input() loadingCreateForm:boolean |undefined;
+  @Input() saving!:boolean | null;
+  @Input() loadingCreateForm!:boolean | null;
+  @Input() timestamp!: number | null;
 
 
    @Input() profilePicturePath!: string | null;
@@ -35,13 +37,14 @@ export class UserCreateComponent {
    @Input() imagePreview: string | null | undefined;
    @Input() profilePictureStatus:string | null | undefined;
 
+   @Output() suspensionUserFromPanelEvent = new EventEmitter<any>();
    @Output() resetPasswordEvent = new EventEmitter<void>();
    @Output() changeUserStatusEvent = new EventEmitter<void>();
    @Output() saveUserEvent = new EventEmitter<void>();
    @Output() setProfilePictureEvent = new EventEmitter<File>();
   
 
-    @ViewChild('btnClose') btnClose!: ElementRef;  
+  @ViewChild('btnClose') btnClose!: ElementRef;  
 
    
 
@@ -49,7 +52,7 @@ export class UserCreateComponent {
 
 
 
-  constructor() { }
+  constructor(private modalService:ModalService) { }
 
 
 
@@ -114,7 +117,7 @@ export class UserCreateComponent {
 
       this.profilePictureStatus = "El archivo proporcionado no tiene el formato correcto";
       this.imagePreview = "";
-      this.userCreateForm.get('profilePicture')?.setValue(false);
+      this.userCreateForm.get('profilePicture')?.setValue('');
 
 
     }
@@ -136,6 +139,39 @@ export class UserCreateComponent {
   saveUser() {
 
       this.saveUserEvent.emit();
+
+  }
+
+    userSuspensionFromPanel() {
+
+   if (this.userCreateForm.value && this.userCreateForm.value.id) {
+
+      this.suspensionUserFromPanelEvent.emit(
+        
+        {
+          suspensionOrigin:'PANEL',
+          user:this.userCreateForm.value
+
+        });
+
+        this.modalService.switch('createUserModal', 'userSuspensionModal');
+        
+    }
+
+    
+
+  }
+
+      userPasswordResetFromPanel() {
+
+   if (this.userCreateForm.value && this.userCreateForm.value.id) {
+
+
+        this.modalService.switch('createUserModal', 'userPasswordResetModal');
+        
+    }
+
+    
 
   }
 

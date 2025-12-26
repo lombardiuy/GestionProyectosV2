@@ -7,7 +7,7 @@ export interface User {
   name: string;
   username:string;
   password:string;
-  hasProfilePicture:boolean;
+  profilePicture:string;
   userRole:UserRole;
   active:boolean;
   suspended:boolean;

@@ -12,6 +12,7 @@ export class VersionControlComponent implements OnChanges {
 
   @Input() entity!: string;
   @Input() entityId!: number;
+  @Input() timestamp!: number | null;
   @Input() hasPermission!: (code: string) => boolean;
   @Input() description?: string;
   @Input() asModal?: boolean = false;
@@ -27,7 +28,7 @@ export class VersionControlComponent implements OnChanges {
   constructor(private auditService: AuditTrailService, public router:Router) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['entity'] || changes['entityId']) && this.entity && this.entityId) {
+    if ((changes['entity'] || changes['entityId'] || changes['timestamp']) && this.entity && this.entityId) {
       console.log("cambio de version")
       this.loadVersions();
     }

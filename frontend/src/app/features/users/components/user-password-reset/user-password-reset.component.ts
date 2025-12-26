@@ -1,4 +1,6 @@
 import { Component, Output, EventEmitter, ViewChild, ElementRef, Input } from '@angular/core';
+import { ModalService } from '../../../../shared/services/modal.service';
+import {FormMessage} from "../../../../shared/interfaces/form-message.interface"
 
 
 @Component({
@@ -16,8 +18,9 @@ export class UserPasswordResetComponent {
    @Output() resetPasswordEvent = new EventEmitter<void>();
    @ViewChild('btnClose') btnClose!: ElementRef;  
    @Input() hasPermission!: (code: string) => boolean;
+   @Input() formMessage: FormMessage | null | undefined;
 
-  constructor() { }
+  constructor(private modalService:ModalService) { }
 
     resetPassword() {
 
@@ -27,6 +30,7 @@ export class UserPasswordResetComponent {
 
     closeModal() {
     this.btnClose.nativeElement.click();
+       this.modalService.switch('userPasswordResetModal', 'createUserModal');
   }
   
 

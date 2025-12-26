@@ -49,7 +49,7 @@ const permissionsData = JSON.parse(fs.readFileSync(permissionsPath, 'utf8'));
       id: 0,
       name: "Usuario prueba",
       username: "testing",
-      hasProfilePicture: false,
+      profilePicture: null,
       userRole: {
         name: 'admin',
         userRolePermissions: validPermissions

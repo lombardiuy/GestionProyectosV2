@@ -3,29 +3,16 @@
  <div class="modal-content">
 
      <div class="modal-header">   
-   
-      <button *ngIf="!origin" 
 
- #btnClose
-  type="button" 
-  class="btn-close" 
-  data-bs-target="#createUserModal" 
-  data-bs-toggle="modal" 
-  data-bs-dismiss="modal" 
-  aria-label="Close">
-</button>
+<button #btnClose type="button" class="btn-close" data-bs-dismiss="modal"  (click)="closeModal()" ></button>
 
 
-      <button *ngIf="origin === 'LIST'" #btnClose
-  type="button" 
-  class="btn-close" 
-  data-bs-dismiss="modal" 
-  aria-label="Close">
-</button>
+
         
 </div>
 
  <div class="modal-body">
+
 
 
     <div class="card w-100 h-100">
@@ -39,10 +26,11 @@
             <div  *ngIf="suspend" class="text-center">¿Seguro que desea suspender al usuario <strong>{{username}}</strong>?</div>
             <div  *ngIf="!suspend" class="text-center">¿Seguro que desea reactivar al usuario <strong>{{username}}</strong>?</div>
                 <div class="d-flex align-items-center justify-content-center">
-                      <button  *ngIf="!origin"  data-bs-target="#createUserModal" data-bs-toggle="modal" data-bs-dismiss="modal"  class="btn btn-secondary m-3 ">Cancelar</button>
-                    <button  *ngIf="origin === 'LIST'"  data-bs-dismiss="modal"  class="btn btn-secondary m-3 ">Cancelar</button>
-                        <button *ngIf="suspend" (click)="suspensionUser()" class="btn btn-danger m-3">Suspender usuario</button>
-                       <button *ngIf="!suspend" (click)="suspensionUser()" class="btn btn-success m-3">Reactivar usuario</button>
+                    
+                      <button  *ngIf="suspensionOrigin === 'PANEL'"  (click)="closeModal()"  class="btn btn-secondary m-3 ">Cancelar</button>
+                    <button  *ngIf="suspensionOrigin === 'LIST'" (click)="closeModal()"  class="btn btn-secondary m-3 ">Cancelar</button>
+                        <button [disabled] = "saving" *ngIf="suspend"  (click)="suspensionUser()" class="btn btn-danger m-3">  <span *ngIf ="saving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Suspender usuario</button>
+                       <button [disabled] = "saving" *ngIf="!suspend" (click)="suspensionUser()" class="btn btn-success m-3">  <span *ngIf ="saving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Reactivar usuario</button>
                 </div>
 
                    <form-message [formMessage]="formMessage"></form-message>

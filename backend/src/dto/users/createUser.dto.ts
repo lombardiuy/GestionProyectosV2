@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, IsInt, MinLength, IsNotEmpty, IsOptional } from "class-validator";
+import { IsString, IsBoolean, IsInt, MinLength, IsNotEmpty, IsOptional, IsNumber } from "class-validator";
 
 export class CreateUserDto {
 
@@ -14,8 +14,9 @@ export class CreateUserDto {
   @MinLength(8)
   password!: string;
   
-  @IsBoolean()
-  hasProfilePicture!: boolean;
+  @IsOptional()
+  @IsString()
+  profilePicture!: string;
   
 
   @IsInt()

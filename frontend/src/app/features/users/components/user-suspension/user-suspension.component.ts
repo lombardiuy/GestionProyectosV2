@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter, ViewChild, ElementRef, Input } from '@angular/core';
 import {FormMessage} from "../../../../shared/interfaces/form-message.interface"
+import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'user-suspension-component',
@@ -15,8 +16,9 @@ export class UserSuspensionComponent {
   @ViewChild('btnClose') btnClose!: ElementRef;  
 
    @Input() username: string | null | undefined;
-   @Input() origin: string | null | undefined;
+   @Input() suspensionOrigin: string | null | undefined;
    @Input() suspend: boolean | null | undefined;
+    @Input() saving!:boolean | null;
    @Input() formMessage: FormMessage | null | undefined;
    @Input() hasPermission!: (code: string) => boolean;
    
@@ -25,7 +27,7 @@ export class UserSuspensionComponent {
 
    
 
-  constructor() { }
+  constructor(private modalService:ModalService) { }
 
     suspensionUser() {
 
@@ -34,9 +36,17 @@ export class UserSuspensionComponent {
   }
 
     closeModal() {
+
+      if (this.suspensionOrigin === 'PANEL') {
+          this.modalService.switch('userSuspensionModal', 'createUserModal');
+
+      }else {
     this.btnClose.nativeElement.click();
+      }
    
   }
+
+  
   
 
 

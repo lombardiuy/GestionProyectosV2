@@ -15,11 +15,11 @@ export class UsersListComponent implements OnInit {
 
   @Input() profilePicturePath!: string | null;
   @Input() userList!: User[] | null;
-  @Input() timestamp!: Number | null;
+  @Input() timestamp!: number | null;
   @Input() hasPermission!: (code: string) => boolean;
 
   @Output() editUserEvent = new EventEmitter<any>();
-  @Output() suspendUserFromListEvent = new EventEmitter<any>();
+  @Output() suspensionUserFromListEvent = new EventEmitter<any>();
 
   public userRolesOptions: any[] = [];
   public filteredUserList: User[] = [];
@@ -106,13 +106,19 @@ export class UsersListComponent implements OnInit {
 
   editUser(user: User | null) {
     if (user && user.id) {
-      this.editUserEvent.emit(user.id);
+      this.editUserEvent.emit(user);
     }
   }
 
-  userSuspensionFromList(user: User | null, suspend: boolean) {
+  userSuspensionFromList(user: User) {
     if (user && user.id) {
-      this.suspendUserFromListEvent.emit({ id: user.id, suspend });
+      this.suspensionUserFromListEvent.emit(
+        
+        {
+          suspensionOrigin:'LIST',
+          user:user
+
+        });
     }
   }
 

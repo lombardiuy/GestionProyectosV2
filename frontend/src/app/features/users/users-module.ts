@@ -18,6 +18,16 @@ import { UserRoleCreateComponent } from './components/user-role-create/user-role
 import { UserProfilePage } from './pages/user-profile/user-profile.page';
 
 
+import { UsersPanelFacade } from './facades/users-panel.facade';
+import { CreateUserUseCase } from './use-cases/create-user.usecase';
+import { UpdateUserUseCase } from './use-cases/update-user.usecase';
+import { ResetPasswordUseCase } from './use-cases/reset-password.usecase';
+import { SuspendUserUseCase } from './use-cases/suspend-user.usecase';
+import { UserProfileFacade } from './facades/user-profile.facade';
+import { UpdateUserProfileUseCase } from './use-cases/update-user-profile.usecase';
+import { UploadUserProfilePictureUseCase } from './use-cases/upload-user-profile-picture.usecase';
+
+
 
 
 @NgModule({
@@ -32,6 +42,11 @@ import { UserProfilePage } from './pages/user-profile/user-profile.page';
     ReactiveFormsModule, 
     SharedModule
   ], 
+  providers: [
+    UsersPanelFacade, CreateUserUseCase, UpdateUserUseCase,ResetPasswordUseCase, SuspendUserUseCase,
+    UserProfileFacade, UpdateUserProfileUseCase, UploadUserProfilePictureUseCase,
+
+  ]
 
 })
 export class UsersModule { }

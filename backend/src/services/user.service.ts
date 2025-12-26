@@ -60,10 +60,10 @@ export const createUser = async (payload: {
   username: string;
   password: string;
   userRole: number;
-  hasProfilePicture:boolean;
+  profilePicture:string
 },  currentUsername: string // <-- el usuario logueado 
 ): Promise<Partial<User>> => {
-  const { name, username, password, userRole, hasProfilePicture } = payload;
+  const { name, username, password, userRole, profilePicture } = payload;
 
  
 
@@ -90,7 +90,7 @@ export const createUser = async (payload: {
       name,
       username,
       password: hashed,
-      hasProfilePicture,
+      profilePicture,
       active: false,
       suspended: false,
       userRole: role,
@@ -143,7 +143,7 @@ export const updateUser = async (
     userRoleId?: number; // alternativa explícita
     active?: boolean;
     suspended?: boolean;
-    hasProfilePicture?: boolean;
+    profilePicture?: string;
   },  currentUsername: string // <-- el usuario logueado 
 ): Promise<Partial<User>> => {
 
@@ -183,6 +183,9 @@ export const updateUser = async (
       newRole = role;
     }
 
+  
+
+     
     // ------------------------------------------------------------
     // Construir objeto "after" (clonamos user y aplicamos payload)
     // ------------------------------------------------------------
@@ -210,6 +213,7 @@ export const updateUser = async (
       const { password: _, ...rest } = user;
       return rest;
     }
+       
 
     // Asignar valores actualizados
     Object.assign(user, after);
@@ -218,6 +222,8 @@ export const updateUser = async (
     if (payload.password) {
       user.password = await bcrypt.hash(payload.password, 10);
     }
+
+
 
     const saved = await userRepo.save(user);
 
@@ -246,21 +252,21 @@ export const updateUser = async (
  * Actualiza perfil del usuario.
  * Se puede usar para:
  *  - cambiar contraseña (requiere actualPassword + newPassword)
- *  - cambiar hasProfilePicture (si se envía)
+ *  - cambiar profilePicture (si se envía)
  *
- * payload: { id, actualPassword?, newPassword?, hasProfilePicture? }
+ * payload: { id, actualPassword?, newPassword?, profilePicture? }
  */
 export const updateUserProfile = async (
   payload: {
     id: number;
     actualPassword?: string;
     newPassword?: string;
-    hasProfilePicture?: boolean;
+    profilePicture?: string;
   },
   currentUsername: string
 ): Promise<Partial<User>> => {
 
-  const { id, actualPassword, newPassword, hasProfilePicture } = payload;
+  const { id, actualPassword, newPassword, profilePicture } = payload;
 
   return await AppDataSource.transaction(async (manager) => {
     const userRepo = manager.getRepository(User);
@@ -276,7 +282,7 @@ export const updateUserProfile = async (
     }
 
     // Validación de cambio de contraseña
-    if ((actualPassword && !newPassword) || (!actualPassword && newPassword)) {
+    if ((actualPassword === 'null' ||  newPassword === 'null')) {
       throw new Error('Para cambiar la contraseña debe enviar actualPassword y newPassword.');
     }
 
@@ -292,8 +298,8 @@ export const updateUserProfile = async (
     }
 
     // Procesar cambio de foto de perfil
-    if (typeof hasProfilePicture === 'boolean') {
-      after.hasProfilePicture = hasProfilePicture;
+    if (typeof profilePicture === 'string') {
+      after.profilePicture = profilePicture;
     }
 
     // Detectar cambios

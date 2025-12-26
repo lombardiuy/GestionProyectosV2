@@ -53,7 +53,7 @@
               <tbody >
                 <tr *ngFor="let user of filteredUserList">
                   <td>
-                    <img [src]="user.hasProfilePicture ? profilePicturePath +'/user_'+ user.id +'/ProfilePic_' + user.id + '.jpeg' + '?t=' + timestamp : profilePicturePath + 'avatar.jpeg'"
+                    <img [src]="user.profilePicture ? profilePicturePath +'/user_'+ user.id +'/ProfilePic_' + user.id + '.jpeg' + '?t=' + timestamp : profilePicturePath + 'avatar.jpeg'"
                          alt="..." class="img-fluid rounded-circle avatar">
                   </td>
                   <td class="align-middle">{{ user.name }} </td>
@@ -78,9 +78,7 @@
 <span *ngIf="hasPermission('USER_EDIT')" [Tooltip]="'Editar'" tooltipPlacement="bottom" tooltipClass="tooltip-secondary">
 
   <i class="fa-solid fa-pen-to-square color-secondary cursor-pointer me-2"
-     (click)="editUser(user)"
-     data-bs-toggle="modal"
-     data-bs-target="#createUserModal">
+     (click)="editUser(user)">
   </i>
 
 </span>
@@ -89,9 +87,7 @@
 <span *ngIf="!user.suspended && hasPermission('USER_SUSPENSION')" [Tooltip]="'Suspender'" tooltipPlacement="bottom" tooltipClass="tooltip-danger" >
 
   <i class="fa-solid fa-toggle-on color-success cursor-pointer ms-3"
-     (click)="userSuspensionFromList(user, true)"
-     data-bs-toggle="modal"
-     data-bs-target="#userSuspensionModal">
+     (click)="userSuspensionFromList(user)">
   </i>
 
 </span>
@@ -100,9 +96,7 @@
 <span *ngIf="user.suspended && hasPermission('USER_SUSPENSION')" [Tooltip]="'Reactivar'" tooltipPlacement="bottom" tooltipClass="tooltip-success">
 
   <i class="fa-solid fa-toggle-off color-danger  cursor-pointer ms-3"
-     (click)="userSuspensionFromList(user, false)"
-     data-bs-toggle="modal"
-     data-bs-target="#userSuspensionModal">
+     (click)="userSuspensionFromList(user)">
   </i>
 
 </span>

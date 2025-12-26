@@ -21,9 +21,12 @@ import { FormGroup } from '@angular/forms';
         
       
         
-        control.setErrors({validName: true});
+          control.setErrors({ ...control.errors, validName: true });
       }else {
-        control.setErrors(null);
+          const errors = control.errors ?? {};
+          const { validName, ...otherErrors } = errors;
+          control.setErrors(Object.keys(otherErrors).length ? otherErrors : null);
+
       }
     }
 

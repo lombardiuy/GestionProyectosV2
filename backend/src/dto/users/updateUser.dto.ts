@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, IsInt, MinLength, IsOptional } from "class-validator";
+import { IsString, IsBoolean, IsInt, MinLength, IsOptional, IsNumber } from "class-validator";
 
 export class UpdateUserDto {
 
@@ -24,6 +24,7 @@ export class UpdateUserDto {
   suspended?: boolean;
 
   @IsOptional()
-  @IsBoolean()
-  hasProfilePicture?: boolean;
+  @IsString()
+  profilePicture!: string;
+  
 }

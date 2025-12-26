@@ -26,13 +26,15 @@ export class UserService {
   ****************************************/
 
   createUser(user: User) {
+
+    console.log(user)
     // Convertir el objeto User al DTO que espera el backend
     const dto = {
       name: user.name,
       username: user.username,
       password: user.password,
       userRole: user.userRole?.id ?? null, // SOLO el ID
-      hasProfilePicture: user.hasProfilePicture
+      profilePicture: user.profilePicture
     };
 
     return this.http.post<any>(`${this.apiUrl}/create`, dto);
@@ -52,7 +54,7 @@ updateUser(user: User) {
 
   if (user.active !== undefined) dto.active = user.active;
   if (user.suspended !== undefined) dto.suspended = user.suspended;
-  if (user.hasProfilePicture !== undefined) dto.hasProfilePicture = user.hasProfilePicture;
+  if (user.profilePicture !== undefined) dto.profilePicture = user.profilePicture;
 
   return this.http.put<any>(`${this.apiUrl}/update/${user.id}`, dto);
 }
@@ -60,12 +62,13 @@ updateUser(user: User) {
 
 
 
-  updateUserProfile(userID: number, actualPassword: string, newPassword: string, hasProfilePicture: boolean) {
+  updateUserProfile(userID: number, actualPassword: string, newPassword: string, profilePicture?:string) {
+  
     return this.http.put<any>(`${this.apiUrl}/updateUserProfile`, {
       userID,
       actualPassword,
       newPassword,
-      hasProfilePicture,
+      profilePicture,
     });
   }
 

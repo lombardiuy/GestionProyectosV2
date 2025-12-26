@@ -1,179 +1,159 @@
+<div *ngIf="!(facade.loading$ | async) else loadingSpinner"
+     class="w-100 h-100 d-flex justify-content-center align-items-center">
 
-    <div *ngIf="!loading else loadingSpinner"  class="w-100 h-100 d-flex justify-content-center align-items-center">
+  <div class="card w-80 mh-80 Mh-100 overflow-y-auto">
 
-        <div class="card w-80 mh-80 Mh-100 overflow-y-auto">
+    <div class="card-header">
+      <h6><i class="fa-solid fa-user-pen"></i> Perfil de usuario</h6>
+    </div>
 
-              <div class="card-header" 
-        >
-         
+    <div class="card-body">
 
+      <form [formGroup]="facade.form">
 
+        <div class="d-flex w-100 h-100 flex-column">
 
-            <h6><i class="fa-solid fa-user-pen"></i> Perfil de usuario usuario</h6>           
-        </div>
+          <div class="w-100 d-flex justify-content-between">
 
-       
-        <div class="card-body">
+            <!-- FOTO PERFIL -->
+            <div class="w-25 mt-3 d-flex flex-column align-items-center">
 
+              <div class="avatar-xl parent-container-overlay-inside">
+                <img [src]="facade.imagePreview || facade.profilePicturePath+'avatar.jpeg'"
+                     class="text-center img-fluid rounded-circle avatar-xl child-element-overlayed-centered">
 
+                <i class="bi bi-pen-fill child-element-overlayed-centered text-white"></i>
+                <input (change)="setprofilePicture($event)"
+                       class="child-element-overlayed-centered"
+                       type="file">
+              </div>
 
-            <form  [formGroup]="userProfileForm">
+           
 
-                <div class="d-flex w-100 h-100 flex-column">
-                    <div class="w-100  d-flex justify-content-between">
-                    <div class="w-25 mt-3 d-flex flex-column align-items-center">
-
-                            <div  class="avatar-xl parent-container-overlay-inside ">
-                            <img  [src]="  imagePreview || profilePicturePath+'avatar.jpeg'" alt="..." class=" text-center img-fluid rounded-circle avatar-xl child-element-overlayed-centered ">
-                            <i  class="bi bi-pen-fill child-element-overlayed-centered text-white"></i>    
-                            <input  (change)=" setprofilePicture( $event)" class="child-element-overlayed-centered" id="file-input" type="file" />
-
-       
-                            
-                            </div>
-                             <div style="display:block !important; font-size: 10px !important" class="invalid-feedback text-center" >
-                    <div>{{profilePictureStatus}}</div>
+                    <div *ngIf="(facade.profilePictureStatus$ | async) as err" style="display:block !important; font-size: 10px !important" class="invalid-feedback text-center" >
+                    {{err}}
                    
                 </div>
 
-        
+            </div>
+
+            <!-- DATOS -->
+            <div class="w-70">
+
+                <input type="hidden" formControlName="id">
 
 
-                    </div>
-                    <div class="w-70">
+              <label>Nombre:</label>
+              <input type="text" formControlName="name" class="form-control" readonly>
 
-                        
+              <label>Rol</label>
+              <input type="text" formControlName="userRole" class="form-control" readonly>
 
+              <label>Usuario:</label>
+              <input type="text" formControlName="username" class="form-control" readonly>
 
-                
-        
-                <label>Nombre:</label>
-                <input type="text" formControlName="name" class="form-control" readonly>
+              <div *ngIf="!form['actualPassword'].disabled">
 
-               
-        
-                <label>Rol</label>
-
-                <input type="text" formControlName="userRole" class="form-control" readonly>
-        
-            
-
-
-        
-                <label>Usuario:</label>
-                <input type="text" formControlName="username" class="form-control" readonly>
-        
-    
-
-       
-               <div *ngIf="!form['actualPassword'].disabled">
+                <!-- ACTUAL -->
                 <label>Contraseña actual:</label>
-                <input type="password" formControlName="actualPassword" class="form-control" [ngClass]="{'is-invalid': !!actualPassword?.errors, 'is-valid': actualPassword?.valid}">
-             
+                <input type="password"
+                       formControlName="actualPassword"
+                       class="form-control"
+                       [ngClass]="{'is-invalid': !!form['actualPassword'].errors,
+                                   'is-valid': form['actualPassword'].valid}">
 
-                  <div *ngIf="actualPassword?.errors as actualPassword" class="invalid-feedback">
-                 <div *ngIf="actualPassword['required']">El campo es obligatorio</div>
-                 <div *ngIf="actualPassword['passwordTooShort']">La contraseña debe tener al menos {{ actualPassword['passwordTooShort'].requiredLength }} caracteres</div>
-                <div *ngIf="actualPassword['passwordComplexity']">La contraseña debe contener al menos una letra, un número y un carácter especial.</div>
-                 </div>
+                <div *ngIf="form['actualPassword'].errors as e" class="invalid-feedback">
+                  <div *ngIf="e['required']">El campo es obligatorio</div>
+                  <div *ngIf="e['passwordTooShort']">
+                    La contraseña debe tener al menos {{ e['passwordTooShort'].requiredLength }} caracteres
+                  </div>
+                  <div *ngIf="e['passwordComplexity']">
+                    La contraseña debe contener al menos una letra, un número y un carácter especial.
+                  </div>
+                </div>
 
-
-
+                <!-- NUEVA -->
                 <label>Nueva contraseña:</label>
-                <input type="password" formControlName="newPassword" class="form-control"  [ngClass]="{'is-invalid': !!newPassword?.errors, 'is-valid': newPassword?.valid}">
-                <div *ngIf="newPassword?.errors as newPasswordErrors" class="invalid-feedback">
-                     <div *ngIf="newPasswordErrors['required']">El campo es obligatorio</div>
-                     <div *ngIf="newPasswordErrors['passwordTooShort']">La contraseña debe tener al menos {{ newPasswordErrors['passwordTooShort'].requiredLength }} caracteres</div>
-                    <div *ngIf="newPasswordErrors['passwordComplexity']">La contraseña debe contener al menos una letra, un número y un carácter especial.</div>
-                 
-                 </div>
+                <input type="password"
+                       formControlName="newPassword"
+                       class="form-control"
+                       [ngClass]="{'is-invalid': !!form['newPassword'].errors,
+                                   'is-valid': form['newPassword'].valid}">
 
-      <label>Repetir nueva contraseña:</label>
-<input type="password" formControlName="newPasswordRepeat"
-       class="form-control"
-       [ngClass]="{
-         'is-invalid': userProfileForm.hasError('areEqual') || !!newPasswordRepeat?.errors,
-         'is-valid': newPasswordRepeat?.valid && !userProfileForm.hasError('areEqual')
-       }">
-
-<div *ngIf="newPasswordRepeat?.errors as newPasswordErrorsRepeat" class="invalid-feedback">
-                     <div *ngIf="newPasswordErrorsRepeat['required']">El campo es obligatorio</div>
-                     <div *ngIf="newPasswordErrorsRepeat['passwordTooShort']">La contraseña debe tener al menos {{ newPasswordErrorsRepeat['passwordTooShort'].requiredLength }} caracteres</div>
-                    <div *ngIf="newPasswordErrorsRepeat['passwordComplexity']">La contraseña debe contener al menos una letra, un número y un carácter especial.</div>
-                    <div *ngIf="newPasswordErrorsRepeat['areEqual']">Las contraseñas no coinciden</div>
-                 </div>
-
-        </div>
-        
-                
-
-        
-            
-
-                <div class="w-100 d-flex justify-content-end">
-
-            
-                             <button *ngIf="form['actualPassword'].disabled"   (click)="changePassword()" class="btn btn-sm  btn-primary mr-1 mt-4">
-                                 <i class="fa-solid fa-lock-open"></i>  Modificar contraseña
-                                </button>
-
-
-                        
-             
-
+                <div *ngIf="form['newPassword'].errors as e" class="invalid-feedback">
+                  <div *ngIf="e['required']">El campo es obligatorio</div>
+                  <div *ngIf="e['passwordTooShort']">
+                    La contraseña debe tener al menos {{ e['passwordTooShort'].requiredLength }} caracteres
+                  </div>
+                  <div *ngIf="e['passwordComplexity']">
+                    La contraseña debe contener al menos una letra, un número y un carácter especial.
+                  </div>
                 </div>
 
+                <!-- REPETIR -->
+                <label>Repetir nueva contraseña:</label>
+                <input type="password"
+                       formControlName="newPasswordRepeat"
+                       class="form-control"
+                       [ngClass]="{
+                         'is-invalid': facade.form.hasError('areEqual') || !!form['newPasswordRepeat'].errors,
+                         'is-valid': form['newPasswordRepeat'].valid && !facade.form.hasError('areEqual')
+                       }">
 
-                 
-        
-                    </div>
-                </div>
-                </div>
+                <div *ngIf="form['newPasswordRepeat'].errors || facade.form.hasError('areEqual')"
+                     class="invalid-feedback">
 
-                <div class="d-flex w-100 flex-column align-items-center">
-
-                    
-                <div class="text-center">
-        
-                    <button  (click)="updateUserProfile()" class="btn btn-success mr-1 mt-2" [disabled] = "userProfileForm.invalid || saving || !userProfileForm.dirty">
-
-
-                        
-                        <span *ngIf ="saving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-             
-                        <span > <i class="fa-solid fa-floppy-disk"></i> Guardar cambios</span>
-
-                    </button>
-
-            
-
-                 
-                </div>
-        
-          
-        
+                  <div *ngIf="form['newPasswordRepeat'].errors?.['required']">El campo es obligatorio</div>
+                  <div *ngIf="form['newPasswordRepeat'].errors?.['passwordTooShort']">
+                    La contraseña debe tener al menos {{
+                      form['newPasswordRepeat'].errors?.['passwordTooShort']?.requiredLength
+                    }} caracteres
+                  </div>
+                  <div *ngIf="form['newPasswordRepeat'].errors?.['passwordComplexity']">
+                    La contraseña debe contener al menos una letra, un número y un carácter especial.
+                  </div>
+                  <div *ngIf="facade.form.hasError('areEqual')">Las contraseñas no coinciden</div>
                 </div>
 
-                <form-message [formMessage]="formMessage"></form-message>
+              </div>
 
-        
-                
-        
-        
-        
-            </form>
-      
+              <div class="w-100 d-flex justify-content-end">
+                <button *ngIf="form['actualPassword'].disabled"
+                        type="button"
+                        class="btn btn-sm btn-primary mr-1 mt-4"
+                        (click)="changePassword()">
+                  <i class="fa-solid fa-lock-open"></i> Modificar contraseña
+                </button>
+              </div>
 
-            <version-control *ngIf="userProfileForm.value.id"  [hasPermission]="hasPermission.bind(this)" [entity]="'User'" [entityId]="userProfileForm.value.id" class="w-90 m-2"></version-control>
-        </div>
+            </div>
+          </div>
+
+          <div class="d-flex w-100 flex-column align-items-center">
+
+            <div class="text-center">
+              <button (click)="updateUserProfile()"
+                      class="btn btn-success mr-1 mt-2"
+                      [disabled]="facade.form.invalid || (facade.saving$ | async) || !facade.form.dirty">
+
+                <span *ngIf="facade.saving$ | async"
+                      class="spinner-border spinner-border-sm me-1"></span>
+
+                <span><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</span>
+              </button>
+            </div>
+
+          </div>
 
         </div>
 
-      
+      </form>
+
+      <form-message [formMessage]="facade.formMessage$ | async"></form-message>
     </div>
+  </div>
+</div>
 
-  
-
-<ng-template  #loadingSpinner>
+<ng-template #loadingSpinner>
   <loading-spinner class="w-100 h-100"></loading-spinner>
 </ng-template>

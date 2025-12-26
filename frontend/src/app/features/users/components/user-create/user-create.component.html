@@ -11,7 +11,7 @@
  <div class="modal-body">
 
 
-    <div *ngIf="!loadingCreateForm else loadingSpinner"  class="card w-100 h-100">
+    <div  class="card w-100 h-100">
 
         <div class="card-header alert p-2" [ngClass] = "{
             'alert-primary': !id?.value,
@@ -38,6 +38,8 @@
                     <div class="w-100  d-flex justify-content-between">
                     <div class="w-25 mt-3 d-flex flex-column align-items-center">
 
+
+                        
                             <div  class="avatar-xl parent-container-overlay-inside ">
                             <img  [src]="  imagePreview || profilePicturePath+'avatar.jpeg'" alt="..." class=" text-center img-fluid rounded-circle avatar-xl child-element-overlayed-centered ">
                             <i  class="bi bi-pen-fill child-element-overlayed-centered text-white"></i>    
@@ -50,16 +52,17 @@
                     <div>{{profilePictureStatus}}</div>
                    
                 </div>
+                
 
                 <div *ngIf="id?.value" class="d-flex flex-column w-100 align-items-center">
                  
 
-          <button *ngIf="!suspended?.value && hasPermission('USER_SUSPENSION')"   class="btn btn-sm btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
+          <button (click)="userSuspensionFromPanel()" *ngIf="!suspended?.value && hasPermission('USER_SUSPENSION')"   class="btn btn-sm btn-danger mt-3" >
                                  <i class="fa-solid fa-user-xmark me-1"></i> Suspender usuario
            </button>
 
                            
-              <button *ngIf="suspended?.value && hasPermission('USER_SUSPENSION')"   class="btn btn-sm btn-success mt-3" data-bs-toggle="modal" data-bs-target="#userSuspensionModal">
+              <button (click)="userSuspensionFromPanel()" *ngIf="suspended?.value && hasPermission('USER_SUSPENSION')"   class="btn btn-sm btn-success mt-3">
                                  <i class="fa-solid fa-user-check me-1"></i> Reactivar usuario
            </button>
 
@@ -84,6 +87,7 @@
                         <div *ngIf="nameErrors['required']">El campo es obligatorio</div>
                          <div *ngIf="nameErrors['minlength']">El campo debe tener al menos 6 caracteres</div>
                         <div *ngIf="nameErrors['validName']">El campo debe estar compuesto por Nombre y Apellido</div>
+                       <div *ngIf="nameErrors['leadingSpace']">No se permiten espacios al inicio </div>
                  </div>
         
                 <label>Rol</label>
@@ -129,7 +133,7 @@
                 <div class="w-100 d-flex justify-content-end">
 
             
-                             <button *ngIf="active?.value && hasPermission('USER_PASSWORD_RESET')"   class="btn btn-sm  btn-primary mr-1 mt-4" data-bs-toggle="modal" data-bs-target="#userPasswordResetModal">
+                             <button *ngIf="active?.value && hasPermission('USER_PASSWORD_RESET')"   class="btn btn-sm  btn-primary mr-1 mt-4" (click)="userPasswordResetFromPanel()" >
                                  <i class="fa-solid fa-lock-open"></i>  Resetear contraseña
                                 </button>
 
@@ -179,7 +183,7 @@
         
             </form>
 
-               <version-control   *ngIf="userCreateForm.value.id" [hasPermission]="hasPermission.bind(this)"[entity]="'User'" [entityId]="userCreateForm.value.id" class="w-90 m-2"></version-control>
+               <version-control   *ngIf="userCreateForm.value.id" [hasPermission]="hasPermission.bind(this)"      [timestamp]="timestamp" [entity]="'User'" [entityId]="userCreateForm.value.id" class="w-90 m-2"></version-control>
         </div>
     </div>
 

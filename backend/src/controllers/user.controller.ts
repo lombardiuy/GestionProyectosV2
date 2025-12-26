@@ -69,7 +69,7 @@ export const createUser = async (req: UserRequest, res: Response) => {
       username: string;
       password: string;
       userRole: number;
-      hasProfilePicture:boolean;
+      profilePicture:string;
     };
 
 
@@ -94,7 +94,7 @@ export const updateUser = async (req: UserRequest, res: Response) => {
       userRoleId?: number;
       active?: boolean;
       suspended?: boolean;
-      hasProfilePicture?: boolean;
+      profilePicture?: string;
     };
     if (!req.user) throw new Error("Usuario no autenticado");
     const updatedUser = await userService.updateUser(userId, dto, req.user.username);
@@ -112,17 +112,17 @@ export const updateUser = async (req: UserRequest, res: Response) => {
 
 /**
  * POST /user/updateUserProfile
- * req.body validado por UpdateUserProfileDto -> { userID, actualPassword?, newPassword?, hasProfilePicture? }
+ * req.body validado por UpdateUserProfileDto -> { userID, actualPassword?, newPassword?, profilePicture? }
  */
 export const updateUserProfile = async (req: UserRequest, res: Response) => {
   try {
-    const { userID, actualPassword, newPassword, hasProfilePicture } = req.body;
+    const { userID, actualPassword, newPassword, profilePicture } = req.body;
 
     if (!userID) return res.status(400).json({ error: 'Faltan datos obligatorios' });
 
-    const payload: any = { id: Number(userID) };
+    const payload: any = { id: Number(userID) }; 
 
-    if (typeof hasProfilePicture !== 'undefined') payload.hasProfilePicture = Boolean(hasProfilePicture);
+    if (typeof profilePicture !== 'undefined') payload.profilePicture = String(profilePicture);
     if (typeof actualPassword !== 'undefined') payload.actualPassword = String(actualPassword);
     if (typeof newPassword !== 'undefined') payload.newPassword = String(newPassword);
     if (!req.user) throw new Error("Usuario no autenticado");
