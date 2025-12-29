@@ -1,0 +1,126 @@
+<div class="w-100 d-flex justify-content-center overflow-y-auto " >
+
+  <div class="card w-80 mh-80">
+
+    <div class="card-header">
+      <h6><i class="fa-solid fa-user-pen"></i> Perfil de usuario</h6>
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="facade.form">
+
+        <div class="d-flex flex-column">
+
+          <div class="d-flex justify-content-between">
+
+            <!-- FOTO -->
+            <div class="w-25 mt-3 text-center d-flex justify-content-center">
+
+              <div class="avatar-xl parent-container-overlay-inside">
+                <img [src]="facade.imagePreview || facade.profilePicturePath+'avatar.jpeg'"
+                     class="img-fluid rounded-circle avatar-xl child-element-overlayed-centered">
+
+                <i class="bi bi-pen-fill child-element-overlayed-centered text-white"></i>
+                <input type="file"
+                       class="child-element-overlayed-centered"
+                       (change)="setProfilePicture($event)">
+              </div>
+
+              <div *ngIf="facade.profilePictureStatus$ | async as err"
+                   class="invalid-feedback d-block text-center">
+                {{ err }}
+              </div>
+            </div>
+
+            <!-- DATOS -->
+            <div class="w-70">
+
+              <input type="hidden" formControlName="id">
+
+              <label>Nombre</label>
+              <input type="text" formControlName="name" class="form-control" readonly>
+
+              <label>Rol</label>
+              <input type="text" formControlName="userRole" class="form-control" readonly>
+
+              <label>Usuario</label>
+              <input type="text" formControlName="username" class="form-control" readonly>
+
+              <div *ngIf="!form['actualPassword'].disabled">
+
+                <label>Contraseña actual</label>
+                <input type="password" formControlName="actualPassword"
+                       class="form-control"
+                       [ngClass]="{'is-invalid': form['actualPassword'].invalid && form['actualPassword'].touched}">
+
+                <div *ngIf="form['actualPassword']?.errors as actualPasswordErrors" class="invalid-feedback">
+                     <div *ngIf="actualPasswordErrors['required']">El campo es obligatorio</div>
+                </div>
+
+
+
+                <label>Nueva contraseña</label>
+                <input type="password" formControlName="newPassword"
+                       class="form-control"
+                       [ngClass]="{'is-invalid': form['newPassword'].invalid && form['newPassword'].touched}">
+
+                       <div class="invalid-feedback"
+                  *ngIf="facade.form.hasError('sameAsCurrent') && form['newPassword'].touched">
+                  La nueva contraseña no puede ser igual a la actual
+                      </div>
+
+
+                <label>Repetir nueva contraseña</label> 
+                <input type="password" formControlName="newPasswordRepeat"
+                       class="form-control"
+                       [ngClass]="{
+                         'is-invalid': facade.form.hasError('areEqual') && form['newPasswordRepeat'].touched
+                       }">
+
+                <div class="invalid-feedback"
+                     *ngIf="facade.form.hasError('areEqual') && form['newPasswordRepeat'].touched">
+                  Las contraseñas no coinciden
+                </div>
+              </div>
+
+              <div class="text-end">
+                <button *ngIf="form['actualPassword'].disabled"
+                        type="button"
+                        class="btn btn-primary mt-3"
+                        (click)="changePassword()">
+                  <i class="fa-solid fa-lock-open"></i> Modificar contraseña
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="text-center mt-3">
+            <button class="btn btn-success"
+                    [disabled]="facade.form.invalid || (facade.saving$ | async)"
+                    (click)="save()">
+              <span *ngIf="facade.saving$ | async"
+                    class="spinner-border spinner-border-sm me-1"></span>
+              Guardar cambios
+            </button>
+          </div>
+
+        </div>
+
+      </form>
+
+      <form-message [formMessage]="facade.formMessage$ | async"></form-message>
+
+      <version-control
+  *ngIf="facade.form.value.id"
+  [hasPermission]="hasPermission"
+  [timestamp]="facade.timestamp$ | async"
+  [entity]="'User'"
+  [entityId]="facade.form.value.id"
+  class="w-90 m-2">
+</version-control>
+
+    </div>
+  </div>
+</div>

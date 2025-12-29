@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, firstValueFrom, Observable } from "rxjs";
 import { environment } from "../../../../environments/environment";
-import { FormBuilder, FormGroup } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 import { delay } from "../../../shared/helpers/delay.helper";
 import { FormMessage, MessageType } from "../../../shared/interfaces/form-message.interface";
@@ -13,8 +13,12 @@ import { MessageService } from "../../../shared/services/message.service";
 import { validPasswordValidator } from "../validators/valid-password.validator";
 import { passwordsMatchValidator } from "../validators/match-password.validator";
 
+
 import { UpdateUserProfileUseCase } from "../use-cases/update-user-profile.usecase";
 import { UploadUserProfilePictureUseCase } from "../use-cases/upload-user-profile-picture.usecase";
+import { createUserProfileForm } from "../forms/user-profile.form";
+
+
 
 @Injectable()
 export class UserProfileFacade {
@@ -42,30 +46,20 @@ export class UserProfileFacade {
     private uploadUserProfilePictureUseCase: UploadUserProfilePictureUseCase
   ) {
     this.timestamp$ = this.timeService.timestamp$;
-    this.form = this.createForm();
+  
+     this.form = createUserProfileForm(this.fb);
   }
 
-  private createForm(): FormGroup {
-    return this.fb.group({
-      id: [null],
-      name: [{ value: '', disabled: true }],
-      username: [{ value: '', disabled: true }],
-      userRole: [{ value: '', disabled: true }],
-      actualPassword: [{ value: '', disabled: true }],
-      newPassword: [{ value: '', disabled: true }],
-      newPasswordRepeat: [{ value: '', disabled: true }],
-      profilePicture: [{ value: null, disabled: true }]
-    }, {
-      validators: [passwordsMatchValidator('newPassword', 'newPasswordRepeat')]
-    });
-  }
+
 
   
 async initProfile() {
 
   this.loading$.next(true);
+  
 
   this.resetProfileForm();
+
 
   const user = await firstValueFrom(this.authService.userProfile$);
 
@@ -76,7 +70,7 @@ async initProfile() {
       name: user.name,
       username: user.username,
       userRole: user.userRole.name,
-      profilePicture: user.profilePicture
+
     });
 
     if (user.profilePicture) {
@@ -90,28 +84,29 @@ async initProfile() {
 
   this.timeService.refreshTimestamp();
   this.loading$.next(false);
+
+  console.log(this.form)
 }
 
 
-  private resetProfileForm() {
-
-  // Reset completo del formulario
+ private resetProfileForm() {
   this.form.reset({
     id: null,
-    name: '',
-    username: '',
-    userRole: '',
-    actualPassword: '',
-    newPassword: '',
-    newPasswordRepeat: '',
-    profilePicture: ''
+    name: null,
+    username: null,
+    userRole: null,
+    actualPassword: null,
+    newPassword: null,
+    newPasswordRepeat: null,
+    profilePicture: null
   });
 
-  // Deshabilitar nuevamente password
+  // Deshabilitar los campos de password y quitar validadores
   ['actualPassword', 'newPassword', 'newPasswordRepeat'].forEach(c => {
-    this.form.get(c)?.disable();
-    this.form.get(c)?.clearValidators();
-    this.form.get(c)?.updateValueAndValidity({ emitEvent: false });
+    const ctrl = this.form.get(c);
+    ctrl?.disable();
+    ctrl?.clearValidators();
+    ctrl?.updateValueAndValidity({ emitEvent: false });
   });
 
   this.form.markAsPristine();
@@ -123,13 +118,16 @@ async initProfile() {
 }
 
 
-  enablePasswordChange() {
-    ['actualPassword', 'newPassword', 'newPasswordRepeat'].forEach(c => {
-      this.form.get(c)?.enable();
-      this.form.get(c)?.setValidators(validPasswordValidator(6));
-      this.form.get(c)?.updateValueAndValidity();
-    });
-  }
+enablePasswordChange() {
+  ['actualPassword', 'newPassword', 'newPasswordRepeat'].forEach(c => {
+    const ctrl = this.form.get(c);
+    ctrl?.enable(); // habilita
+    ctrl?.setValidators([Validators.required]); // required
+    ctrl?.updateValueAndValidity(); // recalcula validez
+    ctrl?.markAsTouched(); // para que el error se vea inmediatamente
+  });
+}
+
 
 
   setProfilePicture(file: File) {
@@ -190,6 +188,7 @@ async initProfile() {
       );
     } finally {
       this.saving$.next(false);
+       this.timeService.refreshTimestamp();
       await delay(1000);
       this.formMessage$.next(null);
        

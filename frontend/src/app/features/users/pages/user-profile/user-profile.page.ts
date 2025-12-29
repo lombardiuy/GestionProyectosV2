@@ -19,23 +19,6 @@ export class UserProfilePage implements OnInit {
     this.facade.initProfile();
   }
 
-  get form() {
-    return this.facade.form.controls;
-  }
-
-  setprofilePicture(e: Event) {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (file) this.facade.setProfilePicture(file);
-  }
-
-  updateUserProfile() {
-    this.facade.saveProfile();
-  }
-
-  changePassword() {
-    this.facade.enablePasswordChange();
-  }
-
   hasPermission(code: string) {
     return this.authService.hasPermission(code);
   }

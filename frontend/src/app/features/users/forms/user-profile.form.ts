@@ -1,22 +1,28 @@
-import { FormBuilder, FormGroup} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { passwordsMatchValidator } from '../validators/match-password.validator';
-
+import { notSamePasswordValidator } from '../validators/not-same-password.validator';
+import { profilePictureOrPasswordValidator } from '../validators/profile-picture-or-password.validator';
 
 export function createUserProfileForm(fb: FormBuilder): FormGroup {
+
   return fb.group({
-      id: [{ value: null, disabled: true }],
-      name: [{ value: '', disabled: true }],
-      username: [{ value: '', disabled: true }],
-      actualPassword:  [{ value: '', disabled: true }],
-      newPassword:  [{ value: '', disabled: true }],
-      newPasswordRepeat: [{ value: '', disabled: true }],
-      profilePicture: [{ value: null, disabled: true }],
-      userRole: [{ value: '', disabled: true }],
-      active: [{ value: null, disabled: true }],
-      suspended: [{ value: null, disabled: true }]
+      id: [null, Validators.required],
+      name: [{ value: '', disabled: true }, Validators.required],
+      username: [{ value: '', disabled: true }, Validators.required],
+      actualPassword:  ['', Validators.required],
+      newPassword:  ['', Validators.required],
+      newPasswordRepeat: ['', Validators.required],
+      profilePicture: [null],
+      userRole: [{ value: '', disabled: true }, Validators.required],
+      active: [{ value: null, disabled: true }, Validators.required],
+      suspended: [{ value: null, disabled: true }, Validators.required]
     },
     {
-      validators: [passwordsMatchValidator('newPassword', 'newPasswordRepeat')]
+      validators: [
+        passwordsMatchValidator('newPassword', 'newPasswordRepeat'),
+        notSamePasswordValidator('actualPassword', 'newPassword'),
+        profilePictureOrPasswordValidator('profilePicture', 'actualPassword')
+      ]
     }
   );
 }

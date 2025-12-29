@@ -15,7 +15,9 @@ import { UserSuspensionComponent } from './components/user-suspension/user-suspe
 import { UsersRolePanelPage } from './pages/user-role-panel/users-role-panel.page';
 import { UsersRoleListComponent } from './components/user-role-list/users-role-list.component';
 import { UserRoleCreateComponent } from './components/user-role-create/user-role-create.component';
+
 import { UserProfilePage } from './pages/user-profile/user-profile.page';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 
 
 import { UsersPanelFacade } from './facades/users-panel.facade';
@@ -30,10 +32,14 @@ import { UploadUserProfilePictureUseCase } from './use-cases/upload-user-profile
 
 
 
+
+
+
 @NgModule({
   declarations: [
     UsersPanelPage, UsersListComponent, UserCreateComponent, UserPasswordResetComponent, UserSuspensionComponent,
-    UsersRolePanelPage, UsersRoleListComponent, UserRoleCreateComponent, UserProfilePage
+    UsersRolePanelPage, UsersRoleListComponent, UserRoleCreateComponent, 
+    UserProfilePage, UserProfileComponent,
   ],
   imports: [
     CommonModule,
@@ -45,6 +51,7 @@ import { UploadUserProfilePictureUseCase } from './use-cases/upload-user-profile
   providers: [
     UsersPanelFacade, CreateUserUseCase, UpdateUserUseCase,ResetPasswordUseCase, SuspendUserUseCase,
     UserProfileFacade, UpdateUserProfileUseCase, UploadUserProfilePictureUseCase,
+
 
   ]
 

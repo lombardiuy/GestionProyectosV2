@@ -268,72 +268,81 @@ export const updateUserProfile = async (
 
   const { id, actualPassword, newPassword, profilePicture } = payload;
 
+  console.log(payload)
+
   return await AppDataSource.transaction(async (manager) => {
     const userRepo = manager.getRepository(User);
 
-    // Buscar usuario
     const user = await userRepo.findOne({
       where: { id },
-      relations: ["userRole"], // solo por consistencia, no se usa pero mantiene estructura estándar
+      relations: ["userRole"],
     });
 
     if (!user) {
       throw new Error('Usuario desconocido. Si el error persiste contacte al administrador.');
     }
 
-    // Validación de cambio de contraseña
-    if ((actualPassword === 'null' ||  newPassword === 'null')) {
-      throw new Error('Para cambiar la contraseña debe enviar actualPassword y newPassword.');
-    }
-
-    // Crear objeto AFTER (clonamos user para comparar)
     const after: any = { ...user };
 
-    // Procesar cambio de contraseña
-    if (actualPassword && newPassword) {
-      const match = await bcrypt.compare(actualPassword, user.password);
-      if (!match) throw new Error('Contraseña actual incorrecta');
+    const passwordChanged = !(actualPassword === 'null' && newPassword === 'null');
+    const profilePictureChanged = profilePicture != 'null'
+     
 
-      after.password = await bcrypt.hash(newPassword, 10);
+    if (passwordChanged) {
+      if (actualPassword === newPassword)
+        throw new Error('La nueva contraseña debe ser diferente a la actual.');
+
+      const match = await bcrypt.compare(actualPassword!, user.password);
+      if (!match) throw new Error('Contraseña actual incorrecta.');
+
+      after.password = await bcrypt.hash(newPassword!, 10);
     }
 
-    // Procesar cambio de foto de perfil
-    if (typeof profilePicture === 'string') {
+    if (profilePictureChanged) {
       after.profilePicture = profilePicture;
     }
 
-    // Detectar cambios
     const changes = detectModuleChanges(user, after, {
-      ignore: ["createdAt", "updatedAt", "userRole"], 
-      relations: [], // esta función no afecta roles aquí
+      ignore: ["createdAt", "updatedAt", "userRole"],
+      relations: [],
     });
 
-    // Si no hubo cambios, evitar guardar y evitar audit vacío
     if (Object.keys(changes).length === 0) {
       const { password: _, ...rest } = user;
       return rest;
     }
 
-    // Guardar cambios reales
     Object.assign(user, after);
     const saved = await userRepo.save(user);
 
-    // Registrar auditoría dentro de la misma transacción
+    let action = 'USER_PROFILE_UPDATE';
+    let description = 'Actualización de perfil de usuario.';
+
+    if (profilePictureChanged && !passwordChanged) {
+      action = 'USER_PROFILE_PICTURE_UPDATE';
+      description = 'Actualización de foto de perfil de usuario.';
+    } else if (!profilePictureChanged && passwordChanged) {
+      action = 'USER_PASSWORD_CHANGE';
+      description = 'Cambio de clave de usuario.';
+    } else if (profilePictureChanged && passwordChanged) {
+      action = 'USER_PROFILE_UPDATE';
+      description = 'Actualización de perfil y contraseña.';
+    }
+
     await registerInAuditTrail(
       {
-        module:'Users',
+        module: 'Users',
         entity: "User",
         entityId: saved.id,
-        action: "USER_PROFILE_UPDATE",
-        changes: changes,
-        description: "Actualización de perfil de usuario.",
+        action,
+        changes,
+        description,
         author: currentUsername,
         version: saved.version
       },
       manager
     );
 
-    // Quitar password del retorno
     const { password: _, ...rest } = saved;
     return rest;
   });
@@ -400,7 +409,7 @@ export const setUserPassword = async (
         entityId: saved.id,
         action: "USER_PASSWORD_SET",
         changes: changes,
-        description: "Actualización de contraseña del usuario. Ver detalle en cambios.",
+        description: "Actualización de contraseña del usuario.",
         author: currentUsername || saved.username, // ✅ CORRECCIÓN
         version: saved.version,
       },
