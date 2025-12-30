@@ -1,4 +1,5 @@
-import * as factoryService from '../services/factory.service';
+import * as factoryService from '../services/factories/factory.service';
+import * as factoryRouteService from '../services/factories/factory-route.service';
 import { Request, Response } from 'express';
 
 
@@ -151,7 +152,7 @@ export const updateFactoryRoute = async (req: UserRequest, res: Response) => {
     if (!req.user) throw new Error("Usuario no autenticado");
 
     // Llamar al servicio para actualizar la fábrica
-    const updatedFactoryRoute = await factoryService.updateFactoryRoute(factoryRouteId, dto, req.user.username);
+    const updatedFactoryRoute = await factoryRouteService.updateFactoryRoute(factoryRouteId, dto, req.user.username);
 
     res.json({
       message: "Ruta actualizada",
@@ -181,7 +182,7 @@ export const createFactoryRoute = async (req: UserRequest, res: Response) => {
 if (!req.user) throw new Error("Usuario no autenticado");
 
 
-    const factoryRoute = await factoryService.createFactoryRoute(dto, req.user.username);
+    const factoryRoute = await factoryRouteService.createFactoryRoute(dto, req.user.username);
     res.json({ message: 'Ruta creada', factoryRoute });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -213,7 +214,7 @@ export const suspensionFactoryRoute = async (req: UserRequest, res: Response) =>
     const { id } = req.body;
     if (!id) return res.status(400).json({ error: 'Faltan datos' });
     if (!req.user) throw new Error("Usuario no autenticado");
-    const user = await factoryService.suspensionFactoryRoute(Number(id), req.user.username);
+    const user = await factoryRouteService.suspensionFactoryRoute(Number(id), req.user.username);
     res.json({ user });
   } catch (error: any) {
     res.status(401).json({ error: error.message });
