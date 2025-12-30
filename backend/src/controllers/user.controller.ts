@@ -1,4 +1,5 @@
-import * as userService from '../services/user.service';
+import * as userService from '../services/users/user.service';
+import * as userRoleService from '../services/users/userRole.service';
 import { Request, Response } from 'express';
 
 
@@ -31,7 +32,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
  */
 export const getUserRoles = async (req: Request, res: Response) => {
   try {
-    const roles = await userService.getUserRoles();
+    const roles = await userRoleService.getUserRoles();
     res.json(roles);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -149,7 +150,7 @@ export const saveUserRole = async (req: UserRequest, res: Response) => {
 
     if (!id) {
       // Crear
-      const role = await userService.createUserRole(
+      const role = await userRoleService.createUserRole(
         { name, permissions },
         req.user.username
       );
@@ -158,7 +159,7 @@ export const saveUserRole = async (req: UserRequest, res: Response) => {
     }
 
     // Actualizar
-    const role = await userService.updateUserRole(
+    const role = await userRoleService.updateUserRole(
       { id, name, permissions },
       req.user.username
     );
