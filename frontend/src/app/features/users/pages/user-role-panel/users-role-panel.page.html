@@ -1,94 +1,97 @@
-
-
-<div *ngIf="!loading else loadingSpinner" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+<div *ngIf="!(facade.loading$ | async); else loadingSpinner" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
   <div class="card w-95 h-95">
-    <div class="card-header w-100 ">
-
+    
+    <!-- HEADER -->
+    <div class="card-header w-100">
       <div class="w-100 d-flex justify-content-between">
-
         <h5><i class="bi bi-person-fill-gear"></i> Roles y permisos</h5>
 
-              <button  *ngIf=" hasPermission('USER_ROLE_CREATE') && (formMode === 'select' || formMode === 'edit')" class="btn btn-success btn-sm"  (click)="createUserRole()">
+        <!-- Botón Crear Rol -->
+        <button *ngIf="facade.hasPermission('USER_ROLE_CREATE') && ((facade.formMode$ | async) === 'select' || (facade.formMode$ | async) === 'edit')" 
+                class="btn btn-success btn-sm"  
+                (click)="facade.createUserRole()">
           <i class="bi bi-plus"></i><i class="bi bi-person-fill-gear"></i> Crear Rol
         </button>
 
-          <button  (click)="cancelSelection()" *ngIf=" formMode === 'create'" class="btn btn-primary btn-sm " >
+        <!-- Botón Visualizar Roles -->
+        <button *ngIf="(facade.formMode$ | async) === 'create'" 
+                class="btn btn-primary btn-sm" 
+                (click)="facade.cancelSelection()">
           <i class="bi bi-person-fill-gear"></i> Visualizar roles
         </button>
       </div>
-      
-   
     </div>
 
-    <div class="card-body d-flex flex-column align-items-center w-100 overflow-auto ">
-
+    <!-- BODY -->
+    <div class="card-body d-flex flex-column align-items-center w-100 overflow-auto">
+      
       <div class="w-100 h-8">
-    
+        <ng-container *ngIf="facade.selectedUserRole$ | async as selectedUserRole">
+          <!-- Input nombre rol (solo si es nuevo rol) -->
+          <input *ngIf="!selectedUserRole.id" 
+                 type="text" 
+                 class="form-control w-50 mb-2" 
+                 placeholder="Nombre del Rol" 
+                 [(ngModel)]="selectedUserRole.name">
+        </ng-container>
 
-        <input *ngIf="selectedUserRole && !selectedUserRole.id" type="text" class="form-control w-50 mb-2" placeholder="Nombre del Rol" [(ngModel)]="selectedUserRole!.name" >
-                
-            <users-role-list-component *ngIf=" formMode != 'create' "  class="w-100 " 
-              [selectedUserRole]="selectedUserRole"
-              [userRolesList]="userRolesList$ | async"
-              (selectUserRoleEvent)="selectUserRole($event)">
-           
-              </users-role-list-component>
+        <!-- Lista de roles -->
+        <users-role-list-component *ngIf="(facade.formMode$ | async) !== 'create'"  
+                                   class="w-100" 
+                                   [selectedUserRole]="facade.selectedUserRole$ | async"
+                                   [userRolesList]="facade.userRolesList$ | async"
+                                   (selectUserRoleEvent)="facade.selectUserRole($event)">
+        </users-role-list-component>
       </div>
 
+      <div class="w-100 h-92 overflow-auto">
+        <ng-container *ngIf="facade.selectedUserRole$ | async as selectedUserRole; else noUserRoleSelected">
+          
+          <!-- Componente de creación/edición de rol -->
+          <user-role-create-component class="w-100"
+                                     [userRoleCreateForm]="facade.userRoleCreateForm"
+                                     [selectedUserRole]="selectedUserRole"
+                                     [modules]="facade.modules"
+                                     [formMode]="facade.formMode$ | async"
+                                     [saving]="facade.saving$ | async"
+                                     [loading]="facade.loading$ | async"
+                                     [formMessage]="facade.formMessage$ | async"
+                                     (saveUserRoleEvent)="facade.saveUserRole()">
+          </user-role-create-component>
 
-      <div class="w-100 h-92  overflow-auto">
-                    
-   <user-role-create-component    *ngIf="selectedUserRole; else noUserRoleSelected"  class="w-100"
-              
-  
-  
-              [userRoleCreateForm]="userRoleCreateForm"
-              [selectedUserRole]="selectedUserRole"
-              [modules]="modules"
-              [formMode]="formMode"
-              [saving]="saving"
-              [loading]="loading"
-              [formMessage]="formMessage"
-              (saveUserRoleEvent)="saveUserRole()"
-   
-   
-   ></user-role-create-component>
-
-
-
-       <version-control *ngIf="selectedUserRole?.id" [hasPermission]="hasPermission.bind(this)" [entity]="'UserRole'" [entityId]="selectedUserRole!.id!" class="w-90"></version-control>
-
+          <!-- Version control -->
+          <version-control *ngIf="selectedUserRole.id" 
+                           [timestamp] = "facade.timestamp$ | async"
+                           [hasPermission]="facade.hasPermission.bind(facade)" 
+                           [entity]="'UserRole'" 
+                           [entityId]="selectedUserRole.id" 
+                           class="w-90">
+          </version-control>
+        </ng-container>
       </div>
 
-
-
     </div>
-     <div *ngIf="hasPermission('USER_VIEW')" class="card-footer text-primary d-flex justify-content-end align-items-center">
-    
-       <div [routerLink]="['/users']" class="cursor-pointer"><i class="fa-solid fa-users me-1"></i> Gestión de Usuarios </div> 
-      
-       
+
+    <!-- FOOTER -->
+    <div *ngIf="facade.hasPermission('USER_VIEW')" class="card-footer text-primary d-flex justify-content-end align-items-center">
+      <div [routerLink]="['/users']" class="cursor-pointer">
+        <i class="fa-solid fa-users me-1"></i> Gestión de Usuarios
+      </div>
     </div>
+
   </div>
-
-       
-
-
-
 </div>
 
-<ng-template  #loadingSpinner>
+<!-- LOADING SPINNER -->
+<ng-template #loadingSpinner>
   <loading-spinner class="w-100 h-100"></loading-spinner>
 </ng-template>
 
-<ng-template  #noUserRoleSelected>
-   <div class="cursor-pointer area rounded h-100 border-secondary color-secondary 
-                  d-flex flex-column justify-content-around align-items-center add-btn"
-           style="border:dashed; border-width:1px">
-          Una vez seleccione un rol de usuario podrá visualizar sus permisos en este menú.</div>
-
-
-
+<!-- MENSAJE CUANDO NO HAY ROL SELECCIONADO -->
+<ng-template #noUserRoleSelected>
+  <div class="cursor-pointer area rounded h-100 border-secondary color-secondary 
+              d-flex flex-column justify-content-around align-items-center add-btn"
+       style="border:dashed; border-width:1px">
+    Una vez seleccione un rol de usuario podrá visualizar sus permisos en este menú.
+  </div>
 </ng-template>
-
-

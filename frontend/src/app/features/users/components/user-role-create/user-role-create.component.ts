@@ -17,9 +17,9 @@ export class UserRoleCreateComponent {
      @Input() userRoleCreateForm!: FormGroup ;
      @Input() selectedUserRole:UserRole | null | undefined;
      @Input() modules:any;
-     @Input() saving:boolean |undefined;
-     @Input() loading:boolean |undefined;
-     @Input() formMode:string | undefined;
+     @Input() saving:boolean | null | undefined;
+     @Input() loading:boolean | null | undefined;
+     @Input() formMode:string | null | undefined;
      @Input() formMessage:FormMessage | null |undefined;
 
      @Output() saveUserRoleEvent = new EventEmitter<void>();

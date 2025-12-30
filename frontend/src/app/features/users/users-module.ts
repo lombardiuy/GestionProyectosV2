@@ -28,6 +28,7 @@ import { SuspendUserUseCase } from './use-cases/suspend-user.usecase';
 import { UserProfileFacade } from './facades/user-profile.facade';
 import { UpdateUserProfileUseCase } from './use-cases/update-user-profile.usecase';
 import { UploadUserProfilePictureUseCase } from './use-cases/upload-user-profile-picture.usecase';
+import { UsersRolePanelFacade } from './facades/users-role-panel.facade';
 
 
 
@@ -51,6 +52,7 @@ import { UploadUserProfilePictureUseCase } from './use-cases/upload-user-profile
   providers: [
     UsersPanelFacade, CreateUserUseCase, UpdateUserUseCase,ResetPasswordUseCase, SuspendUserUseCase,
     UserProfileFacade, UpdateUserProfileUseCase, UploadUserProfilePictureUseCase,
+    UsersRolePanelFacade
 
 
   ]

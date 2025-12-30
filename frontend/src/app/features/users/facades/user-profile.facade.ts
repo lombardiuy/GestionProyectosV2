@@ -62,6 +62,7 @@ async initProfile() {
 
 
   const user = await firstValueFrom(this.authService.userProfile$);
+  console.log(user)
 
   if (user) {
 
@@ -175,6 +176,16 @@ enablePasswordChange() {
       if (this.profilePicture) {
         await this.uploadUserProfilePictureUseCase.execute(res.user.id, this.profilePicture);
       }
+
+        // 🔹 Actualizamos solo profilePicture en userProfile$
+      const currentProfile = this.authService.userProfile$.value;
+      if (currentProfile) {
+        this.authService.userProfile$.next({
+          ...currentProfile,
+          profilePicture: res.user.profilePicture
+        });
+      }
+    
 
       this.formMessage$.next(
         this.messageService.createFormMessage(MessageType.SUCCESS, 'Perfil actualizado con éxito')
